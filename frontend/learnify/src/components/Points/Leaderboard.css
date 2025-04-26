@@ -1,0 +1,113 @@
+.leaderboard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+    overflow: hidden;
+  }
+  
+  .leaderboard-header {
+    padding: 1rem;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+  }
+  
+  .leaderboard-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .leaderboard-list {
+    padding: 1rem;
+  }
+  
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .leaderboard-item:last-child {
+    border-bottom: none;
+  }
+  
+  .leaderboard-item.current-user {
+    background-color: #f0f4ff;
+  }
+  
+  .rank {
+    width: 30px;
+    height: 30px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  .leaderboard-item:nth-child(1) .rank {
+    background-color: #ffd700; /* Gold */
+    color: white;
+  }
+  
+  .leaderboard-item:nth-child(2) .rank {
+    background-color: #c0c0c0; /* Silver */
+    color: white;
+  }
+  
+  .leaderboard-item:nth-child(3) .rank {
+    background-color: #cd7f32; /* Bronze */
+    color: white;
+  }
+  
+  .student-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+  
+  .leaderboard-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+  }
+  
+  .student-name {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .you-badge {
+    background-color: #667eea;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+  }
+  
+  .student-stats {
+    text-align: right;
+  }
+  
+  .student-points {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .student-level {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
