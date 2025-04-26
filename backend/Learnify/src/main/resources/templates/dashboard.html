@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        img { border-radius: 50%; width: 100px; height: 100px; }
+        button { padding: 10px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome, <span th:text="${userName}">User</span>!</h2>
+    <img th:if="${userPicture}" th:src="${userPicture}" alt="Profile Picture">
+    <p>Email: <span th:text="${userEmail}">user@example.com</span></p>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+</body>
+</html>
