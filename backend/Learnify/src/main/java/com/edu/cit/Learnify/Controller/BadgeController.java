@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000") // Accept all origins
 @RestController
 @RequestMapping("/api/badges")
 public class BadgeController {
@@ -61,4 +62,14 @@ public class BadgeController {
         List<Badge> badges = badgeService.getBadgesByCategory(category);
         return new ResponseEntity<>(badges, HttpStatus.OK);
     }
+
+    /**
+     * Get all badges with earned status for a student
+     */
+    @GetMapping("/student/{studentId}/all")
+    public ResponseEntity<List<BadgeDTO>> getAllBadgesWithStatus(@PathVariable String studentId) {
+        List<BadgeDTO> badges = badgeService.getAllBadgesWithEarnedStatus(studentId);
+        return new ResponseEntity<>(badges, HttpStatus.OK);
+    }
+
 }

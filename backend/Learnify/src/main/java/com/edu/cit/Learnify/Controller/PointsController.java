@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000") // Accept all origins
 @RestController
 @RequestMapping("/api/points")
 public class PointsController {
