@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface QuestionRepository extends MongoRepository<Question, String> {
-    List<Question> findByQuizId(String quizId);  // Query to fetch questions by quizId
-    List<Question> findAll();  // Retrieve all questions from all quizzes
+    List<Question> findByQuizId(String quizId);
+    List<Question> findAll();
+
+
 }

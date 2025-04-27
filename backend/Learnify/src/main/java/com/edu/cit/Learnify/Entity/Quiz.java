@@ -2,17 +2,18 @@ package com.edu.cit.Learnify.Entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document(collection = "quizzes")
 public class Quiz {
 
     @Id
-    private String id;  // Using String for the ID to match MongoDB's default behavior
-    private Integer teacherId;
-    private String title;
-    private LocalDateTime createdAt;
+    private String id;  // MongoDB identifier
+    private Integer teacherId;  // Teacher's ID
+    private String title;  // Quiz title
+    private LocalDateTime createdAt;  // Creation timestamp
+    private List<Question> questions;  // List of questions in this quiz
 
     // Default constructor
     public Quiz() {}
@@ -55,5 +56,13 @@ public class Quiz {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }

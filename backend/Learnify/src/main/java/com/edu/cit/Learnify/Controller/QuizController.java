@@ -17,47 +17,45 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
-    // Endpoint to create a new quiz
+    // Create a new quiz
     @PostMapping
     public Quiz createQuiz(@RequestBody Map<String, Object> payload) {
         int teacherId = 123; // Assume auth in real app
         String title = (String) payload.get("title");
 
-        // Retrieve and map the questions
-        List<Map<String, String>> questionsRaw = (List<Map<String, String>>) payload.get("questions");
-        List<Question> questions = questionsRaw.stream()
-                .map(q -> new Question(
-                        null,  // Will be set later after quiz creation
-                        q.get("questionText"),
-                        q.get("type"),
-                        q.get("correctAnswer")))
-                .toList();
+        // Extract the questions from the payload
+        List<Map<String, Object>> questionsRaw = (List<Map<String, Object>>) payload.get("questions");
 
-        Quiz createdQuiz = quizService.createQuiz(teacherId, title, questions);
+        // Map each question and handle options correctly
+        List<Question> questions = questionsRaw.stream().map(q -> {
+            String questionText = (String) q.get("questionText");
+            String type = (String) q.get("type");
+            String correctAnswer = (String) q.get("correctAnswer");
 
-        // After quiz creation, set the actual quizId for each question
-        for (Question question : questions) {
-            question.setQuizId(createdQuiz.getId());
-        }
+            // Ensure options are extracted as a List<String>
+            List<String> options = (List<String>) q.get("options"); // Correctly cast options to List<String>
 
-        return createdQuiz;
+            return new Question(null, questionText, type, correctAnswer, options); // Using the new constructor
+        }).toList();
+
+        // Create the quiz and return the result
+        return quizService.createQuiz(teacherId, title, questions);
     }
 
-    // Endpoint to get a quiz by its ID
+    // Get a specific quiz by ID
     @GetMapping("/{id}")
     public Quiz getQuizById(@PathVariable String id) {
-        return quizService.getQuizById(id);  // Retrieve quiz by ID from the service layer
+        return quizService.getQuizById(id);
     }
 
-    // Endpoint to get all questions for a specific quiz
-    @GetMapping("/{quizId}/questions")
-    public List<Question> getQuestionsByQuizId(@PathVariable String quizId) {
-        return quizService.getQuestionsByQuizId(quizId);  // Retrieve questions by quizId
-    }
-
-    // Endpoint to get all questions from all quizzes
+    // Endpoint to retrieve all questions from all quizzes
     @GetMapping("/questions")
-    public List<Question> getAllQuestionsFromAllQuizzes() {
-        return quizService.getAllQuestionsFromAllQuizzes();  // Retrieve all questions across quizzes
+    public List<Question> getAllQuestions() {
+        return quizService.getAllQuestions();
+    }
+    // Get all quizzes for a specific teacher
+    @GetMapping("/teacher/{teacherId}")
+    public List<Quiz> getQuizzesByTeacher(@PathVariable Integer teacherId) {
+        return quizService.getQuizzesByTeacher(teacherId);
     }
 }

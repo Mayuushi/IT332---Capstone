@@ -3,28 +3,33 @@ package com.edu.cit.Learnify.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "questions")
 public class Question {
 
     @Id
-    private String id;
+    private String id; // MongoDB ID
+
     private String quizId;
     private String questionText;
     private String type;
     private String correctAnswer;
+    private List<String> options; // List of options for multiple choice questions
 
     // Default constructor
     public Question() {}
 
-    // Constructor with all fields (matching the fields you need)
-    public Question(String quizId, String questionText, String type, String correctAnswer) {
+    // Constructor with all fields
+    public Question(String quizId, String questionText, String type, String correctAnswer, List<String> options) {
         this.quizId = quizId;
         this.questionText = questionText;
         this.type = type;
         this.correctAnswer = correctAnswer;
+        this.options = options;
     }
 
-    // Getter and Setter methods
+    // Getters and Setters
 
     public String getId() {
         return id;
@@ -64,5 +69,13 @@ public class Question {
 
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
     }
 }
