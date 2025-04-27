@@ -8,6 +8,9 @@ const Sidebar = () => {
 
   if (!currentUser) return null;
 
+  // Assuming we have a list of quizzes available for the user. You could fetch this data dynamically.
+  const quizId = "680e122aca8d7a0a93757df5"; // Sample quiz ID for demonstration.
+
   return (
     <div className="sidebar">
       <div className="profile">
@@ -35,6 +38,11 @@ const Sidebar = () => {
         </NavLink>
         <NavLink to="/lessons" className={({ isActive }) => isActive ? 'active' : ''}>
           Lessons
+        </NavLink>
+        
+        {/* New NavLink for Quiz */}
+        <NavLink to={`/quiz/${quizId}`} className={({ isActive }) => isActive ? 'active' : ''}>
+          Take Quiz
         </NavLink>
       </nav>
     </div>
