@@ -9,6 +9,7 @@ import PointsHistory from './components/Points/PointsHistory';
 import Leaderboard from './components/Points/Leaderboard';
 import BadgeDisplay from './components/Badges/BadgeDisplay';
 import LearnifyApp from './components/Student/LearnifyApp';
+import Quiz from './components/Quiz/Quiz';  // Import the Quiz component
 import './App.css';
 
 // Protected route component
@@ -97,6 +98,12 @@ const App = () => {
                     <Leaderboard />
                   </ProtectedRoute>
                 } />
+                <Route path="/quiz/:quizId" element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                } />
+
                 <Route path="*" element={<Navigate to="/dashboard" />} />
               </Routes>
             </main>
