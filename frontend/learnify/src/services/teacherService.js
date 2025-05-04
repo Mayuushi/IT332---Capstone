@@ -12,7 +12,11 @@ const getAllTeachers = async () => {
   return res.data;
 };
 
-export default {
+const teacherService ={
   createTeacher,
-  getAllTeachers,
-};
+  getAllTeachers
+}
+
+
+
+export default teacherService;

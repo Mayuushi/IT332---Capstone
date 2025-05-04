@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/api/classes";
+const API_URL = 'http://localhost:8080/api/classes';
 
 const createClass = async (classData) => {
   const res = await axios.post(API_URL, classData);
@@ -12,7 +12,9 @@ const getAllClasses = async () => {
   return res.data;
 };
 
-export default {
-  createClass,
-  getAllClasses,
-};
+const classService = {
+    createClass,
+    getAllClasses
+}
+
+export default classService;

@@ -93,6 +93,12 @@ const App = () => {
       <Quiz />
     </ProtectedRoute>
   } />
+
+<Route path="/classcreate" element={
+    <ProtectedRoute>
+      <ClassCreate />
+    </ProtectedRoute>
+  } />
   
   <Route path="*" element={<Navigate to="/" />} />
 </Routes>
