@@ -16,9 +16,11 @@ public class TeacherService {
     private TeacherRepository teacherRepository;
 
     public Teacher createTeacher(CreateTeacherDTO dto) {
-        Teacher teacher = new Teacher(dto.getName(), dto.getEmail(), dto.getTopic());
+        Teacher teacher = new Teacher(dto.getName(), dto.getEmail(), dto.getPassword());
+        teacher.setTeacher(true); // explicitly mark as teacher
         return teacherRepository.save(teacher);
     }
+
 
     public List<Teacher> getAllTeachers() {
         return teacherRepository.findAll();

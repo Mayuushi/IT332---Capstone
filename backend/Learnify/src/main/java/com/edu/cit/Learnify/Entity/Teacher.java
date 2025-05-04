@@ -9,46 +9,36 @@ public class Teacher {
     private String id;
     private String name;
     private String email;
-    private String topic;
+    private String password;
+    private boolean isTeacher = true; // Default to true for all teacher entities
 
     public Teacher() {}
 
-    public Teacher(String name, String email, String topic) {
+    public Teacher(String name, String email, String password) {
         this.name = name;
         this.email = email;
-        this.topic = topic;
+        this.password = password;
+        this.isTeacher = true;
     }
 
     // Getters and Setters
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public void setId(String id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getTopic() {
-        return topic;
-    }
+    public String getPassword() { return password; }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
+    public void setPassword(String password) { this.password = password; }
+
+    public boolean isTeacher() { return isTeacher; }
+
+    public void setTeacher(boolean teacher) { isTeacher = teacher; }
 }

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000") // Accepting frontend origins
+
 @RestController
 @RequestMapping("/api/teachers")
 public class TeacherController {
@@ -17,6 +19,7 @@ public class TeacherController {
 
     @PostMapping
     public Teacher createTeacher(@RequestBody CreateTeacherDTO dto) {
+        // Now include password
         return teacherService.createTeacher(dto);
     }
 
