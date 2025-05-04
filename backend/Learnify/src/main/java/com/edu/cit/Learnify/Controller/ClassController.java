@@ -1,6 +1,7 @@
 package com.edu.cit.Learnify.Controller;
 
 import com.edu.cit.Learnify.DTO.ClassWithStudentsDTO;
+import com.edu.cit.Learnify.DTO.ClassWithUsersDTO;
 import com.edu.cit.Learnify.DTO.CreateClassDTO;
 import com.edu.cit.Learnify.Entity.Class;
 import com.edu.cit.Learnify.Service.ClassService;
@@ -52,6 +53,12 @@ public class ClassController {
     public List<Class> getClassesByStudentId(@PathVariable String studentId) {
         return classService.getClassesByStudentId(studentId);
     }
+
+    @GetMapping("/student/{studentId}/with-users")
+    public List<ClassWithUsersDTO> getClassesByStudentIdWithUsers(@PathVariable String studentId) {
+        return classService.getClassesByStudentIdWithUserData(studentId);
+    }
+
 
 
 
