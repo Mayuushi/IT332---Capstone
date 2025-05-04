@@ -44,4 +44,17 @@ public class ClassService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public Class updateClass(String id, Class updatedData) {
+        return classRepository.findById(id).map(existing -> {
+            existing.setTopic(updatedData.getTopic());
+            existing.setStudentIds(updatedData.getStudentIds());
+            return classRepository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("Class not found"));
+    }
+
+    public void deleteClass(String id) {
+        classRepository.deleteById(id);
+    }
+
 }

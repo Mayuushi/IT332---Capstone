@@ -37,4 +37,16 @@ public class ClassController {
         return classService.getClassById(id)
                 .orElseThrow(() -> new RuntimeException("Class not found"));
     }
+
+    @PutMapping("/{id}")
+    public Class updateClass(@PathVariable String id, @RequestBody Class updatedClass) {
+        return classService.updateClass(id, updatedClass);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteClass(@PathVariable String id) {
+        classService.deleteClass(id);
+    }
+
+
 }
