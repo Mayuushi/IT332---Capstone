@@ -18,10 +18,22 @@ const getAllClassesWithStudents = async () => {
   return res.data;
 };
 
-const classService = {
-  createClass,
-  getAllClasses,
-  getAllClassesWithStudents, // ✅ Make sure this is exported!
-};
-
-export default classService;
+const updateClass = async (id, updatedData) => {
+    const res = await axios.put(`${API_URL}/${id}`, updatedData);
+    return res.data;
+  };
+  
+  const deleteClass = async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+  };
+  
+  const classService = {
+    createClass,
+    getAllClasses,
+    getAllClassesWithStudents,
+    updateClass,
+    deleteClass,
+  };
+  
+  export default classService;
+  

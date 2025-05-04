@@ -49,7 +49,7 @@ const Sidebar = () => {
         {/* Teacher-specific links */}
         {currentUser.isTeacher && (
           <>
-            <NavLink to="/classcreate" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink to="/manageclasses" className={({ isActive }) => isActive ? 'active' : ''}>
               Manage Classes
             </NavLink>
             <NavLink to="/create-lesson" className={({ isActive }) => isActive ? 'active' : ''}>

@@ -12,12 +12,13 @@ import LearnifyApp from './components/Student/LearnifyApp';
 import AuthSelector from './components/Auth/AuthSelector';
 import TeacherRegister from './components/Auth/TeacherRegister';
 import StudentRegister from './components/Auth/StudentRegister';
-import ClassCreate from './components/Class/ClassCreate';
+import ClassCreate from './components/Class/ManageClasses';
 import Login from './components/Auth/Login';
 //import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 
 import Quiz from './components/Quiz/Quiz';  // Import the Quiz component
 import './App.css';
+import ManageClasses from './components/Class/ManageClasses';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -94,9 +95,9 @@ const App = () => {
     </ProtectedRoute>
   } />
 
-<Route path="/classcreate" element={
+<Route path="/manageclasses" element={
     <ProtectedRoute>
-      <ClassCreate />
+      <ManageClasses />
     </ProtectedRoute>
   } />
   
