@@ -48,5 +48,11 @@ public class ClassController {
         classService.deleteClass(id);
     }
 
+    @GetMapping("/student/{studentId}")
+    public List<Class> getClassesByStudentId(@PathVariable String studentId) {
+        return classService.getClassesByStudentId(studentId);
+    }
+
+
 
 }

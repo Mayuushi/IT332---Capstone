@@ -57,4 +57,9 @@ public class ClassService {
         classRepository.deleteById(id);
     }
 
+    public List<Class> getClassesByStudentId(String studentId) {
+        return classRepository.findByStudentIdsContaining(studentId);
+    }
+
+
 }
