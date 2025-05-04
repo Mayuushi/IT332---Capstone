@@ -1,19 +1,26 @@
 package com.edu.cit.Learnify.Service;
 
+import com.edu.cit.Learnify.DTO.ClassWithStudentsDTO;
 import com.edu.cit.Learnify.DTO.CreateClassDTO;
 import com.edu.cit.Learnify.Entity.Class;
+import com.edu.cit.Learnify.Entity.Student;
 import com.edu.cit.Learnify.Repository.ClassRepository;
+import com.edu.cit.Learnify.Repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassService {
 
     @Autowired
     private ClassRepository classRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     public Class createClass(CreateClassDTO dto) {
         Class classEntity = new Class(dto.getTopic(), dto.getTeacherId(), dto.getStudentIds());
@@ -26,5 +33,15 @@ public class ClassService {
 
     public Optional<Class> getClassById(String id) {
         return classRepository.findById(id);
+    }
+
+    public List<ClassWithStudentsDTO> getAllClassesWithStudents() {
+        List<Class> classes = classRepository.findAll();
+        return classes.stream()
+                .map(clazz -> {
+                    List<Student> students = studentRepository.findAllById(clazz.getStudentIds());
+                    return new ClassWithStudentsDTO(clazz, students);
+                })
+                .collect(Collectors.toList());
     }
 }

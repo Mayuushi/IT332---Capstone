@@ -1,5 +1,6 @@
 package com.edu.cit.Learnify.Controller;
 
+import com.edu.cit.Learnify.DTO.ClassWithStudentsDTO;
 import com.edu.cit.Learnify.DTO.CreateClassDTO;
 import com.edu.cit.Learnify.Entity.Class;
 import com.edu.cit.Learnify.Service.ClassService;
@@ -8,9 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-@CrossOrigin(origins = "http://localhost:3000") // Accepting frontend origins
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/classes")
 public class ClassController {
@@ -26,6 +25,11 @@ public class ClassController {
     @GetMapping
     public List<Class> getAllClasses() {
         return classService.getAllClasses();
+    }
+
+    @GetMapping("/with-students")
+    public List<ClassWithStudentsDTO> getAllClassesWithStudents() {
+        return classService.getAllClassesWithStudents();
     }
 
     @GetMapping("/{id}")
