@@ -14,6 +14,7 @@ import TeacherRegister from './components/Auth/TeacherRegister';
 import StudentRegister from './components/Auth/StudentRegister';
 import ClassCreate from './components/Class/ClassCreate';
 import Login from './components/Auth/Login';
+//import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 
 import Quiz from './components/Quiz/Quiz';  // Import the Quiz component
 import './App.css';

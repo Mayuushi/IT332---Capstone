@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import teacherService from "../../services/teacherService";
+import { useNavigate } from "react-router-dom";
+import '../../components/CSS/Register.css';
 
 const TeacherRegister = () => {
-  const [teacher, setTeacher] = useState({ name: "", email: "", password: "" });
-  const navigate = useNavigate(); // useNavigate hook to redirect after registration
+  const [teacher, setTeacher] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setTeacher({ ...teacher, [e.target.name]: e.target.value });
@@ -13,43 +19,69 @@ const TeacherRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send the teacher data to backend for registration
       const result = await teacherService.createTeacher(teacher);
-      alert("Teacher registered with ID: " + result.id);
-      
-      // Redirect to login page after successful registration
-      navigate("/login"); 
+      const userWithRole = { ...result, isTeacher: true };
+      localStorage.setItem("user", JSON.stringify(userWithRole));
+      navigate("/dashboard");
     } catch (error) {
-      alert("Error registering teacher: " + error.message);
+      console.error('Registration failed:', error);
+      alert('Failed to register teacher');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Teacher Registration</h2>
-      <input 
-        type="text" 
-        name="name" 
-        placeholder="Name" 
-        onChange={handleChange} 
-        required 
-      />
-      <input 
-        type="email" 
-        name="email" 
-        placeholder="Email" 
-        onChange={handleChange} 
-        required 
-      />
-      <input 
-        type="password" 
-        name="password" 
-        placeholder="Password" 
-        onChange={handleChange} 
-        required 
-      />
-      <button type="submit">Register</button>
-    </form>
+    <div className="register-container">
+      <div className="register-card">
+        <div className="register-header">
+          <h2>Teacher Registration</h2>
+          <p>Create an account to manage courses and students</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="register-form">
+          <div className="form-group">
+            <label htmlFor="name">Full Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              placeholder="Enter your full name" 
+              onChange={handleChange} 
+              required 
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="Enter your email" 
+              onChange={handleChange} 
+              required 
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Create a password" 
+              onChange={handleChange} 
+              required 
+            />
+          </div>
+          
+          <button type="submit" className="register-button">Create Teacher Account</button>
+        </form>
+        
+        <div className="login-link">
+          Already have an account? <span onClick={() => navigate('/login')}>Log in</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
