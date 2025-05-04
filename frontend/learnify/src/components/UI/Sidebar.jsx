@@ -8,8 +8,8 @@ const Sidebar = () => {
 
   if (!currentUser) return null;
 
-  // Assuming we have a list of quizzes available for the user. You could fetch this data dynamically.
-  const quizId = "680e122aca8d7a0a93757df5"; // Sample quiz ID for demonstration.
+  // Sample quiz ID for demonstration
+  const quizId = "680e122aca8d7a0a93757df5"; 
 
   return (
     <div className="sidebar">
@@ -24,6 +24,7 @@ const Sidebar = () => {
       </div>
       
       <nav className="nav-menu">
+        {/* Common NavLinks for all users */}
         <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
           Dashboard
         </NavLink>
@@ -40,10 +41,25 @@ const Sidebar = () => {
           Lessons
         </NavLink>
         
-        {/* New NavLink for Quiz */}
+        {/* Common NavLink for Quiz */}
         <NavLink to={`/quiz/${quizId}`} className={({ isActive }) => isActive ? 'active' : ''}>
           Take Quiz
         </NavLink>
+
+        {/* Teacher-specific links */}
+        {currentUser.isTeacher && (
+          <>
+            <NavLink to="/manage-classes" className={({ isActive }) => isActive ? 'active' : ''}>
+              Manage Classes
+            </NavLink>
+            <NavLink to="/create-lesson" className={({ isActive }) => isActive ? 'active' : ''}>
+              Create Lesson
+            </NavLink>
+            <NavLink to="/gradebook" className={({ isActive }) => isActive ? 'active' : ''}>
+              Gradebook
+            </NavLink>
+          </>
+        )}
       </nav>
     </div>
   );
