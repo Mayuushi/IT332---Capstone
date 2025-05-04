@@ -19,6 +19,7 @@ import Login from './components/Auth/Login';
 import Quiz from './components/Quiz/Quiz';  // Import the Quiz component
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
+import EnrolledClasses from './components/Student/EnrolledClasses';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -31,10 +32,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Login page component (simplified for demo)
 
-
-// Points page component that combines PointsDisplay and PointsHistory
 const PointsPage = () => {
   return (
     <div className="points-page">
@@ -98,6 +96,11 @@ const App = () => {
 <Route path="/manageclasses" element={
     <ProtectedRoute>
       <ManageClasses />
+    </ProtectedRoute>
+  } />
+  <Route path="/enrolledclasses" element={
+    <ProtectedRoute>
+      <EnrolledClasses />
     </ProtectedRoute>
   } />
   

@@ -27,10 +27,16 @@ const updateClass = async (id, updatedData) => {
     await axios.delete(`${API_URL}/${id}`);
   };
   
+  const getClassesByStudentId = async (studentId) => {
+    const res = await axios.get(`${API_URL}/student/${studentId}`);
+    return res.data;
+  };
+  
   const classService = {
     createClass,
     getAllClasses,
     getAllClassesWithStudents,
+    getClassesByStudentId, // ✅ Add this
     updateClass,
     deleteClass,
   };
