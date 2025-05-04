@@ -9,6 +9,7 @@ public class Student {
     private String id;
     private String name;
     private String email;
+    private String password;  // Add password field
     private int grade;
     private int totalPoints;
     private int level;
@@ -16,9 +17,10 @@ public class Student {
     // Constructors
     public Student() {}
 
-    public Student(String name, String email, int grade) {
+    public Student(String name, String email, String password, int grade) {
         this.name = name;
         this.email = email;
+        this.password = password;
         this.grade = grade;
         this.totalPoints = 0;
         this.level = 1;
@@ -47,6 +49,14 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public int getGrade() {

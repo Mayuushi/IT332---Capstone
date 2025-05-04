@@ -6,8 +6,10 @@ const StudentRegister = () => {
   const [student, setStudent] = useState({
     name: '',
     email: '',
-    grade: ''
+    grade: '',
+    password: ''  // Add password state
   });
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,10 +20,12 @@ const StudentRegister = () => {
     e.preventDefault();
 
     try {
+      // Send password as part of the registration data
       await studentService.registerStudent({
         name: student.name,
         email: student.email,
-        grade: parseInt(student.grade)
+        grade: parseInt(student.grade),
+        password: student.password  // Include password in the request
       });
 
       alert('Registration successful! Please log in.');
@@ -61,6 +65,14 @@ const StudentRegister = () => {
           required
           min="4"
           max="5"
+        />
+        <input
+          type="password"  // Password input field
+          name="password"
+          placeholder="Password"
+          value={student.password}
+          onChange={handleChange}
+          required
         />
         <button type="submit">Register</button>
       </form>
