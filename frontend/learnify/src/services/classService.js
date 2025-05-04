@@ -12,34 +12,33 @@ const getAllClasses = async () => {
   return res.data;
 };
 
-// ✅ Add this method
-const getAllClassesWithStudents = async () => {
-  const res = await axios.get(`${API_URL}/with-students`);
+// ✅ Add this method to fetch classes with teacher and classmates data
+const getClassesByStudentIdWithUsers = async (studentId) => {
+  const res = await axios.get(`${API_URL}/student/${studentId}/with-users`);
   return res.data;
 };
 
 const updateClass = async (id, updatedData) => {
-    const res = await axios.put(`${API_URL}/${id}`, updatedData);
-    return res.data;
-  };
-  
-  const deleteClass = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-  };
-  
-  const getClassesByStudentId = async (studentId) => {
-    const res = await axios.get(`${API_URL}/student/${studentId}`);
-    return res.data;
-  };
-  
-  const classService = {
-    createClass,
-    getAllClasses,
-    getAllClassesWithStudents,
-    getClassesByStudentId, // ✅ Add this
-    updateClass,
-    deleteClass,
-  };
-  
-  export default classService;
-  
+  const res = await axios.put(`${API_URL}/${id}`, updatedData);
+  return res.data;
+};
+
+const deleteClass = async (id) => {
+  await axios.delete(`${API_URL}/${id}`);
+};
+
+const getClassesByStudentId = async (studentId) => {
+  const res = await axios.get(`${API_URL}/student/${studentId}`);
+  return res.data;
+};
+
+const classService = {
+  createClass,
+  getAllClasses,
+  getClassesByStudentIdWithUsers, // ✅ Add this method
+  getClassesByStudentId,
+  updateClass,
+  deleteClass,
+};
+
+export default classService;

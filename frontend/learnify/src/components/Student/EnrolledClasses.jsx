@@ -9,13 +9,12 @@ const EnrolledClasses = () => {
   useEffect(() => {
     console.log("✅ EnrolledClasses mounted");
   }, []);
-  
 
   useEffect(() => {
     const fetchEnrolledClasses = async () => {
       if (currentUser) {
         try {
-          const res = await classService.getClassesByStudentId(currentUser.id);
+          const res = await classService.getClassesByStudentIdWithUsers(currentUser.id);
           setClasses(res);
         } catch (err) {
           console.error("Error fetching enrolled classes:", err);
@@ -35,7 +34,14 @@ const EnrolledClasses = () => {
         <ul>
           {classes.map((clazz) => (
             <li key={clazz.id}>
-              <strong>{clazz.topic}</strong> (Teacher ID: {clazz.teacherId})
+              <strong>{clazz.topic}</strong><br />
+              <strong>Teacher:</strong> {clazz.teacher?.fullName || "Unknown"}<br />
+              <strong>Classmates:</strong>
+              <ul>
+                {clazz.classmates?.map((classmate) => (
+                  <li key={classmate.id}>{classmate.fullName}</li>
+                ))}
+              </ul>
             </li>
           ))}
         </ul>
