@@ -1,0 +1,139 @@
+/* AuthSelector.css */
+
+/* Main container */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+    background: linear-gradient(to bottom, #EFF6FF, #E0E7FF);
+  }
+  
+  /* Card container */
+  .auth-card {
+    width: 100%;
+    max-width: 28rem;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  
+  /* Header section */
+  .auth-header {
+    background-color: #4F46E5;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+  }
+  
+  .auth-header p {
+    color: #E0E7FF;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Content section */
+  .auth-content {
+    padding: 1.5rem;
+  }
+  
+  .auth-content h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+    color: #1F2937;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Role selection grid */
+  .role-selection {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .role-selection {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  /* Role buttons */
+  .role-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: white;
+    border: 2px solid #E0E7FF;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .role-button:hover {
+    border-color: #4F46E5;
+    background-color: #F5F7FF;
+  }
+  
+  /* Icon container */
+  .icon-container {
+    background-color: #EEF2FF;
+    padding: 1rem;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    color: #4F46E5;
+  }
+  
+  /* Role title */
+  .role-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1F2937;
+  }
+  
+  /* Role description */
+  .role-description {
+    font-size: 0.875rem;
+    color: #6B7280;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+  
+  /* Footer section */
+  .auth-footer {
+    background-color: #F9FAFB;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #E5E7EB;
+  }
+  
+  .auth-footer p {
+    font-size: 0.875rem;
+    color: #4B5563;
+  }
+  
+  /* Sign-in button */
+  .sign-in-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #4F46E5;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .sign-in-button:hover {
+    color: #4338CA;
+  }
