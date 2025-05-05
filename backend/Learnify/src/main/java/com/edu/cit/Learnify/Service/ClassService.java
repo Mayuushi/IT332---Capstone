@@ -94,4 +94,8 @@ public class ClassService {
             return new ClassWithUsersDTO(clazz.getId(), clazz.getTopic(), teacher, classmateDTOs);
         }).collect(Collectors.toList());
     }
+    public List<Class> getClassesByTeacherId(String teacherId) {
+        return classRepository.findByTeacherId(teacherId);
+    }
+
 }

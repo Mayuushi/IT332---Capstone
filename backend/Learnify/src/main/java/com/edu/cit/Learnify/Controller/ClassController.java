@@ -59,6 +59,13 @@ public class ClassController {
         return classService.getClassesByStudentIdWithUserData(studentId);
     }
 
+    @GetMapping("/teacher/{teacherId}")
+    public List<Class> getClassesByTeacherId(@PathVariable String teacherId) {
+        System.out.println("Fetching Teacher ID: "+teacherId);
+        return classService.getClassesByTeacherId(teacherId);
+    }
+
+
 
 
 
