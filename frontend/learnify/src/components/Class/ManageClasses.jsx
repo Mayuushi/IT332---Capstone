@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import classService from "../../services/classService";
 import studentService from "../../services/studentService";
 import { useAuth } from "../../context/AuthContext";
 import '../../components/CSS/ManageClasses.css'
 
 const ManageClasses = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isTeacher } = useAuth();
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
   const [topic, setTopic] = useState("");
@@ -17,22 +17,34 @@ const ManageClasses = () => {
   const [editSearchTerm, setEditSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("enrolled");
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [classData, studentData] = await Promise.all([
-          classService.getAllClassesWithStudents(),
-          studentService.getAllStudents(),
-        ]);
-        setClasses(classData);
-        setStudents(studentData);
-      } catch (error) {
-        console.error("Failed to fetch classes or students:", error);
+  const fetchAll = useCallback(async () => {
+    try {
+      let classData = [];
+      if (isTeacher) {
+        classData = await classService.getClassesByTeacherId(currentUser.id);
+      } else {
+        classData = await classService.getClassesByStudentIdWithUsers(currentUser.id);
       }
-    };
 
+      const studentData = await studentService.getAllStudents();
+
+      classData = classData.map(cls => ({
+        ...cls,
+        students: cls.studentIds.map(studentId =>
+          studentData.find(s => s.id === studentId)
+        ).filter(Boolean)
+      }));
+
+      setStudents(studentData);
+      setClasses(classData);
+    } catch (error) {
+      console.error("Failed to fetch classes or students:", error);
+    }
+  }, [currentUser.id, isTeacher]); // <- dependencies used inside fetchAll
+
+  useEffect(() => {
     fetchAll();
-  }, []);
+  }, [fetchAll]);
 
   const toggleStudentSelection = (id) => {
     setSelectedStudents((prev) =>
@@ -61,12 +73,15 @@ const ManageClasses = () => {
 
     try {
       const result = await classService.createClass(classData);
-      alert("Class created with ID: " + result.id);
-      setTopic("");
-      setSelectedStudents([]);
-      setSearchTerm("");
-      const updatedClasses = await classService.getAllClassesWithStudents();
-      setClasses(updatedClasses);
+      if (result && result.id) {
+        alert("Class created with ID: " + result.id);
+        setTopic("");
+        setSelectedStudents([]);
+        setSearchTerm("");
+        await fetchAll(); // Refresh data
+      } else {
+        throw new Error("Class creation failed due to unexpected response.");
+      }
     } catch (error) {
       console.error("Error creating class:", error);
       alert("Failed to create class.");
@@ -76,7 +91,7 @@ const ManageClasses = () => {
   const handleDelete = async (id) => {
     try {
       await classService.deleteClass(id);
-      setClasses(classes.filter((c) => c.id !== id));
+      await fetchAll(); // Refresh after delete
     } catch (err) {
       console.error("Failed to delete class:", err);
     }
@@ -86,8 +101,8 @@ const ManageClasses = () => {
     setEditingClassId(cls.id);
     setEditingTopic(cls.topic);
     setEditingSelectedStudents(cls.students.map((s) => s.id));
-    setEditSearchTerm(""); // reset search term
-    setActiveTab("enrolled");
+    setEditSearchTerm("");
+    setActiveTab("edit");
   };
 
   const handleUpdate = async () => {
@@ -105,11 +120,11 @@ const ManageClasses = () => {
 
     try {
       await classService.updateClass(editingClassId, updatedClass);
-      const updatedClasses = await classService.getAllClassesWithStudents();
-      setClasses(updatedClasses);
+      await fetchAll(); // Refresh after update
       setEditingClassId(null);
       setEditingTopic("");
       setEditingSelectedStudents([]);
+      setActiveTab("enrolled");
     } catch (error) {
       console.error("Failed to update class:", error);
     }
@@ -142,13 +157,13 @@ const ManageClasses = () => {
         {/* Create Class Section */}
         <div className="create-class-section">
           <div className="section-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             Create New Class
           </div>
-          
+
           <form onSubmit={handleCreate}>
             <div className="form-group">
               <label htmlFor="topic">Class Topic</label>
@@ -161,14 +176,10 @@ const ManageClasses = () => {
                 onChange={(e) => setTopic(e.target.value)}
               />
             </div>
-            
+
             <div className="form-group">
               <label>Select Students</label>
               <div className="search-input">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
                 <input
                   type="text"
                   placeholder="Search by name or email"
@@ -176,7 +187,7 @@ const ManageClasses = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
+
               <div className="student-list">
                 {filteredCreateStudents.length > 0 ? (
                   filteredCreateStudents.map((student) => (
@@ -196,13 +207,11 @@ const ManageClasses = () => {
                     </div>
                   ))
                 ) : (
-                  <p style={{ padding: "0.75rem", textAlign: "center", color: "#757575" }}>
-                    No students found
-                  </p>
+                  <p className="no-students">No students found</p>
                 )}
               </div>
             </div>
-            
+
             <button type="submit" className="btn btn-primary">
               Create Class
             </button>
@@ -212,162 +221,136 @@ const ManageClasses = () => {
         {/* Existing Classes Section */}
         <div className="existing-classes-section">
           <div className="section-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-4-4h-4" />
             </svg>
-            Manage Existing Classes
+            My Classes
           </div>
 
-          {classes.length > 0 ? (
-            <div className="class-list">
-              {classes.map((cls) => (
-                <div key={cls.id} className="class-card">
-                  {editingClassId === cls.id ? (
-                    <div className="edit-class-form">
-                      <div className="form-group">
-                        <label htmlFor={`edit-topic-${cls.id}`}>Class Topic</label>
-                        <input
-                          id={`edit-topic-${cls.id}`}
-                          type="text"
-                          className="form-control"
-                          value={editingTopic}
-                          onChange={(e) => setEditingTopic(e.target.value)}
-                        />
-                      </div>
-                      
-                      <div className="form-group">
-                        <div className="search-input">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                          </svg>
-                          <input
-                            type="text"
-                            placeholder="Search by name or email"
-                            value={editSearchTerm}
-                            onChange={(e) => setEditSearchTerm(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="student-tabs">
-                        <div 
-                          className={`student-tab ${activeTab === 'enrolled' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('enrolled')}
-                        >
-                          Enrolled Students
-                        </div>
-                        <div 
-                          className={`student-tab ${activeTab === 'available' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('available')}
-                        >
-                          Available Students
-                        </div>
-                      </div>
-                      
-                      <div className="student-list">
-                        {activeTab === 'enrolled' ? (
-                          filteredEditStudents(true).length > 0 ? (
-                            filteredEditStudents(true).map((student) => (
-                              <div key={student.id} className="student-item">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={true}
-                                    onChange={() => toggleEditingStudentSelection(student.id)}
-                                  />
-                                  <div className="student-info">
-                                    <span className="student-name">{student.name}</span>
-                                    <span className="student-email">{student.email}</span>
-                                  </div>
-                                  <span className="grade-badge">Grade {student.grade}</span>
-                                </label>
+          <div className="tabs">
+            <button
+              className={activeTab === "enrolled" ? "active" : ""}
+              onClick={() => setActiveTab("enrolled")}
+            >
+              Enrolled Students
+            </button>
+            <button
+              className={activeTab === "edit" ? "active" : ""}
+              onClick={() => setActiveTab("edit")}
+              disabled={!editingClassId}
+            >
+              Edit Class
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {activeTab === "enrolled" && (
+              <>
+                {classes.length > 0 ? (
+                  classes.map((cls) => (
+                    <div className="class-item" key={cls.id}>
+                      <div className="class-info">
+                        <h3>{cls.topic}</h3>
+                        <h4>Enrolled Students ({cls.students?.length || 0})</h4>
+                        <div className="students">
+                          {cls.students && cls.students.length > 0 ? (
+                            cls.students.map((student) => (
+                              <div key={student.id} className="student">
+                                <span>{student.name}</span>
+                                <span className="badge">Grade {student.grade}</span>
                               </div>
                             ))
                           ) : (
-                            <p style={{ padding: "0.75rem", textAlign: "center", color: "#757575" }}>
-                              No enrolled students
-                            </p>
-                          )
-                        ) : (
-                          filteredEditStudents(false).length > 0 ? (
-                            filteredEditStudents(false).map((student) => (
-                              <div key={student.id} className="student-item">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={false}
-                                    onChange={() => toggleEditingStudentSelection(student.id)}
-                                  />
-                                  <div className="student-info">
-                                    <span className="student-name">{student.name}</span>
-                                    <span className="student-email">{student.email}</span>
-                                  </div>
-                                  <span className="grade-badge">Grade {student.grade}</span>
-                                </label>
-                              </div>
-                            ))
-                          ) : (
-                            <p style={{ padding: "0.75rem", textAlign: "center", color: "#757575" }}>
-                              No available students
-                            </p>
-                          )
-                        )}
+                            <p>No students enrolled</p>
+                          )}
+                        </div>
                       </div>
-                      
-                      <div className="btn-group" style={{ marginTop: "1rem" }}>
-                        <button className="btn btn-primary" onClick={handleUpdate}>
-                          Save Changes
-                        </button>
-                        <button className="btn btn-secondary" onClick={() => setEditingClassId(null)}>
-                          Cancel
-                        </button>
+
+                      <div className="actions">
+                        <button onClick={() => handleEditClick(cls)}>Edit</button>
+                        <button onClick={() => handleDelete(cls.id)}>Delete</button>
                       </div>
                     </div>
-                  ) : (
-                    <>
-                      <div className="class-card-header">
-                        <h3>{cls.topic}</h3>
-                      </div>
-                      <div className="class-card-body">
-                        <p>Teacher ID: {cls.teacherId}</p>
-                        <h4>Enrolled Students ({cls.students.length})</h4>
-                        <div>
-                          {cls.students.map((s) => (
-                            <span key={s.id} className="student-badge">
-                              {s.name} (Grade {s.grade})
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="class-card-footer">
-                        <button className="btn btn-primary" onClick={() => handleEditClick(cls)}>
-                          Edit
-                        </button>
-                        <button className="btn btn-danger" onClick={() => handleDelete(cls.id)}>
-                          Delete
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  ))
+                ) : (
+                  <p>No classes found</p>
+                )}
+              </>
+            )}
+
+            {activeTab === "edit" && editingClassId && (
+              <>
+                <h3>Edit Class</h3>
+                <div className="form-group">
+                  <label>Topic</label>
+                  <input
+                    type="text"
+                    value={editingTopic}
+                    onChange={(e) => setEditingTopic(e.target.value)}
+                    className="form-control"
+                  />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3v18h18"></path>
-                <path d="M18.4 7.8c.2 .1 .4 .1 .6 .1 0-2.2-1.8-4-4-4-1 0-1.9 .4-2.7 1"></path>
-                <path d="M7 17l4-3 4 2.5 2-1.5"></path>
-                <path d="M3 13h5l4-3 6 3.5"></path>
-              </svg>
-              <h3>No Classes Yet</h3>
-              <p>Create your first class to get started</p>
-            </div>
-          )}
+
+                <div className="form-group">
+                  <label>Enrolled Students</label>
+                  <div className="search-input">
+                    <input
+                      type="text"
+                      placeholder="Search by name or email"
+                      value={editSearchTerm}
+                      onChange={(e) => setEditSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <div className="student-list">
+                    {filteredEditStudents(true).map((student) => (
+                      <div key={student.id} className="student-item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={editingSelectedStudents.includes(student.id)}
+                            onChange={() => toggleEditingStudentSelection(student.id)}
+                          />
+                          <div className="student-info">
+                            <span className="student-name">{student.name}</span>
+                            <span className="student-email">{student.email}</span>
+                          </div>
+                          <span className="grade-badge">Grade {student.grade}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Available Students</label>
+                  <div className="student-list">
+                    {filteredEditStudents(false).map((student) => (
+                      <div key={student.id} className="student-item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={false}
+                            onChange={() => toggleEditingStudentSelection(student.id)}
+                          />
+                          <div className="student-info">
+                            <span className="student-name">{student.name}</span>
+                            <span className="student-email">{student.email}</span>
+                          </div>
+                          <span className="grade-badge">Grade {student.grade}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button onClick={handleUpdate} className="btn btn-primary">
+                  Update Class
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

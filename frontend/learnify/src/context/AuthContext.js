@@ -24,14 +24,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userData));
     return userData;
   };
-
+  
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('user');
   };
 
+  const isTeacher = currentUser ? currentUser.teacher : false; // Check if user is a teacher
+
   const value = {
     currentUser,
+    isTeacher,  // Adding isTeacher as part of the context
     login,
     logout,
     loading
