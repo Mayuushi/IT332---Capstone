@@ -8,8 +8,6 @@ const Sidebar = () => {
 
   if (!currentUser) return null;
 
-  // Sample quiz ID for demonstration
-
   return (
     <div className="sidebar">
       <div className="profile">
@@ -23,28 +21,29 @@ const Sidebar = () => {
       </div>
       
       <nav className="nav-menu">
-        {/* Common NavLinks for all users */}
-        <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
-          Dashboard
-        </NavLink>
-        <NavLink to="/points" className={({ isActive }) => isActive ? 'active' : ''}>
-          My Points
-        </NavLink>
-        <NavLink to="/badges" className={({ isActive }) => isActive ? 'active' : ''}>
-          Badges
-        </NavLink>
-        <NavLink to="/leaderboard" className={({ isActive }) => isActive ? 'active' : ''}>
-          Leaderboard
-        </NavLink>
-        <NavLink to="/lessons" className={({ isActive }) => isActive ? 'active' : ''}>
-          Lessons
-        </NavLink>
-        <NavLink to="/enrolledclasses" className={({ isActive }) => isActive ? 'active' : ''}>
-          Enrolled Classes
-        </NavLink>
-        
+        {!currentUser.isTeacher && (
+          <>
+            <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+              Dashboard
+            </NavLink>
+            <NavLink to="/points" className={({ isActive }) => isActive ? 'active' : ''}>
+              My Points
+            </NavLink>
+            <NavLink to="/badges" className={({ isActive }) => isActive ? 'active' : ''}>
+              Badges
+            </NavLink>
+            <NavLink to="/leaderboard" className={({ isActive }) => isActive ? 'active' : ''}>
+              Leaderboard
+            </NavLink>
+            <NavLink to="/lessons" className={({ isActive }) => isActive ? 'active' : ''}>
+              Lessons
+            </NavLink>
+            <NavLink to="/enrolledclasses" className={({ isActive }) => isActive ? 'active' : ''}>
+              Enrolled Classes
+            </NavLink>
+          </>
+        )}
 
-        {/* Teacher-specific links */}
         {currentUser.isTeacher && (
           <>
             <NavLink to="/manageclasses" className={({ isActive }) => isActive ? 'active' : ''}>
