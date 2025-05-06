@@ -16,6 +16,7 @@ import ClassCreate from './components/Class/ManageClasses';
 import Login from './components/Auth/Login';
 //import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 import QuizWrapper from './components/Quiz/QuizWrapper';
+import QuizForm from './components/Quiz/QuizForm';
 
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
@@ -85,6 +86,12 @@ const App = () => {
   <Route path="/leaderboard" element={
     <ProtectedRoute>
       <Leaderboard />
+    </ProtectedRoute>
+  } />
+
+<Route path="/quizform" element={
+    <ProtectedRoute>
+      <QuizForm />
     </ProtectedRoute>
   } />
   <Route path="/quiz/:classId" element={
