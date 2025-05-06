@@ -9,7 +9,6 @@ const Sidebar = () => {
   if (!currentUser) return null;
 
   // Sample quiz ID for demonstration
-  const quizId = "680e122aca8d7a0a93757df5"; 
 
   return (
     <div className="sidebar">
@@ -44,10 +43,6 @@ const Sidebar = () => {
           Enrolled Classes
         </NavLink>
         
-        {/* Common NavLink for Quiz */}
-        <NavLink to={`/quiz/${quizId}`} className={({ isActive }) => isActive ? 'active' : ''}>
-          Take Quiz
-        </NavLink>
 
         {/* Teacher-specific links */}
         {currentUser.isTeacher && (
