@@ -15,6 +15,9 @@ public class Quiz {
     private LocalDateTime createdAt;  // Creation timestamp
     private List<Question> questions;  // List of questions in this quiz
 
+    private String classId;
+
+
     // Default constructor
     public Quiz() {}
 
@@ -23,6 +26,14 @@ public class Quiz {
         this.teacherId = teacherId;
         this.title = title;
         this.createdAt = createdAt;
+    }
+
+    public String getClassId() {
+        return classId;
+    }
+
+    public void setClassId(String classId) {
+        this.classId = classId;
     }
 
     // Getters and Setters

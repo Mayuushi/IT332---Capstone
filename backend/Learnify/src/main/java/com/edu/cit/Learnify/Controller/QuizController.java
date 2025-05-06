@@ -20,27 +20,24 @@ public class QuizController {
     // Create a new quiz
     @PostMapping
     public Quiz createQuiz(@RequestBody Map<String, Object> payload) {
-        int teacherId = 123; // Assume auth in real app
+        int teacherId = 123; // Assume from auth
         String title = (String) payload.get("title");
+        String classId = (String) payload.get("classId"); // ✅ Extract classId
 
-        // Extract the questions from the payload
         List<Map<String, Object>> questionsRaw = (List<Map<String, Object>>) payload.get("questions");
 
-        // Map each question and handle options correctly
         List<Question> questions = questionsRaw.stream().map(q -> {
             String questionText = (String) q.get("questionText");
             String type = (String) q.get("type");
             String correctAnswer = (String) q.get("correctAnswer");
+            List<String> options = (List<String>) q.get("options");
 
-            // Ensure options are extracted as a List<String>
-            List<String> options = (List<String>) q.get("options"); // Correctly cast options to List<String>
-
-            return new Question(null, questionText, type, correctAnswer, options); // Using the new constructor
+            return new Question(null, questionText, type, correctAnswer, options);
         }).toList();
 
-        // Create the quiz and return the result
-        return quizService.createQuiz(teacherId, title, questions);
+        return quizService.createQuiz(teacherId, title, questions, classId); // ✅ Use updated method
     }
+
 
     // Get a specific quiz by ID
     @GetMapping("/{id}")
@@ -58,4 +55,11 @@ public class QuizController {
     public List<Quiz> getQuizzesByTeacher(@PathVariable Integer teacherId) {
         return quizService.getQuizzesByTeacher(teacherId);
     }
+
+    @GetMapping("/class/{classId}")
+    public List<Quiz> getQuizzesByClass(@PathVariable String classId) {
+        System.out.println("Class ID"+classId);
+        return quizService.getQuizzesByClassId(classId);
+    }
+
 }

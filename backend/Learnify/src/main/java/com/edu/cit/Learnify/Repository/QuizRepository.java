@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface QuizRepository extends MongoRepository<Quiz, String> {
     List<Quiz> findByTeacherId(Integer teacherId);
     Optional<Quiz> findById(String id);
+    List<Quiz> findByClassId(String classId);
+
 }

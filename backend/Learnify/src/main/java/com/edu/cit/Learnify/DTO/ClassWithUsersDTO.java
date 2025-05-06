@@ -1,5 +1,6 @@
 package com.edu.cit.Learnify.DTO;
 
+import com.edu.cit.Learnify.Entity.Quiz;
 import java.util.List;
 
 public class ClassWithUsersDTO {
@@ -7,16 +8,17 @@ public class ClassWithUsersDTO {
     private String topic;
     private UserDTO teacher;
     private List<UserDTO> classmates;
+    private List<Quiz> quizzes;  // Add quizzes field
 
-    public ClassWithUsersDTO() {}
-
-    public ClassWithUsersDTO(String id, String topic, UserDTO teacher, List<UserDTO> classmates) {
+    public ClassWithUsersDTO(String id, String topic, UserDTO teacher, List<UserDTO> classmates, List<Quiz> quizzes) {
         this.id = id;
         this.topic = topic;
         this.teacher = teacher;
         this.classmates = classmates;
+        this.quizzes = quizzes;
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -47,5 +49,13 @@ public class ClassWithUsersDTO {
 
     public void setClassmates(List<UserDTO> classmates) {
         this.classmates = classmates;
+    }
+
+    public List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
+        this.quizzes = quizzes;
     }
 }
