@@ -14,6 +14,8 @@ import TeacherRegister from './components/Auth/TeacherRegister';
 import StudentRegister from './components/Auth/StudentRegister';
 import ClassCreate from './components/Class/ManageClasses';
 import Login from './components/Auth/Login';
+import TitleScreen from './components/Lessons/TitleScreen';
+import VisualNovel from './components/Lessons/VisualNoverl';
 //import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 
 import Quiz from './components/Quiz/Quiz';  // Import the Quiz component
@@ -103,6 +105,16 @@ const App = () => {
       <EnrolledClasses />
     </ProtectedRoute>
   } />
+                <Route path="/lessons/nervous-system" element={
+                  <ProtectedRoute>
+                    <TitleScreen />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lessons/nervous-system/play" element={
+                  <ProtectedRoute>
+                    <VisualNovel />
+                  </ProtectedRoute>
+                } />
   
   <Route path="*" element={<Navigate to="/" />} />
 </Routes>

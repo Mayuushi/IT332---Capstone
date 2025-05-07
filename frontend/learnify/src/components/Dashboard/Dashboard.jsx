@@ -6,6 +6,8 @@ import PointsDisplay from '../Points/PointsDisplay';
 import BadgeCard from '../Badges/BadgeCard';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -38,6 +40,8 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [currentUser]);
+  
+  const navigate = useNavigate();
 
   // Format date
   const formatDate = (dateString) => {
@@ -101,16 +105,18 @@ const Dashboard = () => {
         </div>
         
         <div className="dashboard-item recommendations">
-          <h2 className="section-title">Recommended for You</h2>
-          <div className="recommendation-list">
-            <div className="recommendation-item">
-              <div className="recommendation-icon lesson">📚</div>
-              <div className="recommendation-details">
-                <div className="recommendation-title">Introduction to Fractions</div>
-                <div className="recommendation-type">Lesson • 15 mins</div>
-              </div>
-              <button className="start-btn">Start</button>
-            </div>
+  <h2 className="section-title">Recommended for You</h2>
+  <div className="recommendation-list">
+    <div className="recommendation-item">
+      <div className="recommendation-icon lesson">📚</div>
+      <div className="recommendation-details">
+        <div className="recommendation-title">Introduction to Fractions</div>
+        <div className="recommendation-type">Lesson • 15 mins</div>
+      </div>
+      <button className="start-btn" onClick={() => navigate('/lessons/nervous-system')}>
+        Start
+      </button>
+    </div>
             <div className="recommendation-item">
               <div className="recommendation-icon quiz">❓</div>
               <div className="recommendation-details">
