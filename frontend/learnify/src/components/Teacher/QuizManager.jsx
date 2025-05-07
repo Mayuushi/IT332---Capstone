@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import ManageQuizzes from './ManageQuizzes'; // Your existing update/edit component
-import QuizForm from './QuizForm'; // Your existing create component
+import ManageQuizzes from './ManageQuizzes';
+import QuizForm from './QuizForm';
+import '../CSS/QuizManager.css'; // Import the CSS file
 
 const QuizManager = () => {
   const [mode, setMode] = useState(null); // null | 'create' | 'update'
@@ -10,31 +11,31 @@ const QuizManager = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="quiz-container">
       {!mode ? (
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Manage Quizzes</h2>
-          <p className="text-gray-600">What would you like to do?</p>
-          <div className="flex justify-center space-x-4">
+        <div className="quiz-selection">
+          <h2 className="quiz-title">Manage Quizzes</h2>
+          <p className="quiz-subtitle">What would you like to do?</p>
+          <div className="quiz-buttons">
             <button
               onClick={() => handleModeChange('create')}
-              className="bg-green-500 text-white px-4 py-2 rounded"
+              className="quiz-button quiz-button-create"
             >
               Create New Quiz
             </button>
             <button
               onClick={() => handleModeChange('update')}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="quiz-button quiz-button-update"
             >
               Update Existing Quiz
             </button>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="quiz-mode-container">
           <button
             onClick={() => setMode(null)}
-            className="text-sm text-blue-500 hover:underline mb-4"
+            className="quiz-back-button"
           >
             ← Back to Quiz Options
           </button>

@@ -19,7 +19,7 @@ import QuizWrapper from './components/Quiz/QuizWrapper';
 // import QuizForm from './components/Teacher/ManageQuizzes'; //managequiz like update delete
 import Quiz from './components/Teacher/ManageQuizzes'; //create quiz
 import QuizForm from './components/Teacher/QuizForm';
-import QuizManager from './components/Teacher/QuizManage';
+import QuizManager from './components/Teacher/QuizManager';
 
 
 import './App.css';

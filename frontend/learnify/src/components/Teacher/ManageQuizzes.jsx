@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { deleteQuiz, updateQuiz } from '../../services/quizService';
 import axios from 'axios';
+import '../CSS/ManageQuizzes.css';
 
 const ManageQuizzes = () => {
   const { currentUser } = useAuth();
@@ -10,7 +10,6 @@ const ManageQuizzes = () => {
   const [error, setError] = useState('');
   const [editMode, setEditMode] = useState(null);
   const [editingQuestion, setEditingQuestion] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -43,270 +42,246 @@ const ManageQuizzes = () => {
   };
 
   const handleQuizChange = (quizId, field, value) => {
-    setQuizzes(prevQuizzes =>
-      prevQuizzes.map(quiz =>
+    setQuizzes(prev =>
+      prev.map(quiz =>
         quiz.id === quizId ? { ...quiz, [field]: value } : quiz
       )
     );
   };
 
-  const handleQuestionChange = (quizId, questionIndex, field, value) => {
-    setQuizzes(prevQuizzes =>
-      prevQuizzes.map(quiz => {
+  const handleQuestionChange = (quizId, index, field, value) => {
+    setQuizzes(prev =>
+      prev.map(quiz => {
         if (quiz.id !== quizId) return quiz;
-        
-        const updatedQuestions = [...(quiz.questions || [])];
-        updatedQuestions[questionIndex] = {
-          ...updatedQuestions[questionIndex],
-          [field]: value
-        };
-        
+        const updatedQuestions = [...quiz.questions];
+        updatedQuestions[index] = { ...updatedQuestions[index], [field]: value };
         return { ...quiz, questions: updatedQuestions };
       })
     );
   };
 
   const handleAddQuestion = (quizId) => {
-    setQuizzes(prevQuizzes =>
-      prevQuizzes.map(quiz => {
+    setQuizzes(prev =>
+      prev.map(quiz => {
         if (quiz.id !== quizId) return quiz;
-        
+
+        const lastQuestion = quiz.questions[quiz.questions.length - 1];
+
+        // Validate the last question
+        if (
+          lastQuestion &&
+          (!lastQuestion.questionText ||
+            (lastQuestion.type === 'multiple-choice' && lastQuestion.options.some(opt => !opt)) ||
+            !lastQuestion.correctAnswer)
+        ) {
+          setError('Please complete the current question before adding a new one.');
+          return quiz;
+        }
+
+        // Clear error if validation passes
+        setError('');
+
         const newQuestion = {
           questionText: '',
           type: 'multiple-choice',
           correctAnswer: '',
           options: ['', '', '', '']
         };
-        
-        return {
-          ...quiz,
-          questions: [...(quiz.questions || []), newQuestion]
-        };
+        return { ...quiz, questions: [...quiz.questions, newQuestion] };
       })
     );
   };
 
-  const handleDeleteQuestion = (quizId, questionIndex) => {
-    setQuizzes(prevQuizzes =>
-      prevQuizzes.map(quiz => {
+  const handleDeleteQuestion = (quizId, index) => {
+    setQuizzes(prev =>
+      prev.map(quiz => {
         if (quiz.id !== quizId) return quiz;
-        
-        const updatedQuestions = [...(quiz.questions || [])];
-        updatedQuestions.splice(questionIndex, 1);
-        
+        const updatedQuestions = [...quiz.questions];
+        updatedQuestions.splice(index, 1);
         return { ...quiz, questions: updatedQuestions };
       })
     );
   };
 
-  const handleEditQuestion = (questionIndex) => {
-    setEditingQuestion(questionIndex);
+  const handleEditQuestion = (index) => {
+    setEditingQuestion(index);
   };
 
   const handleSave = async (quizId) => {
-    const quizToUpdate = quizzes.find(quiz => quiz.id === quizId);
+    const quizToUpdate = quizzes.find(q => q.id === quizId);
     if (!quizToUpdate) return;
 
     try {
       await updateQuiz(quizId, {
         ...quizToUpdate,
-        questions: quizToUpdate.questions || [] // Ensure questions is always an array
+        questions: quizToUpdate.questions || []
       });
       setEditMode(null);
       setEditingQuestion(null);
+      setError('');
     } catch (error) {
-      setError('Failed to update the quiz.');
-      console.error('Error updating quiz:', error);
+      setError('Failed to update quiz.');
+      console.error(error);
     }
   };
 
   const handleDelete = async (quizId) => {
     try {
       await deleteQuiz(quizId);
-      setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz.id !== quizId));
+      setQuizzes(prev => prev.filter(q => q.id !== quizId));
     } catch (error) {
-      setError('Failed to delete the quiz.');
-      console.error('Error deleting quiz:', error);
+      setError('Failed to delete quiz.');
+      console.error(error);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">My Quizzes</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      
+    <div className="quizzes-container">
+      <h1 className="quizzes-title">📚 My Quizzes</h1>
+      {error && <p className="error-message">{error}</p>}
+
       {quizzes.length === 0 ? (
-        <p>No quizzes found.</p>
+        <p className="no-quizzes-message">No quizzes found.</p>
       ) : (
-        <div className="space-y-4">
+        <div className="quizzes-list">
           {quizzes.map(quiz => (
-            <div key={quiz.id} className="border rounded-lg p-4 shadow-sm">
+            <div key={quiz.id} className="quiz-card">
               {editMode === quiz.id ? (
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <label className="font-medium">Title:</label>
-                    <input
-                      type="text"
-                      value={quiz.title || ''}
-                      onChange={(e) => handleQuizChange(quiz.id, 'title', e.target.value)}
-                      className="border rounded px-2 py-1 flex-grow"
-                    />
-                  </div>
-                  
-                  <h3 className="font-medium">Questions:</h3>
-                  <div className="space-y-4">
-                    {(quiz.questions || []).map((question, qIndex) => (
-                      <div key={qIndex} className="border-l-4 border-blue-500 pl-4">
-                        {editingQuestion === qIndex ? (
-                          <div className="space-y-2">
-                            <div>
-                              <label className="block font-medium">Question Text:</label>
-                              <input
-                                type="text"
-                                value={question.questionText || ''}
-                                onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'questionText', e.target.value)}
-                                className="border rounded px-2 py-1 w-full"
-                              />
-                            </div>
-                            
-                            <div>
-                              <label className="block font-medium">Type:</label>
-                              <select
-                                value={question.type || 'multiple-choice'}
-                                onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'type', e.target.value)}
-                                className="border rounded px-2 py-1"
-                              >
-                                <option value="multiple-choice">Multiple Choice</option>
-                                <option value="true-false">True/False</option>
-                                <option value="short-answer">Short Answer</option>
-                              </select>
-                            </div>
-                            
-                            {(question.type === 'multiple-choice') && (
-                              <div>
-                                <label className="block font-medium">Options:</label>
-                                {(question.options || ['', '', '', '']).map((option, oIndex) => (
-                                  <div key={oIndex} className="flex items-center space-x-2 mb-1">
+                <div className="quiz-edit-container">
+                  <input
+                    type="text"
+                    placeholder="Quiz Title"
+                    value={quiz.title || ''}
+                    onChange={(e) => handleQuizChange(quiz.id, 'title', e.target.value)}
+                    className="quiz-title-input"
+                  />
+                  <h2 className="questions-heading">Questions</h2>
+
+                  {(quiz.questions || []).map((q, qIndex) => (
+                    <div key={qIndex} className="question-card">
+                      {editingQuestion === qIndex ? (
+                        <div className="question-edit-form">
+                          <input
+                            type="text"
+                            placeholder="Question Text"
+                            value={q.questionText}
+                            onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'questionText', e.target.value)}
+                            className="question-text-input"
+                          />
+
+                          <select
+                            value={q.type}
+                            onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'type', e.target.value)}
+                            className="question-type-select"
+                          >
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="true-false">True/False</option>
+                            <option value="short-answer">Short Answer</option>
+                          </select>
+
+                          {q.type === 'multiple-choice' && (
+                            <div className="options-container">
+                              <p className="options-label">Options:</p>
+                              <div className="options-grid">
+                                {(q.options || []).map((option, oIndex) => (
+                                  <div key={oIndex} className="option-item">
                                     <input
                                       type="radio"
                                       name={`correctAnswer-${qIndex}`}
-                                      checked={question.correctAnswer === option}
+                                      checked={q.correctAnswer === option}
                                       onChange={() => handleQuestionChange(quiz.id, qIndex, 'correctAnswer', option)}
+                                      className="option-radio"
                                     />
                                     <input
                                       type="text"
-                                      value={option || ''}
+                                      placeholder={`Option ${oIndex + 1}`}
+                                      value={option}
                                       onChange={(e) => {
-                                        const newOptions = [...(question.options || [])];
+                                        const newOptions = [...q.options];
                                         newOptions[oIndex] = e.target.value;
                                         handleQuestionChange(quiz.id, qIndex, 'options', newOptions);
                                       }}
-                                      className="border rounded px-2 py-1 flex-grow"
+                                      className="option-text-input"
                                     />
                                   </div>
                                 ))}
                               </div>
-                            )}
-                            
-                            {(question.type === 'true-false' || question.type === 'short-answer') && (
-                              <div>
-                                <label className="block font-medium">Correct Answer:</label>
-                                <input
-                                  type="text"
-                                  value={question.correctAnswer || ''}
-                                  onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'correctAnswer', e.target.value)}
-                                  className="border rounded px-2 py-1 w-full"
-                                />
-                              </div>
-                            )}
-                            
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => setEditingQuestion(null)}
-                                className="bg-gray-500 text-white px-3 py-1 rounded"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={() => setEditingQuestion(null)}
-                                className="bg-blue-500 text-white px-3 py-1 rounded"
-                              >
-                                Save
-                              </button>
                             </div>
+                          )}
+
+                          {(q.type === 'true-false' || q.type === 'short-answer') && (
+                            <input
+                              type="text"
+                              placeholder="Correct Answer"
+                              value={q.correctAnswer}
+                              onChange={(e) => handleQuestionChange(quiz.id, qIndex, 'correctAnswer', e.target.value)}
+                              className="correct-answer-input"
+                            />
+                          )}
+
+                          <div className="question-edit-actions">
+                            <button onClick={() => setEditingQuestion(null)} className="btn-cancel">
+                              Cancel
+                            </button>
                           </div>
-                        ) : (
-                          <div className="space-y-1">
-                            <p className="font-medium">{question.questionText || 'Untitled Question'}</p>
-                            {question.type === 'multiple-choice' && (
-                              <ul className="list-disc pl-5">
-                                {(question.options || []).map((option, oIndex) => (
-                                  <li key={oIndex} className={option === question.correctAnswer ? 'text-green-600 font-medium' : ''}>
-                                    {option || 'Empty option'}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                            {question.type !== 'multiple-choice' && (
-                              <p className="text-green-600 font-medium">Correct answer: {question.correctAnswer || 'Not set'}</p>
-                            )}
-                            <div className="flex space-x-2 pt-2">
-                              <button
-                                onClick={() => handleEditQuestion(qIndex)}
-                                className="text-blue-600 hover:text-blue-800 text-sm"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteQuestion(quiz.id, qIndex)}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                              >
-                                Delete
-                              </button>
-                            </div>
+                        </div>
+                      ) : (
+                        <div className="question-display">
+                          <p className="question-text">{q.questionText || 'Untitled Question'}</p>
+                          {q.type === 'multiple-choice' ? (
+                            <ul className="options-list">
+                              {q.options.map((opt, i) => (
+                                <li key={i} className={opt === q.correctAnswer ? 'correct-option' : ''}>
+                                  {opt || 'Empty Option'}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="correct-answer">Answer: {q.correctAnswer}</p>
+                          )}
+                          <div className="question-actions">
+                            <button onClick={() => handleEditQuestion(qIndex)} className="btn-link btn-edit">Edit</button>
+                            <button onClick={() => handleDeleteQuestion(quiz.id, qIndex)} className="btn-link btn-delete">Delete</button>
                           </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleAddQuestion(quiz.id)}
-                      className="bg-green-500 text-white px-3 py-1 rounded"
-                    >
-                      Add Question
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className="quiz-edit-actions">
+                    <button onClick={() => handleAddQuestion(quiz.id)} className="btn btn-add">
+                      ➕ Add Question
                     </button>
-                    <button
-                      onClick={() => handleSave(quiz.id)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
-                    >
-                      Save Quiz
+                    <button onClick={() => handleSave(quiz.id)} className="btn btn-save">
+                      💾 Save Quiz
                     </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="bg-gray-500 text-white px-3 py-1 rounded"
-                    >
-                      Cancel
+                    <button onClick={handleCancelEdit} className="btn btn-cancel-edit">
+                      ❌ Cancel
                     </button>
+
+                    {/* Error Message */}
+                    {error && (
+                      <p className="error-message">
+                        ⚠️ {error || 'Please complete all question details before proceeding.'}
+                      </p>
+                    )}
+
+                    {/* Always-visible Helper Message */}
+                    <p className="helper-text">
+                      ℹ️ Each question must include text, a correct answer, and filled options (if multiple choice).
+                    </p>
                   </div>
                 </div>
               ) : (
-                <div>
-                  <h3 className="font-medium text-lg">{quiz.title || 'Untitled Quiz'}</h3>
-                  <p className="text-gray-600">{(quiz.questions || []).length} questions</p>
-                  <div className="flex space-x-2 mt-2">
-                    <button
-                      onClick={() => handleEditQuiz(quiz.id)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
-                    >
-                      Edit Quiz
+                <div className="quiz-summary">
+                  <h2 className="quiz-title-display">{quiz.title || 'Untitled Quiz'}</h2>
+                  <p className="quiz-stats">{quiz.questions.length} questions</p>
+                  <div className="quiz-actions">
+                    <button onClick={() => handleEditQuiz(quiz.id)} className="btn btn-edit-quiz">
+                      ✏️ Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(quiz.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
-                    >
-                      Delete Quiz
+                    <button onClick={() => handleDelete(quiz.id)} className="btn btn-delete-quiz">
+                      🗑️ Delete
                     </button>
                   </div>
                 </div>
