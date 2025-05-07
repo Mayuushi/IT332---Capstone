@@ -101,7 +101,7 @@ const EnrolledClasses = () => {
                 </div>
                 
                 <div className="class-card__actions">
-                  <Link to={`/lessons/${clazz.id}`} className="action-button lessons-button">
+                  <Link to={`/lessons/nervous-system`} className="action-button lessons-button">
                     Lessons
                   </Link>
                   {hasQuiz ? (
