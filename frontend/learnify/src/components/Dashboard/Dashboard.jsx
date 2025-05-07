@@ -110,29 +110,29 @@ const Dashboard = () => {
     <div className="recommendation-item">
       <div className="recommendation-icon lesson">📚</div>
       <div className="recommendation-details">
-        <div className="recommendation-title">Introduction to Fractions</div>
+        <div className="recommendation-title">Introduction to Nervous System</div>
         <div className="recommendation-type">Lesson • 15 mins</div>
       </div>
       <button className="start-btn" onClick={() => navigate('/lessons/nervous-system')}>
         Start
       </button>
     </div>
-            <div className="recommendation-item">
+            {/* <div className="recommendation-item">
               <div className="recommendation-icon quiz">❓</div>
               <div className="recommendation-details">
                 <div className="recommendation-title">Multiplication Quiz</div>
                 <div className="recommendation-type">Quiz • 10 questions</div>
               </div>
               <button className="start-btn">Start</button>
-            </div>
-            <div className="recommendation-item">
+            </div> */}
+            {/* <div className="recommendation-item">
               <div className="recommendation-icon challenge">🏆</div>
               <div className="recommendation-details">
                 <div className="recommendation-title">Math Speed Challenge</div>
                 <div className="recommendation-type">Challenge • 5 mins</div>
               </div>
               <button className="start-btn">Start</button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
