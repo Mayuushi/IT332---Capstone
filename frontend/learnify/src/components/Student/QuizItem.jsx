@@ -1,3 +1,4 @@
+//student
 import React from 'react';
 
 const QuizItem = ({ question, answer, setAnswer }) => {

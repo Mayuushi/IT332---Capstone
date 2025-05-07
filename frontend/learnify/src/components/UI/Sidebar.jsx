@@ -49,10 +49,10 @@ const Sidebar = () => {
             <NavLink to="/manageclasses" className={({ isActive }) => isActive ? 'active' : ''}>
               Manage Classes
             </NavLink>
-            <NavLink to="/quizform" className={({ isActive }) => isActive ? 'active' : ''}>
-              Create Lesson
+            <NavLink to="/quizmanager" className={({ isActive }) => isActive ? 'active' : ''}>
+              Manage Quizzes
             </NavLink>
-            <NavLink to="/gradebook" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink to="/quiz" className={({ isActive }) => isActive ? 'active' : ''}>
               Gradebook
             </NavLink>
           </>

@@ -1,3 +1,4 @@
+//teacher
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { createQuiz } from '../../services/quizService';
@@ -189,16 +190,24 @@ const QuizForm = () => {
               id="class"
               value={classId}
               onChange={(e) => setClassId(e.target.value)}
+              disabled={classes.length === 0}
               required
             >
-              <option value="" disabled hidden>Select a Class</option>
-              {classes.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.topic || 'Untitled Class'}
-                </option>
-              ))}
+              {classes.length === 0 ? (
+                <option value="">No class available</option>
+              ) : (
+                <>
+                  <option value="" disabled hidden>Select a Class</option>
+                  {classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.topic || 'Untitled Class'}
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
+
 
           <h3>Questions:</h3>
           {questions.map((q, index) => (

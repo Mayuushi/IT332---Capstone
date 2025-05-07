@@ -1,5 +1,6 @@
+//student
 import React, { useEffect, useState } from 'react';
-import './QuizStyles.css';
+import '../CSS/QuizStyles.css';
 import { fetchQuizzesByClassId } from '../../services/quizService';
 import QuizItem from './QuizItem';
 

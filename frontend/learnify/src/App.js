@@ -16,7 +16,11 @@ import ClassCreate from './components/Class/ManageClasses';
 import Login from './components/Auth/Login';
 //import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 import QuizWrapper from './components/Quiz/QuizWrapper';
-import QuizForm from './components/Quiz/QuizForm';
+// import QuizForm from './components/Teacher/ManageQuizzes'; //managequiz like update delete
+import Quiz from './components/Teacher/ManageQuizzes'; //create quiz
+import QuizForm from './components/Teacher/QuizForm';
+import QuizManager from './components/Teacher/QuizManage';
+
 
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
@@ -94,11 +98,23 @@ const App = () => {
       <QuizForm />
     </ProtectedRoute>
   } />
+
+<Route path="/quiz" element={
+    <ProtectedRoute>
+      <Quiz />
+    </ProtectedRoute>
+  } />
   <Route path="/quiz/:classId" element={
   <ProtectedRoute>
     <QuizWrapper />
   </ProtectedRoute>
 } />
+
+<Route path="/quizmanager" element={
+    <ProtectedRoute>
+      <QuizManager />
+    </ProtectedRoute>
+  } />
 
 
   

@@ -45,3 +45,41 @@ export const createQuiz = async (quizData) => {
     throw error;
   }
 };
+
+// ✅ Update a quiz by ID
+export const updateQuiz = async (quizId, updatedQuizData) => {
+  try {
+    const response = await axios.put(`${API_URL}/${quizId}`, updatedQuizData, {
+      headers: {
+        'Content-Type': 'application/json',  // Ensure the request is sent as JSON
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating quiz:', error);
+    throw error;
+  }
+};
+
+// ✅ Delete a quiz by ID
+export const deleteQuiz = async (quizId) => {
+  try {
+    await axios.delete(`${API_URL}/${quizId}`);
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    throw error;
+  }
+
+  
+};
+// ✅ Fetch a quiz by ID
+export const fetchQuiz = async (quizId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${quizId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quiz by ID:', error);
+    throw error;
+  }
+};
+
