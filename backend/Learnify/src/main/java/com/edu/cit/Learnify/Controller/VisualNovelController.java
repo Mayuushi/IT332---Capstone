@@ -16,8 +16,13 @@ public class VisualNovelController {
 
     @GetMapping("/start")
     public ResponseEntity<DialogNode> getStartNode() {
-        return ResponseEntity.ok(visualNovelService.getStartNode());
+        DialogNode startNode = visualNovelService.getStartNode();
+        if (startNode == null) {
+            return ResponseEntity.status(500).body(null); // or 404
+        }
+        return ResponseEntity.ok(startNode);
     }
+
 
     @GetMapping("/node/{nodeId}")
     public ResponseEntity<DialogNode> getNode(@PathVariable String nodeId) {
