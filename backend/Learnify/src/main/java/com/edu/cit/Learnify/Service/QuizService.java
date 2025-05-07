@@ -6,65 +6,88 @@ import com.edu.cit.Learnify.Repository.QuizRepository;
 import com.edu.cit.Learnify.Repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class QuizService {
 
-    @Autowired
-    private QuizRepository quizRepository;
+    private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
 
     @Autowired
-    private QuestionRepository questionRepository;
-
-    // Create a quiz with questions
-    @Transactional
-    public Quiz createQuiz(String teacherId, String title, List<Question> questions, String classId) {
-        Quiz quiz = new Quiz();
-        quiz.setTeacherId(teacherId);
-        quiz.setTitle(title);
-        quiz.setCreatedAt(LocalDateTime.now());
-        quiz.setClassId(classId);
-
-        Quiz savedQuiz = quizRepository.save(quiz);
-
-        for (Question q : questions) {
-            q.setQuizId(savedQuiz.getId());
-            questionRepository.save(q);
-        }
-
-        return savedQuiz;
+    public QuizService(QuizRepository quizRepository, QuestionRepository questionRepository) {
+        this.quizRepository = quizRepository;
+        this.questionRepository = questionRepository;
     }
 
-    public Quiz getQuizById(String id) {
-        Quiz quiz = quizRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+    // Create a new quiz with questions
+    public Quiz createQuiz(String teacherId, String title, String classId, List<Question> questions) {
+        // Validate questions
+        questions.forEach(q -> {
+            if (q.getType().equals("multiple-choice") && (q.getOptions() == null || q.getOptions().size() < 2)) {
+                throw new IllegalArgumentException("Multiple-choice questions must have at least 2 options");
+            }
+            if (q.getCorrectAnswer() == null || q.getCorrectAnswer().trim().isEmpty()) {
+                throw new IllegalArgumentException("All questions must have a correct answer");
+            }
+        });
 
-        List<Question> questions = questionRepository.findByQuizId(id);
-        quiz.setQuestions(questions);
+        // Save questions first
+        List<Question> savedQuestions = questionRepository.saveAll(questions);
 
-        return quiz;
+        // Create the quiz and associate it with the saved questions
+        Quiz quiz = new Quiz(teacherId, title, classId, savedQuestions);
+        return quizRepository.save(quiz);
     }
 
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
-    }
-
+    // Get all quizzes for a specific teacher
     public List<Quiz> getQuizzesByTeacher(String teacherId) {
         return quizRepository.findByTeacherId(teacherId);
     }
 
+    // Get all quizzes for a specific class
     public List<Quiz> getQuizzesByClassId(String classId) {
-        List<Quiz> quizzes = quizRepository.findByClassId(classId);
+        return quizRepository.findByClassId(classId);
+    }
 
-        for (Quiz quiz : quizzes) {
-            List<Question> questions = questionRepository.findByQuizId(quiz.getId());
-            quiz.setQuestions(questions);
-        }
+    // Get a specific quiz by ID
+    public Quiz getQuizById(String id) {
+        return quizRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+    }
 
-        return quizzes;
+    // Delete a quiz by ID
+    public void deleteQuiz(String id) {
+        quizRepository.deleteById(id);
+    }
+
+    // Update an existing quiz (with questions)
+    public Quiz updateQuiz(String id, String teacherId, String title, List<Question> questions, String classId) {
+        // Validate questions before updating
+        questions.forEach(q -> {
+            if (q.getType().equals("multiple-choice") && (q.getOptions() == null || q.getOptions().size() < 2)) {
+                throw new IllegalArgumentException("Multiple-choice questions must have at least 2 options");
+            }
+            if (q.getCorrectAnswer() == null || q.getCorrectAnswer().trim().isEmpty()) {
+                throw new IllegalArgumentException("All questions must have a correct answer");
+            }
+        });
+
+        // Save the updated questions
+        List<Question> savedQuestions = questionRepository.saveAll(questions);
+
+        // Get the existing quiz by ID
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        // Update quiz details
+        quiz.setTeacherId(teacherId);
+        quiz.setTitle(title);
+        quiz.setClassId(classId);
+        quiz.setQuestions(savedQuestions);
+
+        // Save the updated quiz
+        return quizRepository.save(quiz);
     }
 }
