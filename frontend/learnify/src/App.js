@@ -22,7 +22,7 @@ import QuizWrapper from './components/Quiz/QuizWrapper';
 import Quiz from './components/Teacher/ManageQuizzes'; //create quiz
 import QuizForm from './components/Teacher/QuizForm';
 import QuizManager from './components/Teacher/QuizManager';
-
+import NervousSystemLessonPicker from './components/Lessons/LessonPicker';
 
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
@@ -139,6 +139,11 @@ const App = () => {
                 <Route path="/lessons/nervous-system/play" element={
                   <ProtectedRoute>
                     <VisualNovel />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lessons" element={
+                  <ProtectedRoute>
+                    <NervousSystemLessonPicker />
                   </ProtectedRoute>
                 } />
   
