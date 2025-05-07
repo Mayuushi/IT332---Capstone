@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class DataInitializer implements CommandLineRunner {
+public class BadgeDataInitializer implements CommandLineRunner {
 
     @Autowired
     private BadgeRepository badgeRepository;
