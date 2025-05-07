@@ -1,8 +1,7 @@
-//student
 import React from 'react';
 
-const QuizItem = ({ question, answer, setAnswer }) => {
-  const { questionText, type, options } = question;
+const QuizItem = ({ question, answer, setAnswer, disabled }) => {
+  const { questionText, type, options, uniqueId } = question;
 
   const handleOptionChange = (e) => {
     setAnswer(e.target.value);
@@ -22,10 +21,11 @@ const QuizItem = ({ question, answer, setAnswer }) => {
             <div key={index} className="option">
               <input
                 type="radio"
-                name={questionText}
+                name={`option-${uniqueId}`}
                 value={option}
                 checked={answer === option}
                 onChange={handleOptionChange}
+                disabled={disabled}
               />
               <label>{option}</label>
             </div>
@@ -38,6 +38,7 @@ const QuizItem = ({ question, answer, setAnswer }) => {
             placeholder="Your answer"
             value={answer || ""}
             onChange={handleTextChange}
+            disabled={disabled}
           />
         </div>
       )}
