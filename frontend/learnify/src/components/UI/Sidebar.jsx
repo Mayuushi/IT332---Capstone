@@ -8,9 +8,6 @@ const Sidebar = () => {
 
   if (!currentUser) return null;
 
-  // Sample quiz ID for demonstration
-  const quizId = "680e122aca8d7a0a93757df5"; 
-
   return (
     <div className="sidebar">
       <div className="profile">
@@ -24,41 +21,38 @@ const Sidebar = () => {
       </div>
       
       <nav className="nav-menu">
-        {/* Common NavLinks for all users */}
-        <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
-          Dashboard
-        </NavLink>
-        <NavLink to="/points" className={({ isActive }) => isActive ? 'active' : ''}>
-          My Points
-        </NavLink>
-        <NavLink to="/badges" className={({ isActive }) => isActive ? 'active' : ''}>
-          Badges
-        </NavLink>
-        <NavLink to="/leaderboard" className={({ isActive }) => isActive ? 'active' : ''}>
-          Leaderboard
-        </NavLink>
-        <NavLink to="/lessons" className={({ isActive }) => isActive ? 'active' : ''}>
-          Lessons
-        </NavLink>
-        <NavLink to="/enrolledclasses" className={({ isActive }) => isActive ? 'active' : ''}>
-          Enrolled Classes
-        </NavLink>
-        
-        {/* Common NavLink for Quiz */}
-        <NavLink to={`/quiz/${quizId}`} className={({ isActive }) => isActive ? 'active' : ''}>
-          Take Quiz
-        </NavLink>
+        {!currentUser.isTeacher && (
+          <>
+            <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+              Dashboard
+            </NavLink>
+            <NavLink to="/points" className={({ isActive }) => isActive ? 'active' : ''}>
+              My Points
+            </NavLink>
+            <NavLink to="/badges" className={({ isActive }) => isActive ? 'active' : ''}>
+              Badges
+            </NavLink>
+            <NavLink to="/leaderboard" className={({ isActive }) => isActive ? 'active' : ''}>
+              Leaderboard
+            </NavLink>
+            <NavLink to="/lessons" className={({ isActive }) => isActive ? 'active' : ''}>
+              Lessons
+            </NavLink>
+            <NavLink to="/enrolledclasses" className={({ isActive }) => isActive ? 'active' : ''}>
+              Enrolled Classes
+            </NavLink>
+          </>
+        )}
 
-        {/* Teacher-specific links */}
         {currentUser.isTeacher && (
           <>
             <NavLink to="/manageclasses" className={({ isActive }) => isActive ? 'active' : ''}>
               Manage Classes
             </NavLink>
-            <NavLink to="/create-lesson" className={({ isActive }) => isActive ? 'active' : ''}>
-              Create Lesson
+            <NavLink to="/quizmanager" className={({ isActive }) => isActive ? 'active' : ''}>
+              Manage Quizzes
             </NavLink>
-            <NavLink to="/gradebook" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink to="/quiz" className={({ isActive }) => isActive ? 'active' : ''}>
               Gradebook
             </NavLink>
           </>

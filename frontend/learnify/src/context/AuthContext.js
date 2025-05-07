@@ -8,33 +8,36 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // For demo purposes, we'll use localStorage to persist the user
-  // In a real application, you'd use proper authentication
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
+      const user = JSON.parse(storedUser);
+      console.log("Retrieved user from localStorage:", user);
+      setCurrentUser(user);
     }
     setLoading(false);
   }, []);
 
-  // Mock login function - in a real app, this would call an API
   const login = (userData) => {
+    console.log("Logging in with user data:", userData);
     setCurrentUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
     return userData;
   };
-  
+
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('user');
   };
 
-  const isTeacher = currentUser ? currentUser.teacher : false; // Check if user is a teacher
+  // Here, we're using the 'teacher' flag instead of 'teacherId'
+  const isTeacher = currentUser ? currentUser.teacher : false;  // Using 'teacher' instead of 'teacherId'
+
+  console.log("Is Teacher:", isTeacher);
 
   const value = {
     currentUser,
-    isTeacher,  // Adding isTeacher as part of the context
+    isTeacher,  // isTeacher flag
     login,
     logout,
     loading

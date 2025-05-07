@@ -1,0 +1,224 @@
+/* EnrolledClasses.css */
+:root {
+    --primary-color: #4a6fa5;
+    --primary-dark: #3d5d8a;
+    --secondary-color: #f0f4f8;
+    --accent-color: #1e88e5;
+    --accent-secondary: #4caf50;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-light: #fff;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+  }
+  
+  .enrolled-classes {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+  
+  .enrolled-classes__title {
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-lg);
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: var(--spacing-md);
+  }
+  
+  .enrolled-classes__loading,
+  .enrolled-classes__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-secondary);
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+  }
+  
+  .loading-indicator {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+  }
+  
+  .class-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    background-color: white;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .class-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .class-card__header {
+    background-color: var(--primary-color);
+    padding: var(--spacing-md);
+    text-align: center;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+  }
+  
+  .class-card__topic {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text-light);
+  }
+  
+  .class-card__content {
+    padding: var(--spacing-lg);
+    flex-grow: 1;
+  }
+  
+  .class-card__teacher,
+  .class-card__classmates {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .classmates-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .toggle-button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .toggle-button:hover {
+    background-color: rgba(30, 136, 229, 0.1);
+  }
+  
+  .classmates-preview {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .classmates-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .no-classmates {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .classmate {
+    font-size: 0.9rem;
+    background-color: var(--secondary-color);
+    border-radius: 20px;
+    padding: 4px 12px;
+    display: inline-block;
+  }
+  
+  .class-card__actions {
+    padding: var(--spacing-md);
+    background-color: var(--secondary-color);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  
+  .action-button {
+    flex: 1;
+    display: block;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .lessons-button {
+    background-color: var(--accent-secondary);
+  }
+  
+  .lessons-button:hover {
+    background-color: #43a047;
+  }
+  
+  .quiz-button {
+    background-color: var(--accent-color);
+  }
+  
+  .quiz-button:hover {
+    background-color: #1565c0;
+  }
+  
+  .quiz-button--disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .quiz-button--disabled:hover {
+    background-color: #ccc;
+  }
+  
+  @media (max-width: 768px) {
+    .class-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .enrolled-classes {
+      padding: var(--spacing-md);
+    }
+  }

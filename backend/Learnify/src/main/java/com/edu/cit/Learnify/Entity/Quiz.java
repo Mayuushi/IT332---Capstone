@@ -7,62 +7,35 @@ import java.util.List;
 
 @Document(collection = "quizzes")
 public class Quiz {
-
     @Id
-    private String id;  // MongoDB identifier
-    private Integer teacherId;  // Teacher's ID
-    private String title;  // Quiz title
-    private LocalDateTime createdAt;  // Creation timestamp
-    private List<Question> questions;  // List of questions in this quiz
+    private String id;
+    private String teacherId;
+    private String title;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private String classId;
+    private List<Question> questions;
 
-    // Default constructor
+    // Constructors
     public Quiz() {}
 
-    // Constructor with all fields
-    public Quiz(Integer teacherId, String title, LocalDateTime createdAt) {
+    public Quiz(String teacherId, String title, String classId, List<Question> questions) {
         this.teacherId = teacherId;
         this.title = title;
-        this.createdAt = createdAt;
+        this.classId = classId;
+        this.questions = questions;
     }
 
     // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Integer getTeacherId() {
-        return teacherId;
-    }
-
-    public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getTeacherId() { return teacherId; }
+    public void setTeacherId(String teacherId) { this.teacherId = teacherId; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getClassId() { return classId; }
+    public void setClassId(String classId) { this.classId = classId; }
+    public List<Question> getQuestions() { return questions; }
+    public void setQuestions(List<Question> questions) { this.questions = questions; }
 }

@@ -1,0 +1,99 @@
+/* QuizManager.css */
+
+.quiz-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .quiz-selection {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: #f9fafb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .quiz-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+  
+  .quiz-subtitle {
+    color: #4b5563;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .quiz-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .quiz-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+  }
+  
+  .quiz-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .quiz-button-create {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .quiz-button-create:hover {
+    background-color: #059669;
+  }
+  
+  .quiz-button-update {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .quiz-button-update:hover {
+    background-color: #2563eb;
+  }
+  
+  .quiz-mode-container {
+    padding-top: 1rem;
+  }
+  
+  .quiz-back-button {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+  }
+  
+  .quiz-back-button:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
