@@ -10,28 +10,31 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      let res;
-      if (role === 'teacher') {
-        res = await axios.get(`http://localhost:8080/api/teachers`);
-        const user = res.data.find(u => u.email === email && u.password === password);
-        if (!user) throw new Error();
-        login({ ...user, isTeacher: true });
-      } else {
-        res = await axios.get(`http://localhost:8080/api/students/email/${email}`);
-        const user = res.data;
-        if (!user || user.password !== password) throw new Error();
-        login({ ...user, isTeacher: false });
-      }
+  try {
+    let res;
+    let user;
 
-      navigate('/dashboard');
-    } catch (err) {
-      alert('Invalid email or password');
+    if (role === 'teacher') {
+      res = await axios.get(`http://localhost:8080/api/teachers`);
+      user = res.data.find(u => u.email === email && u.password === password);
+      if (!user) throw new Error();
+      login({ ...user, isTeacher: true });
+      navigate('/teacher-dashboard'); // redirect teacher
+    } else {
+      res = await axios.get(`http://localhost:8080/api/students/email/${email}`);
+      user = res.data;
+      if (!user || user.password !== password) throw new Error();
+      login({ ...user, isTeacher: false });
+      navigate('/dashboard'); // redirect student
     }
-  };
+  } catch (err) {
+    alert('Invalid email or password');
+  }
+};
+
 
   return (
     <div className="login-container">
