@@ -22,6 +22,7 @@ import QuizWrapper from './components/Quiz/QuizWrapper';
 import Quiz from './components/Teacher/ManageQuizzes'; //create quiz
 import QuizForm from './components/Teacher/QuizForm';
 import QuizManager from './components/Teacher/QuizManager';
+import TeacherDashboard from './components/Teacher/Dashboard';
 
 
 import './App.css';
@@ -74,6 +75,13 @@ const App = () => {
       <Dashboard />
     </ProtectedRoute>
   } />
+
+  <Route path="/teacher-dashboard" element={
+    <ProtectedRoute>
+      <TeacherDashboard />
+    </ProtectedRoute>
+  } />
+
   <Route path="/test" element={
     <ProtectedRoute>
       <LearnifyApp />
