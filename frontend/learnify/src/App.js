@@ -27,6 +27,7 @@ import TeacherDashboard from './components/Teacher/Dashboard';
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
 import EnrolledClasses from './components/Student/EnrolledClasses';
+import ProgressReport from './components/Teacher/ProgressReport';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -84,6 +85,13 @@ const App = () => {
       <LearnifyApp />
     </ProtectedRoute>
   } />
+
+  <Route path="/progressreport" element={
+    <ProtectedRoute>
+      <ProgressReport />
+    </ProtectedRoute>
+  } />
+
   <Route path="/points" element={
     <ProtectedRoute>
       <PointsPage />

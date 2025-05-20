@@ -55,6 +55,9 @@ const Sidebar = () => {
             <NavLink to="/quizmanager" className={({ isActive }) => isActive ? 'active' : ''}>
               Manage Quizzes
             </NavLink>
+            <NavLink to="/progressreport" className={({ isActive }) => isActive ? 'active' : ''}>
+              Report
+            </NavLink>
             
           </>
         )}
