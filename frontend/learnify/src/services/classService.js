@@ -16,9 +16,9 @@ const getAllClasses = async () => {
 
 // Get classes by student ID with related user data (students and teacher)
 const getClassesByStudentIdWithUsers = async (studentId) => {
-    const res = await axios.get(`${API_URL}/student/${studentId}/with-users`);
-    return res.data;
-  };
+  const res = await axios.get(`${API_URL}/student/${studentId}/with-users`);
+  return res.data;
+};
 
 // Update an existing class
 const updateClass = async (id, updatedData) => {
@@ -37,21 +37,27 @@ const getClassesByStudentId = async (studentId) => {
   return res.data;
 };
 
+// Get classes by teacher ID (without students)
 const getClassesByTeacherId = async (teacherId) => {
-    const res = await axios.get(`${API_URL}/teacher/${teacherId}`);
-    return res.data;
-  };
-  
-  
-  const classService = {
-    createClass,
-    getAllClasses,
-    getClassesByStudentIdWithUsers,
-    getClassesByStudentId,
-    getClassesByTeacherId, // Add this method to fetch classes by teacher ID
-    updateClass,
-    deleteClass,
-  };
-  
-  export default classService;
-  
+  const res = await axios.get(`${API_URL}/teacher/${teacherId}`);
+  return res.data;
+};
+
+// **New: Get classes by teacher ID with enrolled students**
+const getClassesByTeacherIdWithStudents = async (teacherId) => {
+  const res = await axios.get(`${API_URL}/teacher/${teacherId}/with-students`);
+  return res.data;
+};
+
+const classService = {
+  createClass,
+  getAllClasses,
+  getClassesByStudentIdWithUsers,
+  getClassesByStudentId,
+  getClassesByTeacherId,
+  getClassesByTeacherIdWithStudents, // New method here
+  updateClass,
+  deleteClass,
+};
+
+export default classService;

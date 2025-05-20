@@ -1,79 +1,120 @@
 import React, { useEffect, useState } from 'react';
 import '../CSS/QuizStyles.css';
-import { fetchQuizzesByClassId } from '../../services/quizService';
+import { fetchQuizzesByClassAndStudent, submitQuizAnswers } from '../../services/quizService';
 import QuizItem from './QuizItem';
+import { useAuth } from '../../context/AuthContext';
 
 const Quiz = ({ classId }) => {
-  const [questions, setQuestions] = useState([]);
+  const { currentUser } = useAuth();
+
+  const [quizzes, setQuizzes] = useState([]);
   const [answers, setAnswers] = useState({});
   const [results, setResults] = useState({});
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const loadQuestions = async () => {
+    const loadQuizzes = async () => {
+      if (!currentUser || !currentUser.id) return;
+
       try {
-        const quizzes = await fetchQuizzesByClassId(classId);
-        const allQuestions = quizzes.flatMap((quiz, quizIndex) =>
-          (quiz.questions || []).map((q, qIndex) => ({
-            ...q,
-            uniqueId: `${quizIndex}-${qIndex}-${q.id || qIndex}`,
-          }))
-        );
-        setQuestions(allQuestions);
+        const data = await fetchQuizzesByClassAndStudent(classId, currentUser.id);
+        setQuizzes(data);
+
+        const existingResults = {};
+        data.forEach(quiz => {
+          if (quiz.submitted) {
+            existingResults[quiz.id] = {
+              score: quiz.score,
+              totalPossible: quiz.totalPossible,
+              percentage: quiz.percentage
+            };
+          }
+        });
+        setResults(existingResults);
       } catch (error) {
-        console.error("Failed to load questions", error);
+        console.error("Failed to load quizzes", error);
       }
     };
 
-    if (classId) loadQuestions();
-  }, [classId]);
+    if (classId) loadQuizzes();
+  }, [classId, currentUser]);
 
-  const setAnswer = (uniqueId, value) => {
-    if (submitted) return;
-    setAnswers(prev => ({ ...prev, [uniqueId]: value }));
+  const setAnswer = (quizId, questionText, value) => {
+    setAnswers(prev => ({
+      ...prev,
+      [quizId]: {
+        ...prev[quizId],
+        [questionText]: value,
+      }
+    }));
   };
 
-  const handleSubmitAll = () => {
-    const newResults = {};
-    questions.forEach((question) => {
-      const uniqueId = question.uniqueId;
-      const userAnswer = answers[uniqueId];
-      if (!userAnswer) return;
+  const handleSubmitAll = async () => {
+    if (!currentUser || !currentUser.id) {
+      alert('You must be logged in to submit the quiz.');
+      return;
+    }
 
-      const isCorrect = userAnswer.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
-      newResults[uniqueId] = {
-        isCorrect,
-        correctAnswer: question.correctAnswer,
-      };
-    });
+    try {
+      const submissionResults = {};
 
-    setResults(newResults);
-    setSubmitted(true);
+      for (const quiz of quizzes) {
+        if (quiz.submitted) continue; // skip already submitted quizzes
+
+        const quizAnswers = answers[quiz.id] || {};
+        const res = await submitQuizAnswers(quiz.id, currentUser.id, quizAnswers);
+        submissionResults[quiz.id] = res;
+      }
+
+      setResults(prev => ({ ...prev, ...submissionResults }));
+
+      // Refresh quizzes to get updated submission flags
+      const updated = await fetchQuizzesByClassAndStudent(classId, currentUser.id);
+      setQuizzes(updated);
+    } catch (error) {
+      console.error("Failed to submit quizzes", error);
+      alert("Failed to submit quizzes. Please try again.");
+    }
   };
 
   return (
     <div className="quiz">
-      <h2 className="quiz-title">Quiz Questions</h2>
-      {questions.map((question) => (
-        <div key={question.uniqueId} className="quiz-wrapper">
-          <QuizItem
-            question={question}
-            answer={answers[question.uniqueId]}
-            setAnswer={(value) => setAnswer(question.uniqueId, value)}
-            disabled={submitted}
-          />
-          {results[question.uniqueId] && (
-            <div className={`result-feedback ${results[question.uniqueId].isCorrect ? 'correct' : 'incorrect'}`}>
-              <p>{results[question.uniqueId].isCorrect ? '✅ Correct!' : '❌ Incorrect!'}</p>
-              <p><strong>Correct Answer:</strong> {results[question.uniqueId].correctAnswer}</p>
+      <h2 className="quiz-title">Quizzes for Class</h2>
+
+      {quizzes.length === 0 && <p>No quizzes available.</p>}
+
+      {quizzes.map((quiz) => (
+        <div key={quiz.id} className="quiz-wrapper">
+          <h3>{quiz.title}</h3>
+
+          {/* Show questions only if quiz is NOT submitted */}
+          {!quiz.submitted ? (
+            quiz.questions.map((question, index) => {
+              const answer = answers[quiz.id]?.[question.questionText] || '';
+              return (
+                <QuizItem
+                  key={index}
+                  question={{ ...question, uniqueId: `${quiz.id}-${index}` }}
+                  answer={answer}
+                  setAnswer={(value) => setAnswer(quiz.id, question.questionText, value)}
+                  disabled={false}
+                />
+              );
+            })
+          ) : (
+            // If submitted, show score instead of inputs
+            <div className="quiz-result">
+              <p>
+                Score: {quiz.score} / {quiz.totalPossible} ({quiz.percentage}%)
+              </p>
             </div>
           )}
         </div>
       ))}
 
-      {questions.length > 0 && (
-        <button className="submit-btn-all" onClick={handleSubmitAll} disabled={submitted}>
-          Submit All
+      {/* Show submit button only if there are quizzes not submitted */}
+      {quizzes.some(q => !q.submitted) && (
+        <button className="submit-btn-all" onClick={handleSubmitAll}>
+          Submit All Unanswered Quizzes
         </button>
       )}
     </div>

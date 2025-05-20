@@ -61,12 +61,12 @@ public class ClassController {
 
     @GetMapping("/teacher/{teacherId}")
     public List<Class> getClassesByTeacherId(@PathVariable String teacherId) {
-        System.out.println("Fetching Teacher ID: "+teacherId);
         return classService.getClassesByTeacherId(teacherId);
     }
 
-
-
-
-
+    // New endpoint to get classes by teacher with enrolled students
+    @GetMapping("/teacher/{teacherId}/with-students")
+    public List<ClassWithStudentsDTO> getClassesByTeacherIdWithStudents(@PathVariable String teacherId) {
+        return classService.getClassesByTeacherIdWithStudents(teacherId);
+    }
 }

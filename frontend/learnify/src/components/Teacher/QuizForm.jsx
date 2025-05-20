@@ -1,4 +1,4 @@
-//teacher
+// teacher
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { createQuiz } from '../../services/quizService';
@@ -11,7 +11,7 @@ const QuizForm = () => {
   const [classId, setClassId] = useState('');
   const [classes, setClasses] = useState([]);
   const [questions, setQuestions] = useState([
-    { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''] }
+    { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''], points: 1 }
   ]);
   const [loading, setLoading] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -48,7 +48,7 @@ const QuizForm = () => {
   const addQuestion = () => {
     setQuestions([
       ...questions,
-      { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''] }
+      { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''], points: 1 }
     ]);
   };
 
@@ -86,7 +86,6 @@ const QuizForm = () => {
       return;
     }
 
-    // Validate form
     if (!title.trim()) {
       setError('Please enter a quiz title');
       return;
@@ -97,7 +96,6 @@ const QuizForm = () => {
       return;
     }
 
-    // Validate questions
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
       if (!q.questionText.trim()) {
@@ -115,11 +113,14 @@ const QuizForm = () => {
             return;
           }
         }
-        // Check if correct answer is one of the options
         if (!q.options.includes(q.correctAnswer)) {
           setError(`Correct answer for question ${i + 1} must be one of the options`);
           return;
         }
+      }
+      if (!q.points || q.points < 1) {
+        setError(`Points for question ${i + 1} must be at least 1`);
+        return;
       }
     }
 
@@ -133,7 +134,7 @@ const QuizForm = () => {
     setLoading(true);
 
     try {
-      const res = await createQuiz(payload);
+      await createQuiz(payload);
       setFormSubmitted(true);
       resetForm();
     } catch (err) {
@@ -148,7 +149,7 @@ const QuizForm = () => {
     setTitle('');
     setClassId('');
     setQuestions([
-      { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''] }
+      { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''], points: 1 }
     ]);
   };
 
@@ -208,7 +209,6 @@ const QuizForm = () => {
             </select>
           </div>
 
-
           <h3>Questions:</h3>
           {questions.map((q, index) => (
             <div key={index} className="question-card">
@@ -223,7 +223,7 @@ const QuizForm = () => {
                   ✕
                 </button>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor={`question-${index}`}>Question Text:</label>
                 <input
@@ -291,6 +291,19 @@ const QuizForm = () => {
                   onChange={(e) => handleQuestionChange(index, 'correctAnswer', e.target.value)}
                   required
                   placeholder={q.type === 'multiple-choice' ? 'Enter exact text of correct option' : 'Enter correct answer'}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor={`points-${index}`}>Points:</label>
+                <input
+                  id={`points-${index}`}
+                  type="number"
+                  min="1"
+                  value={q.points}
+                  onChange={(e) => handleQuestionChange(index, 'points', parseInt(e.target.value, 10))}
+                  required
+                  placeholder="Enter points for this question"
                 />
               </div>
             </div>
