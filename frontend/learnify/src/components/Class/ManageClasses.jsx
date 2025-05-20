@@ -2,7 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import classService from "../../services/classService";
 import studentService from "../../services/studentService";
 import { useAuth } from "../../context/AuthContext";
-import '../../components/CSS/ManageClasses.css'
+import '../../components/CSS/ManageClasses.css';
+// Import Lucide React icons
+import { Plus, Users, Search, CheckCircle, AlertCircle, Edit, Trash2, ChevronRight } from 'lucide-react';
 
 const ManageClasses = () => {
   const { currentUser, isTeacher } = useAuth();
@@ -16,8 +18,15 @@ const ManageClasses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [editSearchTerm, setEditSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("enrolled");
+  // New state for animations and UI enhancements
+  const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [animateItems, setAnimateItems] = useState(false);
 
   const fetchAll = useCallback(async () => {
+    setIsLoading(true);
     try {
       let classData = [];
       if (isTeacher) {
@@ -37,10 +46,20 @@ const ManageClasses = () => {
 
       setStudents(studentData);
       setClasses(classData);
+      
+      // Trigger animations after data is loaded
+      setTimeout(() => {
+        setIsLoading(false);
+        setTimeout(() => setAnimateItems(true), 300);
+      }, 500);
     } catch (error) {
       console.error("Failed to fetch classes or students:", error);
+      setIsLoading(false);
+      setShowError(true);
+      setErrorMessage("Failed to load data. Please try again.");
+      setTimeout(() => setShowError(false), 5000);
     }
-  }, [currentUser.id, isTeacher]); // <- dependencies used inside fetchAll
+  }, [currentUser.id, isTeacher]);
 
   useEffect(() => {
     fetchAll();
@@ -61,7 +80,9 @@ const ManageClasses = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!topic || selectedStudents.length === 0) {
-      alert("Please enter a topic and select at least one student.");
+      setShowError(true);
+      setErrorMessage("Please enter a topic and select at least one student.");
+      setTimeout(() => setShowError(false), 5000);
       return;
     }
 
@@ -71,10 +92,13 @@ const ManageClasses = () => {
       studentIds: selectedStudents,
     };
 
+    setIsLoading(true);
     try {
       const result = await classService.createClass(classData);
       if (result && result.id) {
-        alert("Class created with ID: " + result.id);
+        setIsLoading(false);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 5000);
         setTopic("");
         setSelectedStudents([]);
         setSearchTerm("");
@@ -84,16 +108,29 @@ const ManageClasses = () => {
       }
     } catch (error) {
       console.error("Error creating class:", error);
-      alert("Failed to create class.");
+      setIsLoading(false);
+      setShowError(true);
+      setErrorMessage("Failed to create class.");
+      setTimeout(() => setShowError(false), 5000);
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await classService.deleteClass(id);
-      await fetchAll(); // Refresh after delete
-    } catch (err) {
-      console.error("Failed to delete class:", err);
+    if (window.confirm("Are you sure you want to delete this class?")) {
+      setIsLoading(true);
+      try {
+        await classService.deleteClass(id);
+        setIsLoading(false);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 5000);
+        await fetchAll(); // Refresh after delete
+      } catch (err) {
+        console.error("Failed to delete class:", err);
+        setIsLoading(false);
+        setShowError(true);
+        setErrorMessage("Failed to delete class.");
+        setTimeout(() => setShowError(false), 5000);
+      }
     }
   };
 
@@ -107,7 +144,9 @@ const ManageClasses = () => {
 
   const handleUpdate = async () => {
     if (!editingTopic || editingSelectedStudents.length === 0) {
-      alert("Topic and students are required.");
+      setShowError(true);
+      setErrorMessage("Topic and students are required.");
+      setTimeout(() => setShowError(false), 5000);
       return;
     }
 
@@ -118,8 +157,12 @@ const ManageClasses = () => {
       studentIds: editingSelectedStudents,
     };
 
+    setIsLoading(true);
     try {
       await classService.updateClass(editingClassId, updatedClass);
+      setIsLoading(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
       await fetchAll(); // Refresh after update
       setEditingClassId(null);
       setEditingTopic("");
@@ -127,6 +170,10 @@ const ManageClasses = () => {
       setActiveTab("enrolled");
     } catch (error) {
       console.error("Failed to update class:", error);
+      setIsLoading(false);
+      setShowError(true);
+      setErrorMessage("Failed to update class.");
+      setTimeout(() => setShowError(false), 5000);
     }
   };
 
@@ -146,22 +193,55 @@ const ManageClasses = () => {
       return (s.grade === 4 || s.grade === 5) && matchesSearch && (included ? isIncluded : !isIncluded);
     });
 
+  // Function to generate random gradient colors for class items
+  const getRandomGradient = (index) => {
+    const gradients = [
+      'linear-gradient(135deg, #6366F1, #8B5CF6)',
+      'linear-gradient(135deg, #10B981, #3B82F6)',
+      'linear-gradient(135deg, #F59E0B, #EF4444)',
+      'linear-gradient(135deg, #EC4899, #8B5CF6)',
+      'linear-gradient(135deg, #06B6D4, #3B82F6)'
+    ];
+    return gradients[index % gradients.length];
+  };
+
   return (
     <div className="manage-classes-container">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="notification success">
+          <CheckCircle size={20} />
+          <span>Operation completed successfully!</span>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {showError && (
+        <div className="notification error">
+          <AlertCircle size={20} />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       <div className="manage-classes-header">
         <h1>Class Management</h1>
-        <p color="#000000">Create and manage your classes and student enrollments</p>
+        <p>Create and manage your classes and student enrollments</p>
       </div>
 
       <div className="manage-classes-content">
         {/* Create Class Section */}
-        <div className="create-class-section">
+        <div className={`create-class-section ${animateItems ? 'animate-in' : ''}`}>
           <div className="section-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Create New Class
+            <Plus size={24} />
+            <span>Create New Class</span>
           </div>
 
           <form onSubmit={handleCreate}>
@@ -180,6 +260,7 @@ const ManageClasses = () => {
             <div className="form-group">
               <label>Select Students</label>
               <div className="search-input">
+                <Search size={18} className="search-icon" />
                 <input
                   type="text"
                   placeholder="Search by name or email"
@@ -190,8 +271,12 @@ const ManageClasses = () => {
 
               <div className="student-list">
                 {filteredCreateStudents.length > 0 ? (
-                  filteredCreateStudents.map((student) => (
-                    <div key={student.id} className="student-item">
+                  filteredCreateStudents.map((student, index) => (
+                    <div 
+                      key={student.id} 
+                      className={`student-item ${selectedStudents.includes(student.id) ? 'selected' : ''}`}
+                      style={{animationDelay: `${index * 0.05}s`}}
+                    >
                       <label>
                         <input
                           type="checkbox"
@@ -213,20 +298,17 @@ const ManageClasses = () => {
             </div>
 
             <button type="submit" className="btn btn-primary">
+              <Plus size={18} />
               Create Class
             </button>
           </form>
         </div>
 
         {/* Existing Classes Section */}
-        <div className="existing-classes-section">
+        <div className={`existing-classes-section ${animateItems ? 'animate-in' : ''}`}>
           <div className="section-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-4-4h-4" />
-            </svg>
-            My Classes
+            <Users size={24} />
+            <span>My Classes</span>
           </div>
 
           <div className="tabs">
@@ -249,8 +331,15 @@ const ManageClasses = () => {
             {activeTab === "enrolled" && (
               <>
                 {classes.length > 0 ? (
-                  classes.map((cls) => (
-                    <div className="class-item" key={cls.id}>
+                  classes.map((cls, index) => (
+                    <div 
+                      className={`class-item ${animateItems ? 'animate-in' : ''}`} 
+                      key={cls.id}
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                        backgroundImage: getRandomGradient(index)
+                      }}
+                    >
                       <div className="class-info">
                         <h3>{cls.topic}</h3>
                         <h4>Enrolled Students ({cls.students?.length || 0})</h4>
@@ -269,19 +358,30 @@ const ManageClasses = () => {
                       </div>
 
                       <div className="actions">
-                        <button onClick={() => handleEditClick(cls)}>Edit</button>
-                        <button onClick={() => handleDelete(cls.id)}>Delete</button>
+                        <button className="edit-btn" onClick={() => handleEditClick(cls)}>
+                          <Edit size={16} />
+                          Edit
+                        </button>
+                        <button className="delete-btn" onClick={() => handleDelete(cls.id)}>
+                          <Trash2 size={16} />
+                          Delete
+                        </button>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p>No classes found</p>
+                  <div className="empty-state">
+                    <Users size={48} />
+                    <p>No classes found</p>
+                    <p className="hint">Create your first class to get started</p>
+                    <ChevronRight size={24} className="arrow-hint" />
+                  </div>
                 )}
               </>
             )}
 
             {activeTab === "edit" && editingClassId && (
-              <>
+              <div className="edit-form">
                 <h3>Edit Class</h3>
                 <div className="form-group">
                   <label>Topic</label>
@@ -296,6 +396,7 @@ const ManageClasses = () => {
                 <div className="form-group">
                   <label>Enrolled Students</label>
                   <div className="search-input">
+                    <Search size={18} className="search-icon" />
                     <input
                       type="text"
                       placeholder="Search by name or email"
@@ -304,8 +405,12 @@ const ManageClasses = () => {
                     />
                   </div>
                   <div className="student-list">
-                    {filteredEditStudents(true).map((student) => (
-                      <div key={student.id} className="student-item">
+                    {filteredEditStudents(true).map((student, index) => (
+                      <div 
+                        key={student.id} 
+                        className={`student-item selected`}
+                        style={{animationDelay: `${index * 0.05}s`}}
+                      >
                         <label>
                           <input
                             type="checkbox"
@@ -326,8 +431,12 @@ const ManageClasses = () => {
                 <div className="form-group">
                   <label>Available Students</label>
                   <div className="student-list">
-                    {filteredEditStudents(false).map((student) => (
-                      <div key={student.id} className="student-item">
+                    {filteredEditStudents(false).map((student, index) => (
+                      <div 
+                        key={student.id} 
+                        className="student-item"
+                        style={{animationDelay: `${index * 0.05}s`}}
+                      >
                         <label>
                           <input
                             type="checkbox"
@@ -346,9 +455,10 @@ const ManageClasses = () => {
                 </div>
 
                 <button onClick={handleUpdate} className="btn btn-primary">
+                  <CheckCircle size={18} />
                   Update Class
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>

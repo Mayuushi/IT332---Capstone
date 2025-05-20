@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { createQuiz } from '../../services/quizService';
 import classService from '../../services/classService';
 import '../CSS/QuizForm.css';
+import { BookOpen, HelpCircle, Plus, X, Check, AlertCircle } from 'lucide-react';
 
 const QuizForm = () => {
   const { currentUser, isTeacher } = useAuth();
@@ -161,6 +162,9 @@ const QuizForm = () => {
     <div className="quiz-form-container">
       {formSubmitted ? (
         <div className="success-message">
+          <div className="success-icon">
+            <Check size={48} color="#2ecc71" />
+          </div>
           <h2>Quiz Created Successfully!</h2>
           <p>Your quiz has been created and is now available for your students.</p>
           <div className="button-group">
@@ -171,10 +175,18 @@ const QuizForm = () => {
         <form onSubmit={handleSubmit} className="quiz-form">
           <h2>Create New Quiz</h2>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <AlertCircle size={20} />
+              <span>{error}</span>
+            </div>
+          )}
 
           <div className="form-group">
-            <label htmlFor="title">Quiz Title:</label>
+            <label htmlFor="title">
+              <BookOpen size={18} />
+              <span>Quiz Title:</span>
+            </label>
             <input
               id="title"
               type="text"
@@ -182,17 +194,22 @@ const QuizForm = () => {
               onChange={(e) => setTitle(e.target.value)}
               required
               placeholder="Enter quiz title"
+              className="enhanced-input"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="class">Class:</label>
+            <label htmlFor="class">
+              <HelpCircle size={18} />
+              <span>Class:</span>
+            </label>
             <select
               id="class"
               value={classId}
               onChange={(e) => setClassId(e.target.value)}
               disabled={classes.length === 0}
               required
+              className="enhanced-select"
             >
               {classes.length === 0 ? (
                 <option value="">No class available</option>
@@ -210,111 +227,124 @@ const QuizForm = () => {
           </div>
 
           <h3>Questions:</h3>
-          {questions.map((q, index) => (
-            <div key={index} className="question-card">
-              <div className="question-header">
-                <h4>Question {index + 1}</h4>
-                <button 
-                  type="button" 
-                  onClick={() => removeQuestion(index)}
-                  className="remove-button"
-                  aria-label="Remove question"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor={`question-${index}`}>Question Text:</label>
-                <input
-                  id={`question-${index}`}
-                  type="text"
-                  value={q.questionText}
-                  onChange={(e) => handleQuestionChange(index, 'questionText', e.target.value)}
-                  required
-                  placeholder="Enter your question"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor={`question-type-${index}`}>Question Type:</label>
-                <select
-                  id={`question-type-${index}`}
-                  value={q.type}
-                  onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
-                >
-                  <option value="multiple-choice">Multiple Choice</option>
-                  <option value="text">Text Answer</option>
-                </select>
-              </div>
-
-              {q.type === 'multiple-choice' && (
-                <div className="options-container">
-                  <label className="options-label">Options:</label>
-                  {q.options.map((option, oIndex) => (
-                    <div key={oIndex} className="option-item">
-                      <input
-                        type="text"
-                        value={option}
-                        onChange={(e) => handleOptionChange(index, oIndex, e.target.value)}
-                        required
-                        placeholder={`Option ${oIndex + 1}`}
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => removeOption(index, oIndex)}
-                        className="option-remove-button"
-                        aria-label="Remove option"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
+          <div className="questions-container">
+            {questions.map((q, index) => (
+              <div key={index} className={`question-card ${q.type}`}>
+                <div className="question-header">
+                  <div className="question-number">
+                    <span>Question {index + 1}</span>
+                    <span className="question-type">
+                      {q.type === 'multiple-choice' ? 'Multiple Choice' : 'Text Answer'}
+                    </span>
+                  </div>
                   <button 
                     type="button" 
-                    onClick={() => addOption(index)}
-                    className="add-option-button"
+                    onClick={() => removeQuestion(index)}
+                    className="remove-button"
+                    aria-label="Remove question"
                   >
-                    + Add Option
+                    <X size={18} />
                   </button>
                 </div>
-              )}
 
-              <div className="form-group">
-                <label htmlFor={`correct-answer-${index}`}>
-                  {q.type === 'multiple-choice' ? 'Correct Option:' : 'Correct Answer:'}
-                </label>
-                <input
-                  id={`correct-answer-${index}`}
-                  type="text"
-                  value={q.correctAnswer}
-                  onChange={(e) => handleQuestionChange(index, 'correctAnswer', e.target.value)}
-                  required
-                  placeholder={q.type === 'multiple-choice' ? 'Enter exact text of correct option' : 'Enter correct answer'}
-                />
-              </div>
+                <div className="form-group">
+                  <label htmlFor={`question-${index}`}>Question Text:</label>
+                  <input
+                    id={`question-${index}`}
+                    type="text"
+                    value={q.questionText}
+                    onChange={(e) => handleQuestionChange(index, 'questionText', e.target.value)}
+                    required
+                    placeholder="Enter your question"
+                    className="enhanced-input"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor={`points-${index}`}>Points:</label>
-                <input
-                  id={`points-${index}`}
-                  type="number"
-                  min="1"
-                  value={q.points}
-                  onChange={(e) => handleQuestionChange(index, 'points', parseInt(e.target.value, 10))}
-                  required
-                  placeholder="Enter points for this question"
-                />
+                <div className="form-group">
+                  <label htmlFor={`question-type-${index}`}>Question Type:</label>
+                  <select
+                    id={`question-type-${index}`}
+                    value={q.type}
+                    onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
+                    className="enhanced-select"
+                  >
+                    <option value="multiple-choice">Multiple Choice</option>
+                    <option value="text">Text Answer</option>
+                  </select>
+                </div>
+
+                {q.type === 'multiple-choice' && (
+                  <div className="options-container">
+                    <label className="options-label">Options:</label>
+                    {q.options.map((option, oIndex) => (
+                      <div key={oIndex} className="option-item">
+                        <div className="option-number">{oIndex + 1}</div>
+                        <input
+                          type="text"
+                          value={option}
+                          onChange={(e) => handleOptionChange(index, oIndex, e.target.value)}
+                          required
+                          placeholder={`Option ${oIndex + 1}`}
+                          className="enhanced-input"
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => removeOption(index, oIndex)}
+                          className="option-remove-button"
+                          aria-label="Remove option"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <button 
+                      type="button" 
+                      onClick={() => addOption(index)}
+                      className="add-option-button"
+                    >
+                      <Plus size={16} /> Add Option
+                    </button>
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label htmlFor={`correct-answer-${index}`}>
+                    {q.type === 'multiple-choice' ? 'Correct Option:' : 'Correct Answer:'}
+                  </label>
+                  <input
+                    id={`correct-answer-${index}`}
+                    type="text"
+                    value={q.correctAnswer}
+                    onChange={(e) => handleQuestionChange(index, 'correctAnswer', e.target.value)}
+                    required
+                    placeholder={q.type === 'multiple-choice' ? 'Enter exact text of correct option' : 'Enter correct answer'}
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div className="form-group points-group">
+                  <label htmlFor={`points-${index}`}>Points:</label>
+                  <input
+                    id={`points-${index}`}
+                    type="number"
+                    min="1"
+                    value={q.points}
+                    onChange={(e) => handleQuestionChange(index, 'points', parseInt(e.target.value, 10))}
+                    required
+                    placeholder="Enter points"
+                    className="enhanced-input points-input"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           <button 
             type="button" 
             onClick={addQuestion}
             className="add-question-button"
           >
-            + Add Question
+            <Plus size={18} /> Add Question
           </button>
           
           <div className="form-actions">
