@@ -1,88 +1,156 @@
 import React, { useState, useEffect } from 'react';
 import studentService from '../../services/studentService';
 import { pointsService } from '../../services/pointsService';
-import { useAuth } from '../../context/AuthContext'; // ✅ Import auth context
+import classService from '../../services/classService';
+import { fetchQuizzesByTeacherId, fetchQuizSubmissions } from '../../services/quizService';
+import { useAuth } from '../../context/AuthContext';
 
 const TeacherDashboard = () => {
-  const { currentUser } = useAuth(); // ✅ Access current user
+  const { currentUser } = useAuth();
 
+  // Students with points state
   const [studentsWithPoints, setStudentsWithPoints] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [sortField, setSortField] = useState('name'); // name or points
-  const [sortDirection, setSortDirection] = useState('asc'); // asc or desc
+  const [loadingStudents, setLoadingStudents] = useState(true);
+  const [errorStudents, setErrorStudents] = useState(null);
+
+  // Quizzes and submissions state
+  const [quizzesWithSubmissions, setQuizzesWithSubmissions] = useState([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
+  const [errorSubmissions, setErrorSubmissions] = useState(null);
+  const [selectedQuizId, setSelectedQuizId] = useState(null);
+
+  // Classes with students state
+  const [classesWithStudents, setClassesWithStudents] = useState([]);
+  const [loadingClasses, setLoadingClasses] = useState(true);
+  const [errorClasses, setErrorClasses] = useState(null);
+
+  // Sorting states
+  const [studentSortField, setStudentSortField] = useState('name');
+  const [studentSortDirection, setStudentSortDirection] = useState('asc');
+
+  const [submissionSortField, setSubmissionSortField] = useState('studentName');
+  const [submissionSortDirection, setSubmissionSortDirection] = useState('asc');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const students = await studentService.getAllStudents();
+    if (!currentUser?.id) return;
 
-        const studentsWithPoints = await Promise.all(
+    // Fetch students with points
+    const fetchStudentPoints = async () => {
+      setLoadingStudents(true);
+      try {
+        const students = await studentService.getAllStudents();
+        const withPoints = await Promise.all(
           students.map(async (student) => {
             try {
               const points = await pointsService.getStudentPoints(student.id);
-              return {
-                ...student,
-                points,
-              };
+              return { ...student, points };
             } catch {
-              return {
-                ...student,
-                points: null,
-              };
+              return { ...student, points: null };
             }
           })
         );
-
-        setStudentsWithPoints(studentsWithPoints);
+        setStudentsWithPoints(withPoints);
       } catch (err) {
-        setError('Failed to load students.');
+        setErrorStudents('Failed to load students.');
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoadingStudents(false);
       }
     };
 
-    fetchData();
-  }, []);
+    // Fetch quizzes with submissions
+    const fetchQuizzesAndSubmissions = async () => {
+      setLoadingSubmissions(true);
+      try {
+        const quizzes = await fetchQuizzesByTeacherId(currentUser.id);
+        const withSubmissions = await Promise.all(
+          quizzes.map(async (quiz) => {
+            const submissions = await fetchQuizSubmissions(quiz.id);
+            return { ...quiz, submissions };
+          })
+        );
+        setQuizzesWithSubmissions(withSubmissions);
+        if (withSubmissions.length > 0) setSelectedQuizId(withSubmissions[0].id);
+      } catch (err) {
+        setErrorSubmissions('Failed to load quiz submissions.');
+        console.error(err);
+      } finally {
+        setLoadingSubmissions(false);
+      }
+    };
 
+    // Fetch classes with students
+    const fetchClasses = async () => {
+      setLoadingClasses(true);
+      try {
+        const classes = await classService.getClassesByTeacherIdWithStudents(currentUser.id);
+        setClassesWithStudents(classes);
+      } catch (err) {
+        setErrorClasses('Failed to load classes.');
+        console.error(err);
+      } finally {
+        setLoadingClasses(false);
+      }
+    };
+
+    fetchStudentPoints();
+    fetchQuizzesAndSubmissions();
+    fetchClasses();
+  }, [currentUser?.id]);
+
+  // Sort students by selected field
   const sortStudents = (students) => {
     return [...students].sort((a, b) => {
-      let valA, valB;
-      if (sortField === 'points') {
-        valA = a.points?.totalPoints ?? 0;
-        valB = b.points?.totalPoints ?? 0;
-      } else {
-        valA = a.name.toLowerCase();
-        valB = b.name.toLowerCase();
-      }
-
-      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      let valA = studentSortField === 'points' ? a.points?.totalPoints ?? 0 : a.name.toLowerCase();
+      let valB = studentSortField === 'points' ? b.points?.totalPoints ?? 0 : b.name.toLowerCase();
+      if (valA < valB) return studentSortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return studentSortDirection === 'asc' ? 1 : -1;
       return 0;
     });
   };
 
-  const toggleSort = (field) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  // Sort quiz submissions by field
+  const sortSubmissions = (submissions) => {
+    return [...submissions].sort((a, b) => {
+      let valA = submissionSortField === 'score' ? a.score : (a.studentName || a.studentId);
+      let valB = submissionSortField === 'score' ? b.score : (b.studentName || b.studentId);
+
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return submissionSortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return submissionSortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  // Toggle sorting for students
+  const toggleStudentSort = (field) => {
+    if (field === studentSortField) {
+      setStudentSortDirection(studentSortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field);
-      setSortDirection('asc');
+      setStudentSortField(field);
+      setStudentSortDirection('asc');
     }
   };
 
+  // Toggle sorting for quiz submissions
+  const toggleSubmissionSort = (field) => {
+    if (field === submissionSortField) {
+      setSubmissionSortDirection(submissionSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSubmissionSortField(field);
+      setSubmissionSortDirection('asc');
+    }
+  };
+
+  // Selected quiz for submissions display
+  const selectedQuiz = quizzesWithSubmissions.find(q => q.id === selectedQuizId);
+
   return (
     <div style={{ padding: '1rem' }}>
-      {/* ✅ Greeting Header */}
-      {currentUser && (
-        <h1 style={{ marginBottom: '1rem' }}>
-          Hello, {currentUser.name}!
-        </h1>
-      )}
+      {currentUser && <h1 style={{ marginBottom: '1rem' }}>Hello, {currentUser.name}!</h1>}
 
-      {/* ✅ Grid Container */}
       <div
         style={{
           display: 'grid',
@@ -91,56 +159,25 @@ const TeacherDashboard = () => {
           gap: '1rem',
         }}
       >
-        {/* Student List Box */}
-        <div
-          style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '1rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <h2 style={{ marginBottom: '0.5rem' }}>Students</h2>
+        {/* Box 1 - Students with points */}
+        <div style={{ ...boxStyle, height: '400px' }}>
+          <h2>Students</h2>
           <div style={{ marginBottom: '0.5rem' }}>
-            <button onClick={() => toggleSort('name')}>
-              Sort by Name {sortField === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+            <button onClick={() => toggleStudentSort('name')}>
+              Sort by Name {studentSortField === 'name' ? (studentSortDirection === 'asc' ? '▲' : '▼') : ''}
             </button>{' '}
-            <button onClick={() => toggleSort('points')}>
-              Sort by Points {sortField === 'points' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+            <button onClick={() => toggleStudentSort('points')}>
+              Sort by Points {studentSortField === 'points' ? (studentSortDirection === 'asc' ? '▲' : '▼') : ''}
             </button>
           </div>
-
-          {loading ? (
-            <div style={{ marginTop: '2rem', textAlign: 'center', fontWeight: 'bold' }}>
-              Loading...
-            </div>
-          ) : error ? (
-            <div style={{ color: 'red', marginTop: '2rem' }}>{error}</div>
+          {loadingStudents ? (
+            <div style={{ marginTop: '2rem', textAlign: 'center', fontWeight: 'bold' }}>Loading students...</div>
+          ) : errorStudents ? (
+            <div style={{ color: 'red', marginTop: '2rem' }}>{errorStudents}</div>
           ) : (
-            <ul
-              style={{
-                listStyleType: 'none',
-                padding: 0,
-                margin: 0,
-                overflowY: 'auto',
-                maxHeight: '300px',
-                borderTop: '1px solid #eee',
-                borderBottom: '1px solid #eee',
-              }}
-            >
+            <ul style={listStyle}>
               {sortStudents(studentsWithPoints).map((student) => (
-                <li
-                  key={student.id}
-                  style={{
-                    borderBottom: '1px solid #eee',
-                    padding: '0.75rem 0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
+                <li key={student.id} style={listItemStyle}>
                   <span>{student.name}</span>
                   <span>
                     Points: {student.points?.totalPoints ?? 0} | Level: {student.points?.level ?? 'N/A'}
@@ -151,24 +188,120 @@ const TeacherDashboard = () => {
           )}
         </div>
 
-        {/* Placeholder Boxes */}
-        {[2, 3, 4].map((num) => (
-          <div
-            key={num}
-            style={{
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              padding: '1rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
-          >
-            <h2>Box {num} Placeholder</h2>
-            <p>Content coming soon...</p>
-          </div>
-        ))}
+        {/* Box 2 - Quiz submissions */}
+        <div style={{ ...boxStyle, height: '400px' }}>
+          <h2>Quiz Submissions</h2>
+          {loadingSubmissions ? (
+            <div>Loading submissions...</div>
+          ) : errorSubmissions ? (
+            <div style={{ color: 'red' }}>{errorSubmissions}</div>
+          ) : quizzesWithSubmissions.length === 0 ? (
+            <div>No quizzes found.</div>
+          ) : (
+            <>
+              <label htmlFor="quizSelect" style={{ marginBottom: '0.5rem', display: 'block' }}>
+                Select Quiz:
+              </label>
+              <select
+                id="quizSelect"
+                value={selectedQuizId}
+                onChange={(e) => setSelectedQuizId(e.target.value)}
+                style={{ marginBottom: '1rem', padding: '0.3rem' }}
+              >
+                {quizzesWithSubmissions.map((quiz) => (
+                  <option key={quiz.id} value={quiz.id}>
+                    {quiz.title}
+                  </option>
+                ))}
+              </select>
+
+              {selectedQuiz && selectedQuiz.submissions.length === 0 ? (
+                <div style={{ fontStyle: 'italic' }}>No submissions yet.</div>
+              ) : selectedQuiz ? (
+                <>
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button onClick={() => toggleSubmissionSort('studentName')}>
+                      Sort by Name {submissionSortField === 'studentName' ? (submissionSortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </button>{' '}
+                    <button onClick={() => toggleSubmissionSort('score')}>
+                      Sort by Score {submissionSortField === 'score' ? (submissionSortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </button>
+                  </div>
+                  <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                    {sortSubmissions(selectedQuiz.submissions).map((submission, idx) => (
+                      <div key={idx} style={{ marginBottom: '4px' }}>
+                        {submission.studentName || submission.studentId}: {submission.score}/{submission.totalPossible} ({submission.percentage}%)
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </>
+          )}
+        </div>
+
+        {/* Box 3 - Classes with students */}
+        <div style={{ ...boxStyle, height: '400px' }}>
+          <h2>Your Classes</h2>
+          {loadingClasses ? (
+            <div style={{ marginTop: '2rem', textAlign: 'center', fontWeight: 'bold' }}>Loading classes...</div>
+          ) : errorClasses ? (
+            <div style={{ color: 'red', marginTop: '2rem' }}>{errorClasses}</div>
+          ) : classesWithStudents.length === 0 ? (
+            <div>No classes found.</div>
+          ) : (
+            <ul style={{ ...listStyle, maxHeight: '340px' }}>
+              {classesWithStudents.map((classItem) => (
+                <li key={classItem.id} style={listItemStyle}>
+                  <div>
+                    <strong>{classItem.topic || 'Unnamed Class'}</strong>
+                    <div style={{ fontSize: '0.9rem', color: '#555', marginTop: '0.25rem' }}>
+                      Students: {classItem.students && classItem.students.length > 0
+                        ? classItem.students.map(s => s.name).join(', ')
+                        : 'No students enrolled'}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Box 4 Placeholder */}
+        <div style={boxStyle}>
+          <h2>Box 4 Placeholder</h2>
+          <p>Content coming soon...</p>
+        </div>
       </div>
     </div>
   );
+};
+
+const boxStyle = {
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  padding: '1rem',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const listStyle = {
+  listStyleType: 'none',
+  padding: 0,
+  margin: 0,
+  overflowY: 'auto',
+  maxHeight: '300px',
+  borderTop: '1px solid #eee',
+  borderBottom: '1px solid #eee',
+};
+
+const listItemStyle = {
+  borderBottom: '1px solid #eee',
+  padding: '0.75rem 0',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 };
 
 export default TeacherDashboard;

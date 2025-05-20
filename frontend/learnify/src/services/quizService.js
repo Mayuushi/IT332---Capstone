@@ -107,5 +107,17 @@ export const fetchQuizzesByClassAndStudent = async (classId, studentId) => {
   }
 };
 
+// ✅ Fetch all submissions for a specific quiz
+export const fetchQuizSubmissions = async (quizId) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/quizzes/${quizId}/submissions`);
+    return response.data; // Array of { studentId, studentName, score, totalPossible, percentage, submittedAt }
+  } catch (error) {
+    console.error('Error fetching quiz submissions:', error);
+    throw error;
+  }
+};
+
+
 
 
