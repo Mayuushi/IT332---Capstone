@@ -1,9 +1,12 @@
 package com.edu.cit.Learnify.Controller;
 
 import com.edu.cit.Learnify.Entity.Quiz;
+import com.edu.cit.Learnify.Entity.Student;
+import com.edu.cit.Learnify.Repository.StudentRepository;
 import com.edu.cit.Learnify.Entity.Question;
 import com.edu.cit.Learnify.Service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -15,6 +18,9 @@ public class QuizController {
 
     @Autowired
     private QuizService quizService;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     // ✅ Create a new quiz with dynamic teacherId (String)
     @PostMapping
@@ -56,7 +62,8 @@ public class QuizController {
                 System.out.println("Processing question: " + questionText);
                 System.out.println("Options: " + options);
 
-                return new Question(questionText, type, correctAnswer, options);
+                int points = (int) q.getOrDefault("points", 1); // default to 1 point if not provided
+                return new Question(questionText, type, correctAnswer, options, points);
             }).toList();
         }
 
@@ -108,7 +115,9 @@ public class QuizController {
                 List<String> options = q.containsKey("options") ?
                         (List<String>) q.get("options") : Collections.emptyList();
 
-                return new Question(questionText, type, correctAnswer, options);
+                int points = (int) q.getOrDefault("points", 1); // default to 1 point if not provided
+        return new Question(questionText, type, correctAnswer, options, points);
+
             }).toList();
         }
 
@@ -120,4 +129,42 @@ public class QuizController {
     public void deleteQuiz(@PathVariable String id) {
         quizService.deleteQuiz(id);
     }
+    @PostMapping("/{quizId}/submit")
+public ResponseEntity<Map<String, Object>> submitQuiz(
+        @PathVariable String quizId,
+        @RequestBody Map<String, Object> payload
+) {
+    String studentId = (String) payload.get("studentId");
+    Map<String, String> answers = (Map<String, String>) payload.get("answers"); // questionText -> studentAnswer
+
+    Quiz quiz = quizService.getQuizById(quizId);
+    int totalScore = 0;
+    int totalPossible = 0;
+
+    for (Question q : quiz.getQuestions()) {
+        totalPossible += q.getPoints();
+        String studentAnswer = answers.getOrDefault(q.getQuestionText(), "").trim();
+        if (q.getCorrectAnswer().trim().equalsIgnoreCase(studentAnswer)) {
+            totalScore += q.getPoints();
+        }
+    }
+
+    // Update student points
+    Optional<Student> studentOpt = studentRepository.findById(studentId);
+    if (studentOpt.isPresent()) {
+        Student student = studentOpt.get();
+        student.setTotalPoints(student.getTotalPoints() + totalScore);
+        studentRepository.save(student);
+    }
+
+    // Response
+    Map<String, Object> result = new HashMap<>();
+    result.put("score", totalScore);
+    result.put("totalPossible", totalPossible);
+    result.put("percentage", totalPossible == 0 ? 0 : (totalScore * 100 / totalPossible));
+
+    return ResponseEntity.ok(result);
+}
+
+    
 }
