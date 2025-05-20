@@ -14,4 +14,8 @@ public interface PointsRepository extends MongoRepository<Points, String> {
 
     @Query("{'studentId': ?0, 'activityType': ?1}")
     List<Points> findByStudentIdAndActivityType(String studentId, String activityType);
+
+    @Query("{'studentId': { $in: ?0 }}")
+    List<Points> findByStudentIdIn(List<String> studentIds);
+
 }
