@@ -13,6 +13,30 @@
     align-items: center;
   }
   
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .subheader {
+    font-size: 1rem;
+    margin: 0;
+    margin-top: 0.2em;
+    font-weight: 400;
+  }
+  
+  .subheader .play {
+    color: #8B0000;
+  }
+  
+  .subheader .learn {
+    color: #00008B; 
+  }
+  
+  .subheader .grow {
+    color: #2E8B57; 
+  }
+  
   .logo img {
     height: 40px;
     margin-right: 10px;

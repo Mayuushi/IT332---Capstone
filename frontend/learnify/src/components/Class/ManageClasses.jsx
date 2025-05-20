@@ -150,7 +150,7 @@ const ManageClasses = () => {
     <div className="manage-classes-container">
       <div className="manage-classes-header">
         <h1>Class Management</h1>
-        <p>Create and manage your classes and student enrollments</p>
+        <p color="#000000">Create and manage your classes and student enrollments</p>
       </div>
 
       <div className="manage-classes-content">

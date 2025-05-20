@@ -8,8 +8,15 @@ const Header = () => {
   return (
     <header className="app-header">
       <div className="logo">
-        <img src="/logo.png" alt="Learnify Logo" />
-        <h1>Learnify</h1>
+        <img src="/LearnifyLogo.png" alt="Learnify Logo" />
+        <div className="logo-text">
+          <h1>Learnify</h1>
+          <p className="subheader">
+            <span className="play">Play.</span>
+            <span className="learn">Learn.</span>
+            <span className="grow">Grow.</span>
+          </p>
+        </div>
       </div>
       {currentUser && (
         <div className="user-info">
