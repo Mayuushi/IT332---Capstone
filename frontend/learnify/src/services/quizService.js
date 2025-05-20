@@ -83,3 +83,29 @@ export const fetchQuiz = async (quizId) => {
   }
 };
 
+// Submit quiz answers and get result from backend
+export const submitQuizAnswers = async (quizId, studentId, answers) => {
+  try {
+    const response = await axios.post(`${API_URL}/${quizId}/submit`, {
+      studentId,
+      answers,
+    });
+    return response.data; // { score, totalPossible, percentage }
+  } catch (error) {
+    console.error('Error submitting quiz answers:', error);
+    throw error;
+  }
+};
+
+export const fetchQuizzesByClassAndStudent = async (classId, studentId) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/quizzes/class/${classId}/student/${studentId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quizzes with submission status:", error);
+    throw error;
+  }
+};
+
+
+
