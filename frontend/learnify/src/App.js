@@ -28,6 +28,7 @@ import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
 import EnrolledClasses from './components/Student/EnrolledClasses';
 import ProgressReport from './components/Teacher/ProgressReport';
+import TeacherOverview from './components/Teacher/TeacherOverview';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -75,9 +76,9 @@ const App = () => {
       <Dashboard />
     </ProtectedRoute>
   } />
-  <Route path="/teacher-dashboard" element={
+  <Route path="/teacher-overview" element={
     <ProtectedRoute>
-      <TeacherDashboard />
+      <TeacherOverview />
     </ProtectedRoute>
   } />
   <Route path="/test" element={
