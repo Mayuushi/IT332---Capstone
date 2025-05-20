@@ -3,7 +3,9 @@ package com.edu.cit.Learnify.Controller;
 import com.edu.cit.Learnify.Entity.Question;
 import com.edu.cit.Learnify.Entity.Quiz;
 import com.edu.cit.Learnify.Entity.QuizSubmission;
+import com.edu.cit.Learnify.Entity.Student;
 import com.edu.cit.Learnify.Repository.QuizSubmissionRepository;
+import com.edu.cit.Learnify.Repository.StudentRepository;
 import com.edu.cit.Learnify.Service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class QuizController {
 
     @Autowired
     private QuizSubmissionRepository quizSubmissionRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     // Create a new quiz with dynamic teacherId (String)
     @PostMapping
@@ -119,7 +124,6 @@ public class QuizController {
         String studentId = (String) payload.get("studentId");
         Map<String, String> answers = (Map<String, String>) payload.get("answers");
 
-        // Check if student already submitted this quiz
         boolean alreadySubmitted = quizSubmissionRepository.existsByQuizIdAndStudentId(quizId, studentId);
         if (alreadySubmitted) {
             Map<String, String> response = new HashMap<>();
@@ -144,7 +148,6 @@ public class QuizController {
             }
         }
 
-        // Save the submission
         QuizSubmission submission = new QuizSubmission();
         submission.setQuizId(quizId);
         submission.setStudentId(studentId);
@@ -155,7 +158,6 @@ public class QuizController {
 
         quizSubmissionRepository.save(submission);
 
-        // Return results
         Map<String, Object> result = new HashMap<>();
         result.put("score", totalScore);
         result.put("totalPossible", totalPossible);
@@ -164,38 +166,65 @@ public class QuizController {
         return ResponseEntity.ok(result);
     }
 
+    // Get quizzes for a class along with submission status for a student
     @GetMapping("/class/{classId}/student/{studentId}")
-public List<Map<String, Object>> getQuizzesForClassWithStatus(
-        @PathVariable String classId,
-        @PathVariable String studentId
-) {
-    List<Quiz> quizzes = quizService.getQuizzesByClassId(classId);
-    List<Map<String, Object>> response = new ArrayList<>();
+    public List<Map<String, Object>> getQuizzesForClassWithStatus(
+            @PathVariable String classId,
+            @PathVariable String studentId
+    ) {
+        List<Quiz> quizzes = quizService.getQuizzesByClassId(classId);
+        List<Map<String, Object>> response = new ArrayList<>();
 
-    for (Quiz quiz : quizzes) {
-        Map<String, Object> quizMap = new HashMap<>();
-        quizMap.put("id", quiz.getId());
-        quizMap.put("title", quiz.getTitle());
-        quizMap.put("questions", quiz.getQuestions());
+        for (Quiz quiz : quizzes) {
+            Map<String, Object> quizMap = new HashMap<>();
+            quizMap.put("id", quiz.getId());
+            quizMap.put("title", quiz.getTitle());
+            quizMap.put("questions", quiz.getQuestions());
 
-        Optional<QuizSubmission> submission = quizSubmissionRepository
-                .findByQuizIdAndStudentId(quiz.getId(), studentId);
+            Optional<QuizSubmission> submission = quizSubmissionRepository
+                    .findByQuizIdAndStudentId(quiz.getId(), studentId);
 
-        if (submission.isPresent()) {
-            QuizSubmission s = submission.get();
-            quizMap.put("submitted", true);
-            quizMap.put("score", s.getScore());
-            quizMap.put("totalPossible", s.getTotalPossible());
-            quizMap.put("percentage", s.getTotalPossible() == 0 ? 0 : (s.getScore() * 100 / s.getTotalPossible()));
-        } else {
-            quizMap.put("submitted", false);
+            if (submission.isPresent()) {
+                QuizSubmission s = submission.get();
+                quizMap.put("submitted", true);
+                quizMap.put("score", s.getScore());
+                quizMap.put("totalPossible", s.getTotalPossible());
+                quizMap.put("percentage", s.getTotalPossible() == 0 ? 0 : (s.getScore() * 100 / s.getTotalPossible()));
+            } else {
+                quizMap.put("submitted", false);
+            }
+
+            response.add(quizMap);
         }
 
-        response.add(quizMap);
+        return response;
     }
 
-    return response;
-}
+    // ✅ NEW ENDPOINT: Get submissions for a quiz with student names
+    @GetMapping("/{quizId}/submissions")
+    public ResponseEntity<?> getSubmissionsForQuiz(@PathVariable String quizId) {
+        List<QuizSubmission> submissions = quizSubmissionRepository.findByQuizId(quizId);
+        List<Map<String, Object>> results = new ArrayList<>();
 
+        for (QuizSubmission submission : submissions) {
+            Map<String, Object> studentResult = new HashMap<>();
+            String studentId = submission.getStudentId();
 
+            studentResult.put("studentId", studentId);
+
+            Optional<Student> studentOpt = studentRepository.findById(studentId);
+            studentResult.put("studentName", studentOpt.map(Student::getName).orElse("Unknown"));
+
+            studentResult.put("score", submission.getScore());
+            studentResult.put("totalPossible", submission.getTotalPossible());
+            studentResult.put("percentage", submission.getTotalPossible() == 0
+                    ? 0
+                    : (submission.getScore() * 100 / submission.getTotalPossible()));
+            studentResult.put("submittedAt", submission.getSubmittedAt());
+
+            results.add(studentResult);
+        }
+
+        return ResponseEntity.ok(results);
+    }
 }

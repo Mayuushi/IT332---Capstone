@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class ClassService {
 
-    private static final Logger logger = LogManager.getLogger(ClassService.class);  // Declare logger here
+    private static final Logger logger = LogManager.getLogger(ClassService.class);
 
     @Autowired
     private ClassRepository classRepository;
@@ -33,10 +33,10 @@ public class ClassService {
     private StudentRepository studentRepository;
 
     @Autowired
-    private TeacherRepository teacherRepository;  // Autowire TeacherRepository
+    private TeacherRepository teacherRepository;
 
     @Autowired
-    private QuizRepository quizRepository;  // Autowire QuizRepository
+    private QuizRepository quizRepository;
 
 
     public Class createClass(CreateClassDTO dto) {
@@ -82,7 +82,6 @@ public class ClassService {
         List<Class> classes = classRepository.findByStudentIdsContaining(studentId);
 
         return classes.stream().map(clazz -> {
-            // Teacher info
             String teacherId = clazz.getTeacherId();
             Optional<Teacher> teacherOpt = teacherRepository.findById(teacherId);
             UserDTO teacher = teacherOpt.map(t -> new UserDTO(t.getId(), t.getName()))
@@ -91,20 +90,29 @@ public class ClassService {
                         return null;
                     });
 
-            // Classmates info
             List<Student> classmates = studentRepository.findAllById(clazz.getStudentIds());
             List<UserDTO> classmateDTOs = classmates.stream()
                     .map(s -> new UserDTO(s.getId(), s.getName()))
                     .collect(Collectors.toList());
 
-            // Fetch quizzes for the class
-            List<Quiz> quizzes = quizRepository.findByClassId(clazz.getId());  // Fetch quizzes for the class
+            List<Quiz> quizzes = quizRepository.findByClassId(clazz.getId());
 
             return new ClassWithUsersDTO(clazz.getId(), clazz.getTopic(), teacher, classmateDTOs, quizzes);
         }).collect(Collectors.toList());
     }
+
     public List<Class> getClassesByTeacherId(String teacherId) {
         return classRepository.findByTeacherId(teacherId);
     }
 
+    // New method to get classes by teacher with students loaded
+    public List<ClassWithStudentsDTO> getClassesByTeacherIdWithStudents(String teacherId) {
+        List<Class> classes = classRepository.findByTeacherId(teacherId);
+        return classes.stream()
+                .map(clazz -> {
+                    List<Student> students = studentRepository.findAllById(clazz.getStudentIds());
+                    return new ClassWithStudentsDTO(clazz, students);
+                })
+                .collect(Collectors.toList());
+    }
 }
