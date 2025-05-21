@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import DialogBox from './DialogBox';
 import CharacterDisplay from './CharacterDisplay';
 import { useAuth } from '../../context/AuthContext'; // Update this path to match your project structure
+import { useNavigate } from 'react-router-dom'; // Add React Router navigation
 
 const API_BASE_URL = 'http://localhost:8080/api/vn';
 const API_POINTS_URL = 'http://localhost:8080/api/points/award';
@@ -39,9 +40,28 @@ const PointsNotification = styled.div`
   }
 `;
 
+// Add a back button for navigation
+const BackButton = styled.button`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid #66c2ff;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 20;
+  
+  &:hover {
+    background-color: rgba(102, 194, 255, 0.4);
+  }
+`;
+
 const VisualNovel = () => {
   const { currentUser } = useAuth(); // Get current user from auth context
   const userId = currentUser ? currentUser.id : null; // Use the user's ID from auth context
+  const navigate = useNavigate(); // Use React Router navigation
   
   const [currentNode, setCurrentNode] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,6 +81,22 @@ const VisualNovel = () => {
       setError('Please log in to play the visual novel');
       setLoading(false);
       return;
+    }
+
+    // Check if the visual novel has been completed recently
+    const vnCompleted = localStorage.getItem(`vn_completed_${userId}`);
+    const lastCompleted = localStorage.getItem(`vn_last_completed_${userId}`);
+    
+    // If completed in the last 5 seconds, go straight to lesson picker
+    if (vnCompleted === 'true' && lastCompleted) {
+      const completedTime = parseInt(lastCompleted);
+      const fiveSecondsAgo = Date.now() - 5000;
+      
+      if (completedTime > fiveSecondsAgo) {
+        addDebugLog('Visual novel was recently completed, redirecting to lesson picker');
+        navigate('/lessons/nervous-system/picker');
+        return;
+      }
     }
 
     // Check if player has progress
@@ -103,7 +139,7 @@ const VisualNovel = () => {
     };
 
     fetchProgress();
-  }, [userId]);
+  }, [userId, navigate]);
 
   // Award points function - now takes a points amount parameter
   const awardPoints = async (points = 10, reason = 'story_progress') => {
@@ -219,6 +255,34 @@ const VisualNovel = () => {
     }
   };
 
+  // Handle returning to lesson picker
+  const handleReturnToLessons = () => {
+    // First award any final points if needed
+    if (isEnding) {
+      awardPoints(100, 'final_completion');
+    }
+    
+    // Instead of trying to clear progress by setting nodeId to null,
+    // which is causing the 400 error, we'll use localStorage to prevent looping
+    
+    // Mark the visual novel as completed in localStorage
+    localStorage.setItem(`vn_completed_${userId}`, 'true');
+    
+    // Clear any local progress tracking
+    try {
+      localStorage.removeItem(`vn_current_node_${userId}`);
+      addDebugLog('Local progress tracking cleared');
+    } catch (err) {
+      addDebugLog(`Error clearing local storage: ${err.message}`);
+    }
+    
+    // Add a timestamp to prevent immediate reload
+    localStorage.setItem(`vn_last_completed_${userId}`, Date.now().toString());
+    
+    // Navigate back to lesson picker
+    navigate('/lessons');
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -239,6 +303,11 @@ const VisualNovel = () => {
         </PointsNotification>
       )}
       
+      {/* Back button to return to lessons */}
+      <BackButton onClick={handleReturnToLessons}>
+        Return to Lessons
+      </BackButton>
+      
       <CharacterDisplay 
         character={currentNode?.character} 
         image={currentNode?.characterImage} 
@@ -251,6 +320,7 @@ const VisualNovel = () => {
         onChoiceSelect={handleChoiceSelect}
         isEnding={isEnding}
         onEnding={() => awardPoints(100, 'final_completion')}
+        onReturnToLessons={handleReturnToLessons} // Pass the handler to DialogBox
       />
     </GameContainer>
   );
