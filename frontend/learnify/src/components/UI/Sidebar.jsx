@@ -56,7 +56,10 @@ const Sidebar = () => {
               Manage Quizzes
             </NavLink>
             <NavLink to="/progressreport" className={({ isActive }) => isActive ? 'active' : ''}>
-              Report
+              Visual Report
+            </NavLink>
+            <NavLink to="/performance-overview" className={({ isActive }) => isActive ? 'active' : ''}>
+              Student Performance
             </NavLink>
             
           </>
