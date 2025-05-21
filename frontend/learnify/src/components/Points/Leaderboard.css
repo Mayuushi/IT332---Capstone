@@ -26,6 +26,22 @@
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease; /* Add transition for smooth hover effects */
+    border-radius: 6px; /* Add slight rounding to items */
+  }
+  
+  /* Add hover effect to leaderboard items */
+  .leaderboard-item:hover {
+    background-color: #667eea; /* Use primary color on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); /* Add shadow for depth */
+  }
+  
+  /* Change text colors on hover for better readability */
+  .leaderboard-item:hover .student-points,
+  .leaderboard-item:hover .student-level,
+  .leaderboard-item:hover .student-name {
+    color: white; /* Change to white text on hover for better contrast */
   }
   
   .leaderboard-item:last-child {
@@ -34,6 +50,11 @@
   
   .leaderboard-item.current-user {
     background-color: #f0f4ff;
+  }
+  
+  /* Ensure current user highlighting still works with hover */
+  .leaderboard-item.current-user:hover {
+    background-color: #667eea;
   }
   
   .rank {
@@ -46,6 +67,13 @@
     justify-content: center;
     font-weight: bold;
     margin-right: 1rem;
+    transition: all 0.3s ease; /* Add transition for smooth hover effects */
+  }
+  
+  /* Keep rank visible on hover */
+  .leaderboard-item:hover .rank {
+    background-color: white;
+    color: #667eea;
   }
   
   .leaderboard-item:nth-child(1) .rank {
@@ -61,6 +89,14 @@
   .leaderboard-item:nth-child(3) .rank {
     background-color: #cd7f32; /* Bronze */
     color: white;
+  }
+  
+  /* Keep medal colors on hover */
+  .leaderboard-item:hover:nth-child(1) .rank,
+  .leaderboard-item:hover:nth-child(2) .rank,
+  .leaderboard-item:hover:nth-child(3) .rank {
+    transform: scale(1.1); /* Make medals slightly larger on hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add glow effect */
   }
   
   .student-info {
@@ -80,12 +116,20 @@
     color: white;
     font-size: 1.2rem;
     margin-right: 1rem;
+    transition: all 0.3s ease; /* Add transition for smooth hover effects */
+  }
+  
+  /* Make avatar pop on hover */
+  .leaderboard-item:hover .leaderboard-avatar {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
   }
   
   .student-name {
     font-weight: 500;
     display: flex;
     align-items: center;
+    transition: color 0.3s ease; /* Add transition for smooth color change */
   }
   
   .you-badge {
@@ -97,6 +141,12 @@
     margin-left: 0.5rem;
   }
   
+  /* Make the badge stand out more on hover */
+  .leaderboard-item:hover .you-badge {
+    background-color: white;
+    color: #667eea;
+  }
+  
   .student-stats {
     text-align: right;
   }
@@ -104,10 +154,12 @@
   .student-points {
     font-weight: bold;
     color: #333;
+    transition: color 0.3s ease; /* Add transition for smooth color change */
   }
   
   .student-level {
     font-size: 0.9rem;
     color: #666;
+    transition: color 0.3s ease; /* Add transition for smooth color change */
   }
   

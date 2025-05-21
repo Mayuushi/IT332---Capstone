@@ -57,9 +57,24 @@ const PointsHistory = () => {
     return labels[type] || type;
   };
 
+  // Get activity icon
+  const getActivityIcon = (type) => {
+    const icons = {
+      'QUIZ_COMPLETION': '📝',
+      'LESSON_COMPLETION': '📚',
+      'DAILY_LOGIN': '🔄',
+      'CHALLENGE_COMPLETION': '🏆'
+    };
+    return icons[type] || '✨';
+  };
+
   if (loading) return <LoadingSpinner />;
   
-  if (error) return <div className="error-message">{error}</div>;
+  if (error) return (
+    <div className="error-container">
+      <div className="error-message">{error}</div>
+    </div>
+  );
 
   return (
     <div className="points-history">
@@ -88,13 +103,14 @@ const PointsHistory = () => {
           {history.map((item) => (
             <div key={item.id} className="history-item">
               <div className="history-item-content">
+                <div className="activity-icon">{getActivityIcon(item.activityType)}</div>
                 <div className="history-description">
                   <span className="activity-type">{getActivityLabel(item.activityType)}</span>
                   <p>{item.description}</p>
+                  <div className="history-date">{formatDate(item.earnedAt)}</div>
                 </div>
                 <div className="history-points">+{item.pointsEarned}</div>
               </div>
-              <div className="history-date">{formatDate(item.earnedAt)}</div>
             </div>
           ))}
         </div>
