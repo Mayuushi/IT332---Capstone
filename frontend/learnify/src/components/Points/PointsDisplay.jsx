@@ -34,11 +34,19 @@ const PointsDisplay = () => {
 
   if (!points) return <div className="no-data">No points data available</div>;
 
-  // Calculate progress to next level
+  // Calculate progress to next level - FIXED
   const currentLevel = points.level;
-  const nextLevelPoints = currentLevel * 100; // Assuming 100 points per level
-  const pointsToNextLevel = nextLevelPoints - (points.totalPoints % 100);
-  const progressPercentage = 100 - (pointsToNextLevel / 100 * 100);
+  const pointsPerLevel = 100; // Points needed for each level
+  
+  // Calculate current points within this level
+  const currentLevelPoints = points.totalPoints % pointsPerLevel;
+  
+  // If the user just leveled up (has exactly 0 points in current level),
+  // show 0% progress instead of 100%
+  const progressPercentage = currentLevelPoints === 0 ? 0 : (currentLevelPoints / pointsPerLevel * 100);
+  
+  // Points remaining to next level
+  const pointsToNextLevel = pointsPerLevel - currentLevelPoints;
 
   return (
     <div className="points-display">

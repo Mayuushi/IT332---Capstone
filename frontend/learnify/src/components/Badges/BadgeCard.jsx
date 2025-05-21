@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './BadgeCard.css';
 
 const BadgeCard = ({ badge }) => {
+  const [imageError, setImageError] = useState(false);
+  
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'Not earned yet';
@@ -14,13 +16,22 @@ const BadgeCard = ({ badge }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Handle image loading errors
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className={`badge-card ${badge.isNew ? 'new-badge' : ''} ${!badge.earnedAt ? 'locked-badge' : ''}`}>
       {badge.isNew && <div className="new-badge-label">New!</div>}
       
       <div className="badge-image">
-        {badge.imageUrl ? (
-          <img src={badge.imageUrl} alt={badge.name} />
+        {badge.imageUrl && !imageError ? (
+          <img 
+            src={`${process.env.PUBLIC_URL}${badge.imageUrl}`} 
+            alt={badge.name}
+            onError={handleImageError}
+          />
         ) : (
           <div className="badge-placeholder">
             <span>{badge.name.substring(0, 1)}</span>
