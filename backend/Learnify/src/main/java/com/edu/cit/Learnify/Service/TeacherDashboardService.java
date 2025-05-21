@@ -1,18 +1,14 @@
 package com.edu.cit.Learnify.Service;
 
+import com.edu.cit.Learnify.Entity.*;
 import com.edu.cit.Learnify.Entity.Class;
-import com.edu.cit.Learnify.Entity.GameProgress;
-import com.edu.cit.Learnify.Entity.Points;
-import com.edu.cit.Learnify.Entity.Quiz;
-import com.edu.cit.Learnify.Entity.QuizSubmission;
-import com.edu.cit.Learnify.Repository.ClassRepository;
-import com.edu.cit.Learnify.Repository.GameProgressRepository;
-import com.edu.cit.Learnify.Repository.PointsRepository;
-import com.edu.cit.Learnify.Repository.QuizRepository;
-import com.edu.cit.Learnify.Repository.QuizSubmissionRepository;
+import com.edu.cit.Learnify.Repository.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -32,6 +28,13 @@ public class TeacherDashboardService {
 
     @Autowired
     private QuizSubmissionRepository quizSubmissionRepository;
+
+    @Autowired
+    private SessionLogRepository sessionLogRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
 
     public Map<String, Object> getOverviewData(String classId) {
         Map<String, Object> overview = new HashMap<>();
@@ -75,7 +78,7 @@ public class TeacherDashboardService {
                 ? totalEngagementPoints * 1.0 / totalStudents
                 : 0.0;
 
-        // Build Response
+        // Build Overview Response
         overview.put("totalStudents", totalStudents);
         overview.put("lessonCompletionRate", lessonCompletionRate);
         overview.put("totalQuizzes", quizzes.size());
@@ -85,5 +88,49 @@ public class TeacherDashboardService {
         overview.put("averageEngagementPoints", avgEngagementPoints);
 
         return overview;
+    }
+
+    // ✅ Real-time Monitoring Logic
+    public Map<String, Object> getRealTimeMonitoringData(String classId) {
+        Map<String, Object> realtime = new HashMap<>();
+
+        Optional<Class> optionalClass = classRepository.findById(classId);
+        if (optionalClass.isEmpty()) {
+            realtime.put("error", "Class not found");
+            return realtime;
+        }
+
+        List<SessionLog> sessionLogs = sessionLogRepository.findByClassId(classId);
+        List<Map<String, Object>> activeSessions = new ArrayList<>();
+        Map<String, Long> totalActivityTime = new HashMap<>();
+
+        for (SessionLog session : sessionLogs) {
+            String activity = session.getActivityType();
+            LocalDateTime start = session.getStartTime();
+            LocalDateTime end = session.getEndTime() != null ? session.getEndTime() : LocalDateTime.now();
+
+            long durationMinutes = Duration.between(start, end).toMinutes();
+            totalActivityTime.put(activity, totalActivityTime.getOrDefault(activity, 0L) + durationMinutes);
+
+            if (session.getEndTime() == null) {
+                Map<String, Object> sessionInfo = new HashMap<>();
+                sessionInfo.put("id", session.getId());
+                sessionInfo.put("studentId", session.getStudentId());
+                sessionInfo.put("classId", session.getClassId());
+                sessionInfo.put("activityType", activity);
+                sessionInfo.put("startTime", start);
+                sessionInfo.put("endTime", session.getEndTime());  // null here for active sessions
+
+                Optional<Student> studentOpt = studentRepository.findById(session.getStudentId());
+                String studentName = studentOpt.map(Student::getName).orElse(session.getStudentId());
+                sessionInfo.put("studentName", studentName);
+
+                activeSessions.add(sessionInfo);
+            }
+        }
+
+        realtime.put("activeSessions", activeSessions);
+        realtime.put("activityDurations", totalActivityTime);
+        return realtime;
     }
 }
