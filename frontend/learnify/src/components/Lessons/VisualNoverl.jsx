@@ -9,12 +9,13 @@ import { useNavigate } from 'react-router-dom'; // Add React Router navigation
 const API_BASE_URL = 'http://localhost:8080/api/vn';
 const API_POINTS_URL = 'http://localhost:8080/api/points/award';
 
+// Modified GameContainer to handle different file extensions
 const GameContainer = styled.div`
   width: 100%;
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background-image: ${props => `url('/images/backgrounds/${props.background}.jpg')`};
+  background-image: ${props => `url('/images/backgrounds/${props.backgroundPath}')`};
   background-size: cover;
   background-position: center;
   transition: background-image 0.5s ease-in-out;
@@ -69,6 +70,21 @@ const VisualNovel = () => {
   const [showPointsNotification, setShowPointsNotification] = useState(false);
   const [pointsAwarded, setPointsAwarded] = useState(0);
   const [isEnding, setIsEnding] = useState(false);
+
+  // Helper function to get the background path with appropriate extension
+  const getBackgroundPath = (background) => {
+    if (!background) return 'default.jpg'; // Default background
+    
+    // Check if the background already includes a file extension
+    if (background.includes('.')) {
+      return background; // Return as is, including extension
+    }
+    
+    // Check if a GIF version exists (implemented in your backend or file system)
+    // For now, we'll assume both extensions are valid
+    // In a real implementation, you might want to check if the file exists
+    return `${background}.jpg`; // Default to jpg if no extension specified
+  };
 
   // Simple logging function for production
   const addDebugLog = (message) => {
@@ -295,8 +311,11 @@ const VisualNovel = () => {
     return <div>{error}</div>;
   }
 
+  // Get the appropriate background path with extension
+  const backgroundPath = getBackgroundPath(currentNode?.background);
+
   return (
-    <GameContainer background={currentNode?.background || 'default'}>
+    <GameContainer backgroundPath={backgroundPath}>
       {showPointsNotification && (
         <PointsNotification>
           +{pointsAwarded} points earned!
