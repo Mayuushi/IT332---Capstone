@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7c9e8093-2705-4f65-b232-46ec0f04bd8b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/Lessons/CharacterDisplay.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/Lessons/CharacterDisplay.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
