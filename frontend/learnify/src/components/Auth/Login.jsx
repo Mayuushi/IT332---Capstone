@@ -22,7 +22,7 @@ const handleSubmit = async (e) => {
       user = res.data.find(u => u.email === email && u.password === password);
       if (!user) throw new Error();
       login({ ...user, isTeacher: true });
-      navigate('/teacher-dashboard'); // redirect teacher
+      navigate('/teacher-overview'); // redirect teacher
     } else {
       res = await axios.get(`http://localhost:8080/api/students/email/${email}`);
       user = res.data;
