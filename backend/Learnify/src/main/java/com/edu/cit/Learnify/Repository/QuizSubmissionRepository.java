@@ -22,6 +22,8 @@ public interface QuizSubmissionRepository extends MongoRepository<QuizSubmission
 
     List<QuizSubmission> findByQuizIdIn(List<String> quizIds);
     // QuizSubmissionRepository.java
-List<QuizSubmission> findByQuizIdInAndSubmittedAtAfter(List<String> quizIds, LocalDateTime start);
+    List<QuizSubmission> findByQuizIdInAndSubmittedAtAfter(List<String> quizIds, LocalDateTime start);
+    List<QuizSubmission> findByStudentId(String studentId);
+
 
 }
