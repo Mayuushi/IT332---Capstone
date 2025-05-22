@@ -26,4 +26,11 @@ public class QuestionBankController {
     public List<QuestionBankItem> getQuestionsByTeacher(@PathVariable String teacherId) {
         return questionBankService.getQuestionsByTeacherId(teacherId);
     }
+
+    // ❌ DELETE endpoint
+    @DeleteMapping("/{id}")
+    public void deleteQuestion(@PathVariable String id) {
+        questionBankService.deleteQuestionById(id);
+}
+
 }

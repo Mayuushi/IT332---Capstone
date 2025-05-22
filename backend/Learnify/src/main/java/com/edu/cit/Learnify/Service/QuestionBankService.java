@@ -20,4 +20,9 @@ public class QuestionBankService {
     public QuestionBankItem addQuestionToBank(QuestionBankItem item) {
         return repository.save(item);
     }
+
+    public void deleteQuestionById(String id) {
+    repository.deleteById(id);
+}
+
 }
