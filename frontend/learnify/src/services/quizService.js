@@ -140,6 +140,15 @@ export const addQuestionToBank = async (questionBankItem) => {
   }
 };
 
+export const deleteQuestion = async (id) => {
+  try {
+    await axios.delete(`${QUESTION_BANK_API_URL}/${id}`);
+  } catch (error) {
+    console.error('Error deleting question:', error);
+    throw error;
+  }
+};
+
 
 
 

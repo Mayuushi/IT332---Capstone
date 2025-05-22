@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchQuestionBankByTeacherId, addQuestionToBank } from '../../services/quizService';
+import {
+  fetchQuestionBankByTeacherId,
+  addQuestionToBank,
+  deleteQuestion,
+} from '../../services/quizService';
 import { PlusCircle, Archive, X, Trash2, Edit } from 'lucide-react';
 import Modal from 'react-modal';
 import '../CSS/QuestionBank.css';
 
-// Modal styles
 const customStyles = {
   content: {
     top: '50%',
@@ -94,12 +97,24 @@ const QuestionBankManager = () => {
     }
   };
 
+  const handleDeleteQuestion = async (id) => {
+    try {
+      await deleteQuestion(id);
+      setQuestionBank((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      console.error('Error deleting question:', err);
+      setError('Failed to delete question. Please try again.');
+    }
+  };
+
   const handleOptionChange = (index, value) => {
     setNewQuestion((prev) => ({
       ...prev,
       question: {
         ...prev.question,
-        options: prev.question.options.map((opt, i) => (i === index ? value : opt)),
+        options: prev.question.options.map((opt, i) =>
+          i === index ? value : opt
+        ),
       },
     }));
   };
@@ -166,7 +181,7 @@ const QuestionBankManager = () => {
               key={item.id}
               item={item}
               onEdit={() => {}}
-              onDelete={() => {}}
+              onDelete={() => handleDeleteQuestion(item.id)}
             />
           ))}
         </div>
@@ -321,7 +336,6 @@ const QuestionBankManager = () => {
   );
 };
 
-// Card Component
 const QuestionBankCard = ({ item, onEdit, onDelete }) => {
   return (
     <div className="question-card">

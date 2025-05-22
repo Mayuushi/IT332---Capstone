@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const QUESTION_BANK_API_URL = 'http://localhost:8080/api/question-bank';
 
 export const fetchQuestionBankByTeacherId = async (teacherId) => {
@@ -16,6 +18,15 @@ export const addQuestionToBank = async (questionBankItem) => {
     return response.data;
   } catch (error) {
     console.error('Error adding question to bank:', error);
+    throw error;
+  }
+};
+
+export const deleteQuestion = async (id) => {
+  try {
+    await axios.delete(`${QUESTION_BANK_API_URL}/${id}`);
+  } catch (error) {
+    console.error('Error deleting question:', error);
     throw error;
   }
 };
