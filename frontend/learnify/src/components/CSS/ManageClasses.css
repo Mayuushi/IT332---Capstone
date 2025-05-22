@@ -304,7 +304,7 @@
 
 .student-email {
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: #625f5f; /* Changed from var(--text-light) to a darker color */
   margin-top: 0.2rem;
 }
 

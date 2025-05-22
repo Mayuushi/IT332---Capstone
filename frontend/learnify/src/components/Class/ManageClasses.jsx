@@ -197,10 +197,7 @@ const ManageClasses = () => {
   const getRandomGradient = (index) => {
     const gradients = [
       'linear-gradient(135deg, #6366F1, #8B5CF6)',
-      'linear-gradient(135deg, #10B981, #3B82F6)',
-      'linear-gradient(135deg, #F59E0B, #EF4444)',
-      'linear-gradient(135deg, #EC4899, #8B5CF6)',
-      'linear-gradient(135deg, #06B6D4, #3B82F6)'
+      
     ];
     return gradients[index % gradients.length];
   };

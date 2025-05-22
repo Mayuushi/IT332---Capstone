@@ -6,6 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="7c9e8093-2705-4f65-b232-46ec0f04bd8b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/Badges/BadgeDisplay.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/Badges/BadgeDisplay.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/CSS/ManageClasses.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/CSS/ManageClasses.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/Dashboard/Dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/Dashboard/Dashboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/Dashboard/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/Dashboard/Dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/Points/PointsHistory.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/Points/PointsHistory.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/learnify/src/components/UI/Header.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/learnify/src/components/UI/Header.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

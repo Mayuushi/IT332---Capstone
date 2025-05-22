@@ -25,6 +25,7 @@
     border-radius: 4px;
     border: 1px solid #ccc;
     background-color: white;
+    color: #333; /* Adding this line to ensure text is black */
   }
   
   .badges-stats {
