@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import classService from '../../services/classService';
 import { fetchStudentProfile, addStudentNote } from '../../services/studentProfileService';
 import { useAuth } from '../../context/AuthContext';
+import '../CSS/PerformanceOverview.css';
 
 const PerformanceOverview = () => {
   const { currentUser } = useAuth();
@@ -66,83 +67,135 @@ const PerformanceOverview = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '80vh' }}>
+    <div className="performance-overview-container">
       {/* Left Panel: Student List */}
-      <div style={{ width: '30%', borderRight: '1px solid #ccc', padding: '1rem', overflowY: 'auto' }}>
-        <h3>Students</h3>
-        {students.map(student => (
-          <div
-            key={student.id}
-            style={{ marginBottom: '0.5rem', cursor: 'pointer' }}
-            onClick={() => setSelectedStudentId(student.id)}
-          >
-            <strong>{student.name}</strong><br />
-            <small>{student.email}</small>
-          </div>
-        ))}
+      <div className="student-list-panel">
+        <div className="student-list-header">
+          <h3>Students</h3>
+        </div>
+        <div className="student-list-content">
+          {students.map(student => (
+            <div
+              key={student.id}
+              className={`student-item ${selectedStudentId === student.id ? 'selected' : ''}`}
+              onClick={() => setSelectedStudentId(student.id)}
+            >
+              <span className="student-name">{student.name}</span>
+              <span className="student-email">{student.email}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Right Panel: Student Profile */}
-      <div style={{ flex: 1, padding: '1rem', overflowY: 'auto' }}>
+      <div className="student-profile-panel">
         {profile ? (
           <>
-            <h2>{profile.student.name}'s Profile</h2>
-            <p><strong>Email:</strong> {profile.student.email}</p>
-            <p><strong>Grade:</strong> {profile.student.grade}</p>
-            <p><strong>Level:</strong> {profile.student.level}</p>
-            <p><strong>Total Points:</strong> {profile.student.totalPoints}</p>
-
-            <h3>Badges</h3>
-            {profile.badges.length === 0 ? (
-              <div>No badges earned</div>
-            ) : (
-              profile.badges.map(badge => (
-                <div key={`${badge.id}-${new Date(badge.earnedAt).getTime()}`}>
-                  {badge.name} — {new Date(badge.earnedAt).toLocaleString()}
+            <div className="profile-header">
+              <h2 className="profile-title">{profile.student.name}'s Profile</h2>
+              <div className="profile-basic-info">
+                <div className="info-item">
+                  <div className="info-label">Email</div>
+                  <div className="info-value">{profile.student.email}</div>
                 </div>
-              ))
-            )}
-
-            <h3>Quiz Performances</h3>
-            {profile.quizPerformances.length === 0 ? (
-              <div>No quiz data</div>
-            ) : (
-              profile.quizPerformances.map((quiz, index) => (
-                <div key={index}>
-                  {quiz.quizTitle} — {quiz.score}/{quiz.totalPossible} — {new Date(quiz.submittedAt).toLocaleString()}
+                <div className="info-item">
+                  <div className="info-label">Grade</div>
+                  <div className="info-value">{profile.student.grade}</div>
                 </div>
-              ))
-            )}
-
-            <h3>Notes</h3>
-            {profile.notes.length === 0 ? (
-              <div>No notes</div>
-            ) : (
-              profile.notes.map((note, i) => (
-                <div key={note.id ? note.id : `note-${i}`} style={{ marginBottom: '0.5rem' }}>
-                  <strong>{note.teacherName}</strong>: {note.note} <br />
-                  <small>{new Date(note.createdAt).toLocaleString()}</small>
+                <div className="info-item">
+                  <div className="info-label">Level</div>
+                  <div className="info-value">{profile.student.level}</div>
                 </div>
-              ))
-            )}
+                <div className="info-item">
+                  <div className="info-label">Total Points</div>
+                  <div className="info-value">{profile.student.totalPoints}</div>
+                </div>
+              </div>
+            </div>
 
-            {/* Add new note */}
-            <div style={{ marginTop: '1rem' }}>
-              <textarea
-                rows="3"
-                placeholder="Add a new note..."
-                value={newNote}
-                onChange={(e) => setNewNote(e.target.value)}
-                style={{ width: '100%', resize: 'vertical' }}
-              />
-              {noteError && <div style={{ color: 'red' }}>{noteError}</div>}
-              <button onClick={handleAddNote} disabled={loadingNote} style={{ marginTop: '0.5rem' }}>
-                {loadingNote ? 'Adding...' : 'Add Note'}
-              </button>
+            <div className="profile-content">
+              <div className="profile-section">
+                <h3 className="section-title badges">Badges</h3>
+                {profile.badges.length === 0 ? (
+                  <div className="empty-state section-empty">No badges earned</div>
+                ) : (
+                  <div className="badges-grid">
+                    {profile.badges.map(badge => (
+                      <div key={`${badge.id}-${new Date(badge.earnedAt).getTime()}`} className="badge-item">
+                        <div className="badge-icon">🏆</div>
+                        <div className="badge-info">
+                          <div className="badge-name">{badge.name}</div>
+                          <div className="badge-date">{new Date(badge.earnedAt).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="profile-section">
+                <h3 className="section-title quizzes">Quiz Performances</h3>
+                {profile.quizPerformances.length === 0 ? (
+                  <div className="empty-state section-empty">No quiz data</div>
+                ) : (
+                  <div className="quiz-list">
+                    {profile.quizPerformances.map((quiz, index) => (
+                      <div key={index} className="quiz-item">
+                        <div className="quiz-header">
+                          <div className="quiz-title">{quiz.quizTitle}</div>
+                          <div className="quiz-score">{quiz.score}/{quiz.totalPossible}</div>
+                        </div>
+                        <div className="quiz-date">{new Date(quiz.submittedAt).toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="profile-section">
+                <h3 className="section-title notes">Notes</h3>
+                {profile.notes.length === 0 ? (
+                  <div className="empty-state section-empty">No notes</div>
+                ) : (
+                  <div className="notes-list">
+                    {profile.notes.map((note, i) => (
+                      <div key={note.id ? note.id : `note-${i}`} className="note-item">
+                        <div className="note-header">
+                          <div className="note-teacher">{note.teacherName}</div>
+                          <div className="note-date">{new Date(note.createdAt).toLocaleString()}</div>
+                        </div>
+                        <div className="note-content">{note.note}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add new note */}
+                <div className="add-note-section">
+                  <div className="add-note-title">Add New Note</div>
+                  <textarea
+                    rows="3"
+                    placeholder="Add a new note..."
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    className="note-textarea"
+                  />
+                  {noteError && <div className="note-error">{noteError}</div>}
+                  <button 
+                    onClick={handleAddNote} 
+                    disabled={loadingNote}
+                    className="add-note-button"
+                  >
+                    {loadingNote ? 'Adding...' : 'Add Note'}
+                  </button>
+                </div>
+              </div>
             </div>
           </>
         ) : (
-          <p>Select a student to view their profile.</p>
+          <div className="empty-state profile-empty">
+            <p>Select a student to view their profile.</p>
+          </div>
         )}
       </div>
     </div>

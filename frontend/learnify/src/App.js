@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/UI/Header';
@@ -24,6 +24,7 @@ import QuizForm from './components/Teacher/QuizForm';
 import QuizManager from './components/Teacher/QuizManager';
 import NervousSystemLessonPicker from './components/Lessons/LessonPicker';
 import TeacherDashboard from './components/Teacher/Dashboard';
+import QuestionBankManager from './components/Teacher/QuestionBankManager';
 import './App.css';
 import ManageClasses from './components/Class/ManageClasses';
 import EnrolledClasses from './components/Student/EnrolledClasses';
@@ -80,6 +81,11 @@ const App = () => {
   <Route path="/teacher-overview" element={
     <ProtectedRoute>
       <TeacherOverview />
+    </ProtectedRoute>
+  } />
+  <Route path="/question-bankmanager" element={
+    <ProtectedRoute>
+      <QuestionBankManager />
     </ProtectedRoute>
   } />
   <Route path="/test" element={

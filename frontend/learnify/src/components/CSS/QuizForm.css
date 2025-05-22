@@ -1,5 +1,127 @@
 /* QuizForm.css */
+/* Add these styles to your QuizForm.css */
 
+.question-bank-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.add-question-button {
+  background-color: #4a6baf;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.add-question-button:hover {
+  background-color: #3a5a9f;
+}
+
+/* Style the QuestionBankSelector button */
+.question-bank-selector button {
+  background-color: #f5f7fa;
+  color: #4a6baf;
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.question-bank-selector button:hover {
+  background-color: #e1e4e8;
+}
+
+/* Modal styles for the selector */
+.selector-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.question-selector-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.question-selector-item {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.question-selector-item:hover {
+  border-color: #4a6baf;
+  box-shadow: 0 2px 8px rgba(74, 107, 175, 0.2);
+}
+
+.question-selector-item.selected {
+  background-color: #f0f5ff;
+  border-color: #4a6baf;
+}
+
+.selector-item-content .subject {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.selector-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* Overlay for modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
 .quiz-form-container {
   max-width: 900px;
   margin: 0 auto;

@@ -1,10 +1,11 @@
-// teacher
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { createQuiz } from '../../services/quizService';
 import classService from '../../services/classService';
 import '../CSS/QuizForm.css';
-import { BookOpen, HelpCircle, Plus, X, Check, AlertCircle } from 'lucide-react';
+import { BookOpen, HelpCircle, Plus, X, Check, AlertCircle, Archive } from 'lucide-react';
+import QuestionBankSelector from './QuestionBankSelector'; // Add this import
+
 
 const QuizForm = () => {
   const { currentUser, isTeacher } = useAuth();
@@ -51,6 +52,19 @@ const QuizForm = () => {
       ...questions,
       { questionText: '', type: 'multiple-choice', correctAnswer: '', options: ['', '', '', ''], points: 1 }
     ]);
+  };
+
+  // Add this function to handle questions from the bank
+  const handleAddFromBank = (bankQuestions) => {
+    const formattedQuestions = bankQuestions.map(q => ({
+      questionText: q.question.questionText,
+      type: q.question.questionType || 'multiple-choice',
+      correctAnswer: q.question.options[q.question.correctAnswer],
+      options: [...q.question.options],
+      points: q.question.points || 1
+    }));
+    
+    setQuestions([...questions, ...formattedQuestions]);
   };
 
   const removeQuestion = (index) => {
@@ -226,6 +240,19 @@ const QuizForm = () => {
             </select>
           </div>
 
+          <div className="question-bank-controls">
+            <button 
+              type="button" 
+              onClick={addQuestion}
+              className="add-question-button"
+            >
+              <Plus size={18} /> Add New Question
+            </button>
+            
+            {/* Add the QuestionBankSelector here */}
+            <QuestionBankSelector onSelectQuestions={handleAddFromBank} />
+          </div>
+
           <h3>Questions:</h3>
           <div className="questions-container">
             {questions.map((q, index) => (
@@ -339,14 +366,6 @@ const QuizForm = () => {
             ))}
           </div>
 
-          <button 
-            type="button" 
-            onClick={addQuestion}
-            className="add-question-button"
-          >
-            <Plus size={18} /> Add Question
-          </button>
-          
           <div className="form-actions">
             <button type="submit" className="primary-button" disabled={loading}>
               {loading ? 'Creating...' : 'Create Quiz'}
