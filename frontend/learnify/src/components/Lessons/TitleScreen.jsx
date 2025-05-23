@@ -8,7 +8,7 @@ const TitleContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('/images/backgrounds/title_bg.jpg');
+  background-image: url('/images/backgrounds/title_bg.gif');
   background-size: cover;
   background-position: center;
 `;

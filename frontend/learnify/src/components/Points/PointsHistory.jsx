@@ -52,7 +52,8 @@ const PointsHistory = () => {
       'QUIZ_COMPLETION': 'Quiz Completion',
       'LESSON_COMPLETION': 'Lesson Completion',
       'DAILY_LOGIN': 'Daily Login',
-      'CHALLENGE_COMPLETION': 'Challenge Completion'
+      'CHALLENGE_COMPLETION': 'Challenge Completion',
+      'VISUAL_NOVEL_COMPLETION': 'Visual Novel Completion'
     };
     return labels[type] || type;
   };
@@ -63,7 +64,8 @@ const PointsHistory = () => {
       'QUIZ_COMPLETION': '📝',
       'LESSON_COMPLETION': '📚',
       'DAILY_LOGIN': '🔄',
-      'CHALLENGE_COMPLETION': '🏆'
+      'CHALLENGE_COMPLETION': '🏆',
+      'VISUAL_NOVEL_COMPLETION': '📖',
     };
     return icons[type] || '✨';
   };
@@ -92,6 +94,7 @@ const PointsHistory = () => {
             <option value="LESSON_COMPLETION">Lessons</option>
             <option value="DAILY_LOGIN">Daily Logins</option>
             <option value="CHALLENGE_COMPLETION">Challenges</option>
+            <option value="VISUAL_NOVEL_COMPLETION">Visual Novels</option>
           </select>
         </div>
       </div>
