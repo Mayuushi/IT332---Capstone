@@ -16,21 +16,31 @@ const handleSubmit = async (e) => {
   try {
     let res;
     let user;
+    const normalizedEmail = email.trim().toLowerCase();
 
     if (role === 'teacher') {
       res = await axios.get(`http://localhost:8080/api/teachers`);
-      user = res.data.find(u => u.email === email && u.password === password);
-      if (!user) throw new Error();
+      user = res.data.find(u =>
+        (u.email || '').trim().toLowerCase() === normalizedEmail && (u.password || '') === password
+      );
+      if (!user) throw new Error('INVALID_CREDENTIALS');
       login({ ...user, isTeacher: true });
       navigate('/teacher-overview'); // redirect teacher
     } else {
-      res = await axios.get(`http://localhost:8080/api/students/email/${email}`);
-      user = res.data;
-      if (!user || user.password !== password) throw new Error();
+      // Fetch all students and validate both email + password to avoid duplicate-email mismatches.
+      res = await axios.get(`http://localhost:8080/api/students`);
+      user = res.data.find(u =>
+        (u.email || '').trim().toLowerCase() === normalizedEmail && (u.password || '') === password
+      );
+      if (!user) throw new Error('INVALID_CREDENTIALS');
       login({ ...user, isTeacher: false });
       navigate('/dashboard'); // redirect student
     }
   } catch (err) {
+    if (axios.isAxiosError(err) && !err.response) {
+      alert('Cannot connect to server. Please make sure backend is running on port 8080.');
+      return;
+    }
     alert('Invalid email or password');
   }
 };
