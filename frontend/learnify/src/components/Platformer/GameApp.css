@@ -1,0 +1,1199 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   NEUROQUEST — BIOPUNK ARCADE THEME
+   All styles scoped to .neurogame-root to avoid conflicts
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ── Scoped reset ─────────────────────────────────────────────────────────── */
+.neurogame-root *, .neurogame-root *::before, .neurogame-root *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+
+/* ── Variables ────────────────────────────────────────────────────────────── */
+.neurogame-root {
+  --c-bg:         #050a14;
+  --c-surface:    #0a1628;
+  --c-card:       #0d1f3c;
+  --c-border:     #1a3050;
+  --c-border2:    #1e4080;
+  --c-cyan:       #00d4ff;
+  --c-cyan-dim:   #00a8cc;
+  --c-pink:       #ff006e;
+  --c-pink-dim:   #cc0058;
+  --c-green:      #06ffa5;
+  --c-amber:      #ffbe0b;
+  --c-red:        #ff4d6d;
+  --c-purple:     #8b5cf6;
+  --c-purple-dim: #6d28d9;
+  --c-text:       #e8f4fd;
+  --c-muted:      #7ea8cc;
+  --c-dim:        #3d5a80;
+  --f-display:    'Fredoka', sans-serif;
+  --f-body:       'Nunito', sans-serif;
+  --r:            12px;
+  --r-lg:         20px;
+  --r-xl:         28px;
+
+  font-family: var(--f-body);
+  background: var(--c-bg);
+  color: var(--c-text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Circuit board background ─────────────────────────────────────────────── */
+.neurogame-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.neurogame-root .app-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 960px;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────────────────── */
+.neurogame-root .spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.2);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: ng2-spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes ng2-spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   START SCREEN
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .start-screen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+  min-height: 90vh;
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(10,22,40,0.97) 0%, rgba(13,31,60,0.97) 100%);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r-xl);
+  box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 40px 80px rgba(0,0,0,0.7);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.neurogame-root .start-screen.mounted {
+  opacity: 1; transform: translateY(0);
+}
+.neurogame-root .start-screen::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.neurogame-root .start-screen::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(255,0,110,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Orbs */
+.neurogame-root .start-orbs { position: absolute; inset: 0; pointer-events: none; }
+.neurogame-root .orb {
+  position: absolute;
+  border-radius: 50%;
+  animation: ng2-orbFloat linear infinite;
+}
+.neurogame-root .orb-0 { width:6px;height:6px;background:var(--c-cyan);  top:15%;left:8%; opacity:0.6;animation-duration:4s;}
+.neurogame-root .orb-1 { width:4px;height:4px;background:var(--c-pink);  top:35%;left:88%;opacity:0.5;animation-duration:5s;animation-delay:1s;}
+.neurogame-root .orb-2 { width:8px;height:8px;background:var(--c-amber); top:70%;left:12%;opacity:0.4;animation-duration:6s;animation-delay:0.5s;}
+.neurogame-root .orb-3 { width:5px;height:5px;background:var(--c-green); top:80%;left:85%;opacity:0.5;animation-duration:4.5s;animation-delay:2s;}
+.neurogame-root .orb-4 { width:3px;height:3px;background:var(--c-cyan);  top:55%;left:5%; opacity:0.7;animation-duration:3.5s;animation-delay:0.8s;}
+.neurogame-root .orb-5 { width:7px;height:7px;background:var(--c-purple);top:20%;left:75%;opacity:0.4;animation-duration:5.5s;animation-delay:1.5s;}
+@keyframes ng2-orbFloat {
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-18px) scale(1.3);}
+}
+
+/* Left panel */
+.neurogame-root .start-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.neurogame-root .brain-stage {
+  position: relative;
+  width: 280px; height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.neurogame-root .brain-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: ng2-ringPulse ease-in-out infinite;
+}
+.neurogame-root .ring-1 { width:220px;height:220px;border-color:rgba(0,212,255,0.2); animation-duration:3s;}
+.neurogame-root .ring-2 { width:260px;height:260px;border-color:rgba(0,212,255,0.1); animation-duration:3s;animation-delay:0.5s;}
+.neurogame-root .ring-3 { width:190px;height:190px;border-color:rgba(139,92,246,0.2);animation-duration:3s;animation-delay:1s;}
+@keyframes ng2-ringPulse {
+  0%,100%{transform:scale(1);opacity:0.6;}
+  50%{transform:scale(1.04);opacity:1;}
+}
+.neurogame-root .hero-brain-svg {
+  filter: drop-shadow(0 0 30px rgba(139,92,246,0.5));
+  animation: ng2-brainFloat 3.5s ease-in-out infinite;
+}
+@keyframes ng2-brainFloat {
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-12px);}
+}
+.neurogame-root .brain-label {
+  position: absolute;
+  bottom: -10px;
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-cyan-dim));
+  color: white;
+  font-family: var(--f-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  padding: 5px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.neurogame-root .start-stats-row {
+  display: flex;
+  gap: 16px;
+}
+.neurogame-root .start-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: var(--r);
+  padding: 12px 18px;
+  min-width: 72px;
+}
+.neurogame-root .ss-icon { font-size: 1.4rem; }
+.neurogame-root .ss-val  { font-family: var(--f-display); font-size: 1.2rem; font-weight: 700; color: var(--c-cyan); }
+.neurogame-root .ss-lbl  { font-size: 0.7rem; color: var(--c-muted); font-weight: 700; letter-spacing: 0.5px; }
+
+/* Right panel */
+.neurogame-root .start-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.neurogame-root .start-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 2px;
+}
+.neurogame-root .start-logo-n {
+  font-family: var(--f-display);
+  font-size: clamp(3rem, 7vw, 5rem);
+  font-weight: 700;
+  color: var(--c-cyan);
+  text-shadow: 0 0 30px var(--c-cyan), 0 0 60px rgba(0,212,255,0.3);
+  letter-spacing: 4px;
+}
+.neurogame-root .start-logo-q {
+  font-family: var(--f-display);
+  font-size: clamp(3rem, 7vw, 5rem);
+  font-weight: 700;
+  color: var(--c-pink);
+  text-shadow: 0 0 30px var(--c-pink), 0 0 60px rgba(255,0,110,0.3);
+  letter-spacing: 4px;
+}
+.neurogame-root .start-tagline {
+  font-size: 1.05rem;
+  color: var(--c-muted);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.neurogame-root .start-how {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.neurogame-root .how-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--c-muted);
+  font-weight: 600;
+}
+.neurogame-root .how-item strong { color: var(--c-cyan); }
+.neurogame-root .how-num {
+  min-width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-cyan-dim));
+  color: white;
+  font-family: var(--f-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.neurogame-root .start-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.neurogame-root .input-label {
+  font-family: var(--f-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--c-cyan);
+}
+.neurogame-root .name-input {
+  background: rgba(0,212,255,0.05);
+  border: 2px solid var(--c-border2);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  color: var(--c-text);
+  font-family: var(--f-body);
+  font-size: 1.05rem;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  width: 100%;
+}
+.neurogame-root .name-input:focus {
+  border-color: var(--c-cyan);
+  background: rgba(0,212,255,0.08);
+  box-shadow: 0 0 0 4px rgba(0,212,255,0.12);
+}
+.neurogame-root .name-input::placeholder { color: var(--c-dim); }
+
+.neurogame-root .start-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--c-purple-dim) 0%, var(--c-pink) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  padding: 16px 24px;
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 30px rgba(255,0,110,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.neurogame-root .start-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+}
+.neurogame-root .start-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 40px rgba(255,0,110,0.6), 0 0 60px rgba(139,92,246,0.3);
+}
+.neurogame-root .start-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+.neurogame-root .btn-loading { display: flex; align-items: center; gap: 8px; }
+.neurogame-root .error-msg { color: var(--c-red); font-size: 0.9rem; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME BOARD
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .game-board {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* HUD */
+.neurogame-root .game-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,22,40,0.95);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r);
+  padding: 12px 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.neurogame-root .hud-logo {
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c-cyan);
+  text-shadow: 0 0 15px var(--c-cyan);
+  letter-spacing: 2px;
+}
+.neurogame-root .hud-center { flex: 1; display: flex; justify-content: center; }
+.neurogame-root .hud-streak {
+  background: linear-gradient(135deg, #7c2d12, #c2410c);
+  color: #fef3c7;
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+  animation: ng2-streakGlow 0.5s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(251,146,60,0.5);
+}
+@keyframes ng2-streakGlow {
+  from { box-shadow: 0 0 10px rgba(251,146,60,0.4); }
+  to   { box-shadow: 0 0 25px rgba(251,146,60,0.8); }
+}
+.neurogame-root .hud-stats { display: flex; gap: 10px; }
+.neurogame-root .hud-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--c-border2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-family: var(--f-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  display: flex; gap: 6px; align-items: center;
+}
+.neurogame-root .hud-chip span { color: var(--c-text); font-weight: 700; }
+.neurogame-root .score-chip { border-color: rgba(255,190,11,0.4); color: var(--c-amber); }
+.neurogame-root .score-chip span { color: var(--c-amber); }
+
+/* Battle Stage */
+.neurogame-root .battle-stage {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(10,22,40,0.98) 0%, rgba(5,10,20,0.98) 100%);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r-lg);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+  align-items: center;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+}
+.neurogame-root .battle-stage::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(0,212,255,0.04), transparent);
+  pointer-events: none;
+}
+
+.neurogame-root .enemy-zone,
+.neurogame-root .player-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Fighter cards */
+.neurogame-root .fighter-card {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  border: 1px solid var(--c-border);
+}
+.neurogame-root .enemy-card  { border-color: rgba(255,0,110,0.3); background: rgba(255,0,110,0.05); }
+.neurogame-root .player-card { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+
+.neurogame-root .fighter-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.neurogame-root .fighter-level {
+  background: rgba(255,0,110,0.2);
+  border: 1px solid rgba(255,0,110,0.5);
+  color: var(--c-pink);
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.neurogame-root .fighter-name {
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+.neurogame-root .enemy-fighter-name  { color: var(--c-pink); text-shadow: 0 0 10px rgba(255,0,110,0.4); }
+.neurogame-root .player-fighter-name { color: var(--c-cyan); text-shadow: 0 0 10px rgba(0,212,255,0.4); }
+
+.neurogame-root .enemy-hp-badge {
+  font-family: var(--f-display);
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  font-weight: 600;
+}
+
+/* HP bars */
+.neurogame-root .hp-bar-wrap { width: 100%; }
+.neurogame-root .hp-bar-track {
+  height: 16px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  margin-bottom: 5px;
+}
+.neurogame-root .hp-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.neurogame-root .hp-bar-fill.hp-critical {
+  animation: ng2-hpCritical 0.5s ease-in-out infinite alternate;
+}
+@keyframes ng2-hpCritical {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}
+.neurogame-root .hp-bar-shine {
+  position: absolute;
+  top: 2px; left: 8px; right: 8px;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+  pointer-events: none;
+}
+.neurogame-root .hp-bar-nums {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.neurogame-root .hp-current { font-family: var(--f-display); font-size: 0.95rem; font-weight: 700; }
+.neurogame-root .hp-sep     { color: var(--c-dim); }
+.neurogame-root .hp-max     { color: var(--c-dim); font-size: 0.8rem; }
+.neurogame-root .hp-pct     { margin-left: auto; color: var(--c-muted); font-size: 0.75rem; }
+
+/* Sprite wraps */
+.neurogame-root .sprite-wrap { position: relative; }
+.neurogame-root .enemy-sprite {
+  filter: drop-shadow(0 0 16px rgba(255,0,110,0.5));
+  animation: ng2-enemyFloat 3s ease-in-out infinite;
+}
+@keyframes ng2-enemyFloat {
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-10px);}
+}
+.neurogame-root .enemy-sprite.hurt {
+  animation: ng2-hurtShake 0.4s ease;
+  filter: drop-shadow(0 0 30px #ff006e) brightness(2.5);
+}
+@keyframes ng2-hurtShake {
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-12px);}
+  35%{transform:translateX(12px);}
+  55%{transform:translateX(-7px);}
+  75%{transform:translateX(7px);}
+}
+.neurogame-root .enemy-sprite.defeated { opacity:0.25; filter:grayscale(1); animation:none; }
+.neurogame-root .defeated-x {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-size:3rem; color:var(--c-red);
+}
+.neurogame-root .player-avatar {
+  filter: drop-shadow(0 0 14px rgba(0,212,255,0.4));
+}
+.neurogame-root .player-avatar.hurt {
+  animation: ng2-playerHurt 0.5s ease;
+  filter: drop-shadow(0 0 30px #ff4d6d) brightness(1.8);
+}
+@keyframes ng2-playerHurt {
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(12px);}
+  75%{transform:translateX(-12px);}
+}
+
+/* Damage popups */
+.neurogame-root .dmg-popup {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  pointer-events: none;
+  animation: ng2-dmgPop 1.2s ease-out forwards;
+  z-index: 10;
+  white-space: nowrap;
+}
+.neurogame-root .dmg-enemy  { color: var(--c-green);  text-shadow: 0 0 20px var(--c-green); }
+.neurogame-root .dmg-player { color: var(--c-red);    text-shadow: 0 0 20px var(--c-red); }
+@keyframes ng2-dmgPop {
+  0%  { opacity:1; transform:translateX(-50%) translateY(0) scale(0.7); }
+  20% { opacity:1; transform:translateX(-50%) translateY(-10px) scale(1.2); }
+  100%{ opacity:0; transform:translateX(-50%) translateY(-50px) scale(0.8); }
+}
+
+/* Stage center */
+.neurogame-root .stage-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.neurogame-root .vs-badge {
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-pink));
+  color: white;
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(139,92,246,0.5);
+  letter-spacing: 1px;
+}
+.neurogame-root .stage-divider {
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--c-border2), transparent);
+}
+.neurogame-root .turn-indicator {
+  font-family: var(--f-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--c-cyan);
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+/* ── Battle Log ───────────────────────────────────────────────────────────── */
+.neurogame-root .battle-log {
+  background: rgba(5,10,20,0.95);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.neurogame-root .bl-header {
+  background: rgba(0,212,255,0.06);
+  border-bottom: 1px solid var(--c-border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.neurogame-root .bl-header-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.neurogame-root .bl-header-dot:nth-child(1) { background: #ff5f57; }
+.neurogame-root .bl-header-dot:nth-child(2) { background: #ffbd2e; }
+.neurogame-root .bl-header-dot:nth-child(3) { background: #28c840; }
+.neurogame-root .bl-title {
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+.neurogame-root .bl-entries {
+  padding: 10px 14px;
+  max-height: 100px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.neurogame-root .bl-entry {
+  font-size: 0.82rem;
+  color: var(--c-dim);
+  line-height: 1.4;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.neurogame-root .bl-entry-latest { color: var(--c-text); animation: ng2-logIn 0.3s ease; }
+.neurogame-root .bl-entry-arrow  { color: var(--c-cyan); font-size: 1rem; flex-shrink: 0; }
+@keyframes ng2-logIn {
+  from { opacity:0; transform:translateX(-6px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+/* ── Action Bar ───────────────────────────────────────────────────────────── */
+.neurogame-root .action-bar {
+  background: rgba(10,22,40,0.95);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+}
+.neurogame-root .attack-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #1e3a8a 0%, var(--c-purple-dim) 40%, var(--c-pink) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  padding: 18px 32px;
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  width: 100%; max-width: 460px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: ng2-attackAura 2.5s ease-in-out infinite;
+  box-shadow: 0 4px 30px rgba(255,0,110,0.3);
+}
+.neurogame-root .attack-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: ng2-btnShine 2.5s ease-in-out infinite;
+}
+@keyframes ng2-btnShine {
+  0%   { left: -100%; }
+  40%,100%{ left: 150%; }
+}
+@keyframes ng2-attackAura {
+  0%,100%{ box-shadow: 0 4px 20px rgba(255,0,110,0.3); }
+  50%    { box-shadow: 0 4px 40px rgba(139,92,246,0.5), 0 0 60px rgba(255,0,110,0.2); }
+}
+.neurogame-root .attack-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 50px rgba(255,0,110,0.5);
+}
+.neurogame-root .attack-btn-icon { font-size: 1.4rem; }
+.neurogame-root .attack-btn-text { font-size: 1rem; }
+
+.neurogame-root .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.neurogame-root .loading-dots {
+  display: flex;
+  gap: 6px;
+}
+.neurogame-root .loading-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--c-cyan);
+  animation: ng2-dotBounce 1s ease-in-out infinite;
+}
+.neurogame-root .loading-dots span:nth-child(2) { animation-delay: 0.15s; background: var(--c-purple); }
+.neurogame-root .loading-dots span:nth-child(3) { animation-delay: 0.30s; background: var(--c-pink); }
+@keyframes ng2-dotBounce {
+  0%,80%,100%{ transform:scale(0.6); opacity:0.5; }
+  40%        { transform:scale(1.1); opacity:1; }
+}
+.neurogame-root .loading-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  letter-spacing: 0.5px;
+}
+.neurogame-root .error-inline { color: var(--c-red); font-size: 0.9rem; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODAL OVERLAY
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,15,0.85);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.neurogame-root .modal-overlay.visible { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUESTION MODAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .q-modal {
+  background: linear-gradient(180deg, #0d1f3c 0%, #0a1628 100%);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r-xl);
+  padding: 28px 26px;
+  width: 100%; max-width: 600px;
+  box-shadow: 0 0 50px rgba(0,212,255,0.1), 0 40px 80px rgba(0,0,0,0.7);
+  animation: ng2-slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes ng2-slideUp {
+  from { opacity:0; transform:translateY(30px) scale(0.95); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+
+.neurogame-root .q-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.neurogame-root .q-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-cyan-dim));
+  color: white;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-family: var(--f-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+.neurogame-root .q-badge-icon { font-size: 1rem; }
+.neurogame-root .q-instruction {
+  font-size: 0.8rem;
+  color: var(--c-muted);
+  font-weight: 600;
+}
+
+.neurogame-root .q-text-box {
+  background: rgba(0,212,255,0.05);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.neurogame-root .q-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+
+.neurogame-root .q-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.neurogame-root .q-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: var(--r);
+  padding: 13px 14px;
+  cursor: pointer;
+  color: var(--c-muted);
+  font-family: var(--f-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: left;
+  transition: all 0.15s;
+  position: relative;
+}
+.neurogame-root .q-option:hover:not(:disabled) {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--opt-color, var(--c-cyan));
+  color: var(--c-text);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.neurogame-root .q-option-selected {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: var(--opt-color, var(--c-cyan)) !important;
+  color: white !important;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.03);
+  transform: translateY(-2px);
+}
+.neurogame-root .q-option-badge {
+  min-width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.neurogame-root .q-option-text { line-height: 1.3; flex: 1; }
+.neurogame-root .q-option-check {
+  color: var(--c-green);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.neurogame-root .q-submit {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 2px dashed var(--c-border2);
+  border-radius: var(--r);
+  padding: 15px;
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--c-dim);
+  cursor: not-allowed;
+  transition: all 0.2s;
+}
+.neurogame-root .q-submit-ready {
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-pink));
+  border: 2px solid transparent;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(255,0,110,0.35);
+}
+.neurogame-root .q-submit-ready:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255,0,110,0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FEEDBACK PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .fb-panel {
+  background: linear-gradient(180deg, #0d1f3c 0%, #0a1628 100%);
+  border-radius: var(--r-xl);
+  padding: 28px 26px;
+  width: 100%; max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: ng2-slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+}
+.neurogame-root .fb-correct { border: 2px solid var(--c-green); box-shadow: 0 0 50px rgba(6,255,165,0.15), 0 40px 80px rgba(0,0,0,0.7); }
+.neurogame-root .fb-wrong   { border: 2px solid var(--c-red);   box-shadow: 0 0 50px rgba(255,77,109,0.15), 0 40px 80px rgba(0,0,0,0.7); }
+
+.neurogame-root .fb-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--r);
+}
+.neurogame-root .fb-correct .fb-banner { background: rgba(6,255,165,0.06); }
+.neurogame-root .fb-wrong   .fb-banner { background: rgba(255,77,109,0.06); }
+.neurogame-root .fb-result-icon { font-size: 3.5rem; animation: ng2-iconPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes ng2-iconPop {
+  from { transform:scale(0); }
+  to   { transform:scale(1); }
+}
+.neurogame-root .fb-result-label {
+  font-family: var(--f-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.neurogame-root .fb-correct .fb-result-label { color: var(--c-green); text-shadow: 0 0 20px var(--c-green); }
+.neurogame-root .fb-wrong   .fb-result-label { color: var(--c-red);   text-shadow: 0 0 20px var(--c-red); }
+
+.neurogame-root .confetti-strip {
+  display: flex; gap: 4px; font-size: 1.2rem;
+}
+.neurogame-root .confetti-strip span {
+  animation: ng2-confettiPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.neurogame-root .fb-quote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+.neurogame-root .fb-quote-icon { font-size: 1.3rem; flex-shrink: 0; }
+.neurogame-root .fb-quote p { font-size: 0.95rem; font-style: italic; color: var(--c-muted); font-weight: 600; line-height: 1.5; }
+
+.neurogame-root .fb-damage-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.neurogame-root .fb-dmg-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: var(--r);
+  border: 1px solid;
+  min-width: 80px;
+}
+.neurogame-root .fb-dmg-good    { background: rgba(6,255,165,0.08);   border-color: var(--c-green);  }
+.neurogame-root .fb-dmg-bad     { background: rgba(255,77,109,0.08);  border-color: var(--c-red);    }
+.neurogame-root .fb-dmg-streak  { background: rgba(255,190,11,0.08);  border-color: var(--c-amber);  }
+.neurogame-root .fb-dmg-num { font-family: var(--f-display); font-size: 1.3rem; font-weight: 700; }
+.neurogame-root .fb-dmg-good   .fb-dmg-num { color: var(--c-green); }
+.neurogame-root .fb-dmg-bad    .fb-dmg-num { color: var(--c-red); }
+.neurogame-root .fb-dmg-streak .fb-dmg-num { color: var(--c-amber); }
+.neurogame-root .fb-dmg-lbl { font-size: 0.7rem; color: var(--c-muted); font-weight: 700; margin-top: 2px; }
+
+.neurogame-root .fb-answer-reveal {
+  background: rgba(6,255,165,0.07);
+  border: 1px solid rgba(6,255,165,0.3);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.neurogame-root .fb-ar-label { font-size: 0.8rem; font-weight: 800; color: var(--c-green); }
+.neurogame-root .fb-ar-value { font-weight: 800; color: var(--c-text); }
+
+.neurogame-root .fb-info-cards { display: flex; flex-direction: column; gap: 10px; }
+.neurogame-root .fb-info-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+.neurogame-root .fb-explain { background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.2); }
+.neurogame-root .fb-fact    { background: rgba(255,190,11,0.06); border: 1px solid rgba(255,190,11,0.2); }
+.neurogame-root .fb-info-icon  { font-size: 1.4rem; flex-shrink: 0; }
+.neurogame-root .fb-info-title { font-size: 0.75rem; font-weight: 800; color: var(--c-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+.neurogame-root .fb-info-text  { font-size: 0.88rem; color: var(--c-text); line-height: 1.5; font-weight: 600; }
+
+.neurogame-root .fb-continue {
+  width: 100%;
+  border: none;
+  border-radius: var(--r);
+  padding: 15px;
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.neurogame-root .fb-continue-good  { background: linear-gradient(135deg, #064e3b, var(--c-green)); color: #064e3b; box-shadow: 0 4px 20px rgba(6,255,165,0.3); }
+.neurogame-root .fb-continue-retry { background: linear-gradient(135deg, #7f1d1d, var(--c-red));   color: white;   box-shadow: 0 4px 20px rgba(255,77,109,0.3); }
+.neurogame-root .fb-continue:hover { transform: translateY(-2px) scale(1.01); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESULT SCREEN
+   ═══════════════════════════════════════════════════════════════════════════ */
+.neurogame-root .result-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.neurogame-root .result-screen.visible { opacity: 1; }
+
+.neurogame-root .result-particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.neurogame-root .rp {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  top: -20px;
+  animation: ng2-particleFall 3s linear infinite;
+}
+.neurogame-root .rp-0 { background: var(--c-amber); }
+.neurogame-root .rp-1 { background: var(--c-cyan); }
+.neurogame-root .rp-2 { background: var(--c-pink); }
+.neurogame-root .rp-3 { background: var(--c-green); }
+@keyframes ng2-particleFall {
+  0%  { transform:translateY(0) rotate(0deg); opacity:1; }
+  100%{ transform:translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+.neurogame-root .result-card {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #0d1f3c 0%, #050a14 100%);
+  border-radius: var(--r-xl);
+  padding: 36px 28px;
+  width: 100%; max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  animation: ng2-slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.neurogame-root .rc-victory {
+  border: 2px solid var(--c-amber);
+  box-shadow: 0 0 80px rgba(255,190,11,0.2), 0 40px 80px rgba(0,0,0,0.7);
+}
+.neurogame-root .rc-defeat {
+  border: 2px solid var(--c-red);
+  box-shadow: 0 0 60px rgba(255,77,109,0.15), 0 40px 80px rgba(0,0,0,0.7);
+}
+
+.neurogame-root .rc-status { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.neurogame-root .rc-status-icon {
+  font-size: 4.5rem;
+  animation: ng2-brainFloat 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255,190,11,0.4));
+}
+.neurogame-root .rc-title {
+  font-family: var(--f-display);
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+.neurogame-root .rc-victory .rc-title { color: var(--c-amber); text-shadow: 0 0 30px var(--c-amber); }
+.neurogame-root .rc-defeat  .rc-title { color: var(--c-red);   text-shadow: 0 0 30px var(--c-red); }
+.neurogame-root .rc-subtitle { color: var(--c-muted); font-size: 1rem; font-weight: 600; line-height: 1.5; max-width: 380px; }
+
+.neurogame-root .rc-grade {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border: 1px solid;
+}
+.neurogame-root .grade-s { background:rgba(255,190,11,0.1); border-color:var(--c-amber);color:var(--c-amber); }
+.neurogame-root .grade-a { background:rgba(0,212,255,0.1);  border-color:var(--c-cyan); color:var(--c-cyan); }
+.neurogame-root .grade-b { background:rgba(139,92,246,0.1); border-color:var(--c-purple);color:var(--c-purple); }
+.neurogame-root .grade-c { background:rgba(6,255,165,0.1);  border-color:var(--c-green);color:var(--c-green); }
+
+.neurogame-root .rc-stats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  width: 100%;
+}
+.neurogame-root .rc-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r);
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.neurogame-root .rc-stat-score { border-color: rgba(255,190,11,0.4); background: rgba(255,190,11,0.05); }
+.neurogame-root .rc-stat-val {
+  font-family: var(--f-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--c-cyan);
+}
+.neurogame-root .rc-stat-score .rc-stat-val { color: var(--c-amber); }
+.neurogame-root .rc-stat-lbl { font-size: 0.7rem; color: var(--c-muted); font-weight: 700; }
+
+.neurogame-root .rc-learn {
+  background: rgba(139,92,246,0.08);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  text-align: left;
+  width: 100%;
+}
+.neurogame-root .rc-learn-header { font-family: var(--f-display); font-size: 0.85rem; color: var(--c-purple); font-weight: 700; margin-bottom: 8px; }
+.neurogame-root .rc-learn-text { font-size: 0.9rem; color: var(--c-muted); line-height: 1.6; font-weight: 600; }
+.neurogame-root .rc-learn-text strong { color: var(--c-text); }
+
+.neurogame-root .rc-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--c-purple-dim), var(--c-pink));
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  padding: 17px 32px;
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 30px rgba(255,0,110,0.35);
+  position: relative; overflow: hidden;
+}
+.neurogame-root .rc-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: ng2-btnShine 2.5s ease-in-out infinite;
+}
+.neurogame-root .rc-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 50px rgba(255,0,110,0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .neurogame-root .start-screen { grid-template-columns: 1fr; padding: 24px 16px; }
+  .neurogame-root .start-left   { display: none; }
+  .neurogame-root .start-logo-n, .neurogame-root .start-logo-q { font-size: 3rem; }
+  .neurogame-root .battle-stage { grid-template-columns: 1fr; }
+  .neurogame-root .stage-center { flex-direction: row; padding: 8px 0; }
+  .neurogame-root .stage-divider { width: 60px; height: 2px; background: linear-gradient(to right, transparent, var(--c-border2), transparent); }
+  .neurogame-root .q-options    { grid-template-columns: 1fr; }
+  .neurogame-root .rc-stats     { grid-template-columns: repeat(2,1fr); }
+  .neurogame-root .hud-logo     { font-size: 0.85rem; }
+}
