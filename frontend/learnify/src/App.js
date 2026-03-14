@@ -31,6 +31,7 @@ import EnrolledClasses from './components/Student/EnrolledClasses';
 import ProgressReport from './components/Teacher/ProgressReport';
 import TeacherOverview from './components/Teacher/TeacherOverview';
 import PerformanceOverview from './components/Teacher/PerformanceOverview';
+import Platformer from './components/Platformer/GameApp';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -171,6 +172,11 @@ const App = () => {
                 <Route path="/lessons" element={
                   <ProtectedRoute>
                     <NervousSystemLessonPicker />
+                  </ProtectedRoute>
+                } />
+                <Route path="/platformer" element={
+                  <ProtectedRoute>
+                    <Platformer/>
                   </ProtectedRoute>
                 } />
   
