@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import DialogBox from './DialogBox';
@@ -70,6 +70,7 @@ const VisualNovel = () => {
   const [showPointsNotification, setShowPointsNotification] = useState(false);
   const [pointsAwarded, setPointsAwarded] = useState(0);
   const [isEnding, setIsEnding] = useState(false);
+  const currentAudioRef = useRef(null);
 
   // Helper function to get the background path with appropriate extension
   const getBackgroundPath = (background) => {
@@ -156,6 +157,31 @@ const VisualNovel = () => {
 
     fetchProgress();
   }, [userId, navigate]);
+
+  useEffect(() => {
+    const nodeId = currentNode?.id;
+    if (!nodeId) {
+      return undefined;
+    }
+
+    // Stop any currently playing audio before loading the next dialog clip.
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+    }
+
+    const audio = new Audio(`/audio/vn/${nodeId}.mp3`);
+    currentAudioRef.current = audio;
+
+    audio.play().catch((err) => {
+      addDebugLog(`Unable to autoplay audio for node ${nodeId}: ${err.message}`);
+    });
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [currentNode?.id]);
 
   // Award points function - now takes a points amount parameter
   const awardPoints = async (points = 10, reason = 'story_progress') => {
@@ -273,6 +299,11 @@ const VisualNovel = () => {
 
   // Handle returning to lesson picker
   const handleReturnToLessons = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+    }
+
     // First award any final points if needed
     if (isEnding) {
       awardPoints(100, 'final_completion');
