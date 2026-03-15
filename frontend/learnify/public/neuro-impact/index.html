@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Neuro Impact</title>
+</head>
+
+<body>
+    <nav>
+        <img src="./img/logo.png" alt="logo" id="logo">
+    </nav>
+    
+    <!-- Instructions Screen -->
+    <div id="instructions-screen">
+        <div class="instructions-content">
+            <h1>Neuro Impact</h1>
+            <div class="instructions-section">
+                <h2>Objective:</h2>
+                <p>Shoot down the enemy Neuro Toxin and survive all levels.</p>
+            </div>
+            <div class="instructions-section">
+                <h2>Controls:</h2>
+                <div class="control-item">
+                    <span class="control-key">W / A / S / D</span>
+                    <span class="control-desc">Move ship (Up / Left / Down / Right)</span>
+                </div>
+                <div class="control-item">
+                    <span class="control-key">SPACE</span>
+                    <span class="control-desc">Fire weapon</span>
+                </div>
+                <div class="control-item">
+                    <span class="control-key">X</span>
+                    <span class="control-desc">Use special attack</span>
+                </div>
+            </div>
+            <button id="start-game-button" class="start-button">Start Game</button>
+        </div>
+    </div>
+    
+    <div id="game">
+        <canvas id="canvas-bg">Your browswer doesn't support HTML Canvas</canvas>
+        <canvas id="canvas-main"></canvas>
+        <button id="pause-button">Pause</button>
+        <button class="ingame-button" id="play">Play</button>
+        <button class="ingame-button" id="exit">Exit</button>
+    </div>
+
+    <!-- Game scripts - load in dependency order -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/projectiles.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/bosses.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/level.js"></script>
+    <script src="game-main.js"></script>
+
+</body>
+
+</html>

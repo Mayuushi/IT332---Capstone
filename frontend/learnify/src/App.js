@@ -31,6 +31,7 @@ import EnrolledClasses from './components/Student/EnrolledClasses';
 import ProgressReport from './components/Teacher/ProgressReport';
 import TeacherOverview from './components/Teacher/TeacherOverview';
 import PerformanceOverview from './components/Teacher/PerformanceOverview';
+import NeuroImpact from './components/Student/NeuroImpact';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -156,6 +157,11 @@ const App = () => {
   <Route path="/enrolledclasses" element={
     <ProtectedRoute>
       <EnrolledClasses />
+    </ProtectedRoute>
+  } />
+  <Route path="/neuro-impact" element={
+    <ProtectedRoute>
+      <NeuroImpact />
     </ProtectedRoute>
   } />
                 <Route path="/lessons/nervous-system" element={

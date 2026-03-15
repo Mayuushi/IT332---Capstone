@@ -41,6 +41,9 @@ const Sidebar = () => {
             <NavLink to="/enrolledclasses" className={({ isActive }) => isActive ? 'active' : ''}>
               Enrolled Classes
             </NavLink>
+            <NavLink to="/neuro-impact" className={({ isActive }) => isActive ? 'active' : ''}>
+              Neuro Impact
+            </NavLink>
           </>
         )}
 
