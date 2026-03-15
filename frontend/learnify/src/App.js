@@ -15,7 +15,9 @@ import StudentRegister from './components/Auth/StudentRegister';
 import ClassCreate from './components/Class/ManageClasses';
 import Login from './components/Auth/Login';
 import TitleScreen from './components/Lessons/TitleScreen';
-import VisualNovel from './components/Lessons/VisualNoverl';
+import VisualNovelChapter1 from './components/Lessons/VisualNovelChapter1'
+import VisualNovelChapter2 from './components/Lessons/VisualNovelChapter2'
+import VisualNovelChapter3 from './components/Lessons/VisualNovelChapter3'
 //import { Dashboard } from './components/Auth/Dashboard'; Sample Dashboard for Specific User
 import QuizWrapper from './components/Quiz/QuizWrapper';
 // import QuizForm from './components/Teacher/ManageQuizzes'; //managequiz like update delete
@@ -164,9 +166,19 @@ const App = () => {
                     <TitleScreen />
                   </ProtectedRoute>
                 } />
-                <Route path="/lessons/nervous-system/play" element={
+                <Route path="/lessons/nervous-system/play/chapter1" element={
                   <ProtectedRoute>
-                    <VisualNovel />
+                    <VisualNovelChapter1 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lessons/nervous-system/play/chapter3" element={
+                  <ProtectedRoute>
+                    <VisualNovelChapter3 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lessons/nervous-system/play/chapter2" element={
+                  <ProtectedRoute>
+                    <VisualNovelChapter2 />
                   </ProtectedRoute>
                 } />
                 <Route path="/lessons" element={
