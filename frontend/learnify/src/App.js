@@ -34,6 +34,7 @@ import ProgressReport from './components/Teacher/ProgressReport';
 import TeacherOverview from './components/Teacher/TeacherOverview';
 import PerformanceOverview from './components/Teacher/PerformanceOverview';
 import Platformer from './components/Platformer/GameApp';
+import NeuroImpact from './components/Student/NeuroImpact';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -191,6 +192,11 @@ const App = () => {
                     <Platformer/>
                   </ProtectedRoute>
                 } />
+    <Route path = "/neuro-impact" element = {
+      <ProtectedRoute>
+        <NeuroImpact/>
+      </ProtectedRoute>
+    } />
   
   <Route path="*" element={<Navigate to="/" />} />
 </Routes>
