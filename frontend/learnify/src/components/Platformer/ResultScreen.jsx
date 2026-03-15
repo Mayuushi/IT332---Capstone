@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function ResultScreen({ result, onRestart }) {
+export default function ResultScreen({ result, pointsResult, pointsError, onRestart }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { setTimeout(() => setVisible(true), 50); }, []);
 
@@ -8,21 +8,26 @@ export default function ResultScreen({ result, onRestart }) {
   const won = result.status === 'won';
   const accuracy = result.questionsAnswered > 0
     ? Math.round((result.correctAnswers / result.questionsAnswered) * 100) : 0;
-  const grade = accuracy >= 80 ? { label: 'NEURO MASTER', icon: '🌟', cls: 'grade-s' }
-              : accuracy >= 60 ? { label: 'BRAIN WARRIOR', icon: '⭐', cls: 'grade-a' }
-              : accuracy >= 40 ? { label: 'KNOWLEDGE SEEKER', icon: '📚', cls: 'grade-b' }
-              :                  { label: 'KEEP STUDYING!', icon: '💡', cls: 'grade-c' };
+  const grade = accuracy >= 80 ? { label: 'NEURO MASTER',      icon: '🌟', cls: 'grade-s' }
+              : accuracy >= 60 ? { label: 'BRAIN WARRIOR',     icon: '⭐', cls: 'grade-a' }
+              : accuracy >= 40 ? { label: 'KNOWLEDGE SEEKER',  icon: '📚', cls: 'grade-b' }
+              :                  { label: 'KEEP STUDYING!',    icon: '💡', cls: 'grade-c' };
 
   return (
     <div className={`result-screen ${visible ? 'visible' : ''}`}>
-      {/* Background particles */}
-      {won && <div className="result-particles">
-        {[...Array(12)].map((_,i) => <div key={i} className={`rp rp-${i%4}`} style={{left:`${Math.random()*100}%`,animationDelay:`${Math.random()*2}s`}}/>)}
-      </div>}
+      {won && (
+        <div className="result-particles">
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className={`rp rp-${i % 4}`}
+              style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 2}s` }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className={`result-card ${won ? 'rc-victory' : 'rc-defeat'}`}>
 
-        {/* Big status */}
+        {/* Status */}
         <div className="rc-status">
           <div className="rc-status-icon">{won ? '🏆' : '💀'}</div>
           <h1 className="rc-title">{won ? 'VICTORY!' : 'DEFEATED!'}</h1>
@@ -33,7 +38,7 @@ export default function ResultScreen({ result, onRestart }) {
           </p>
         </div>
 
-        {/* Grade badge */}
+        {/* Grade */}
         <div className={`rc-grade ${grade.cls}`}>
           <span>{grade.icon}</span>
           <span>{grade.label}</span>
@@ -59,12 +64,44 @@ export default function ResultScreen({ result, onRestart }) {
           </div>
         </div>
 
+        {/* ── Points Awarded Block ─────────────────────────────────────────── */}
+        {!pointsResult && !pointsError && (
+          <div className="rc-points rc-points-loading">
+            <span className="spinner" />
+            <span>Saving your points...</span>
+          </div>
+        )}
+
+        {pointsResult && (
+          <div className="rc-points rc-points-success">
+            <div className="rc-points-icon">⭐</div>
+            <div className="rc-points-body">
+              <span className="rc-points-label">POINTS EARNED</span>
+              <span className="rc-points-value">+{pointsResult.earned}</span>
+            </div>
+            {pointsResult.response?.totalPoints != null && (
+              <div className="rc-points-total">
+                Total: <strong>{pointsResult.response.totalPoints} pts</strong>
+              </div>
+            )}
+          </div>
+        )}
+
+        {pointsError && (
+          <div className="rc-points rc-points-error">
+            <span>⚠️</span>
+            <span>{pointsError}</span>
+          </div>
+        )}
+        {/* ────────────────────────────────────────────────────────────────── */}
+
         {/* Learning moment */}
         <div className="rc-learn">
           <div className="rc-learn-header">🔬 Did You Know?</div>
           <p className="rc-learn-text">
-            Your nervous system has <strong>86 billion neurons</strong> — more than stars visible in the night sky.
-            Every correct answer you give actually <strong>strengthens real neural pathways</strong> in your brain! 🧠⚡
+            Your nervous system has <strong>86 billion neurons</strong> — more than stars visible
+            in the night sky. Every correct answer you give actually{' '}
+            <strong>strengthens real neural pathways</strong> in your brain! 🧠⚡
           </p>
         </div>
 
