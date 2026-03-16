@@ -9,8 +9,15 @@ import com.edu.cit.Learnify.DTO.EngagementHeatmapDTO;
 import com.edu.cit.Learnify.Repository.ClassRepository;
 import com.edu.cit.Learnify.Repository.QuizRepository;
 import com.edu.cit.Learnify.Repository.QuizSubmissionRepository;
+import com.edu.cit.Learnify.Repository.StudentRepository;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,11 +29,18 @@ public class VisualProgressService {
     private final QuizSubmissionRepository submissionRepo;
     private final QuizRepository quizRepo;
     private final ClassRepository classRepo;
+    private final StudentRepository studentRepo;
 
-    public VisualProgressService(QuizSubmissionRepository submissionRepo, QuizRepository quizRepo, ClassRepository classRepo) {
+    public VisualProgressService(
+            QuizSubmissionRepository submissionRepo,
+            QuizRepository quizRepo,
+            ClassRepository classRepo,
+            StudentRepository studentRepo
+    ) {
         this.submissionRepo = submissionRepo;
         this.quizRepo = quizRepo;
         this.classRepo = classRepo;
+        this.studentRepo = studentRepo;
     }
 
     // Existing methods here...
@@ -118,5 +132,64 @@ public class VisualProgressService {
 
         trends.sort(Comparator.comparing(QuizScoreTrendDTO::getDate));
         return trends;
+    }
+
+    public byte[] exportClassStudentScoresToExcel(String classId, String teacherId) {
+        Optional<Class> classOpt = classRepo.findById(classId);
+        if (classOpt.isEmpty()) {
+            throw new IllegalArgumentException("Class not found");
+        }
+
+        Class cls = classOpt.get();
+        if (!Objects.equals(cls.getTeacherId(), teacherId)) {
+            throw new SecurityException("You are not allowed to export this class");
+        }
+
+        List<Quiz> quizzes = quizRepo.findByClassId(classId);
+        List<String> quizIds = quizzes.stream().map(Quiz::getId).toList();
+        List<QuizSubmission> submissions = quizIds.isEmpty()
+                ? Collections.emptyList()
+                : submissionRepo.findByQuizIdIn(quizIds);
+
+        Map<String, List<QuizSubmission>> submissionsByStudent = new HashMap<>();
+        for (QuizSubmission submission : submissions) {
+            submissionsByStudent
+                    .computeIfAbsent(submission.getStudentId(), ignored -> new ArrayList<>())
+                    .add(submission);
+        }
+
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Student Scores");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Student Name");
+            header.createCell(1).setCellValue("Score");
+
+            List<String> studentIds = cls.getStudentIds() == null ? Collections.emptyList() : cls.getStudentIds();
+            int rowIndex = 1;
+            for (String studentId : studentIds) {
+                String studentName = studentRepo.findById(studentId)
+                        .map(student -> student.getName() == null || student.getName().isBlank() ? studentId : student.getName())
+                        .orElse(studentId);
+
+                List<QuizSubmission> studentSubmissions = submissionsByStudent.getOrDefault(studentId, Collections.emptyList());
+                double averageScore = studentSubmissions.stream()
+                        .mapToDouble(s -> s.getTotalPossible() == 0 ? 0.0 : (s.getScore() * 100.0) / s.getTotalPossible())
+                        .average()
+                        .orElse(0.0);
+
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(studentName);
+                row.createCell(1).setCellValue(Math.round(averageScore * 100.0) / 100.0);
+            }
+
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to generate export file", ex);
+        }
     }
 }

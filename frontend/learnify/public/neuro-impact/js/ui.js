@@ -33,8 +33,7 @@ class UI {
                 break;
         }
         bgCtx.save();
-        if (isLevelDark) bgCtx.fillStyle = "#aad69c";
-        else bgCtx.fillStyle = "#282828";
+        bgCtx.fillStyle = "#ff007b";
         bgCtx.font = "bold 52px Silkscreen";
         bgCtx.fillText(specialCount.toString().padStart(2, "0"), 460, 45);
 
