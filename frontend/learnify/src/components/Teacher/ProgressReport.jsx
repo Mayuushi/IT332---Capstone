@@ -6,6 +6,7 @@ import {
   fetchQuizAverages,
   fetchEngagementHeatmap,
   fetchTemporalProgress,
+  exportClassStudentScoresExcel,
 } from '../../services/progressReportService';
 import ClassPerformanceChart from './ClassPerformanceChart';
 import QuizAverageChart from './QuizAverageChart';
@@ -63,6 +64,7 @@ export default function ProgressReport() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (!currentUser || !currentUser.id) return;
@@ -194,6 +196,36 @@ export default function ProgressReport() {
     );
   }
 
+  const handleExport = async () => {
+    if (!selectedClassId || !currentUser?.id) return;
+
+    try {
+      setExporting(true);
+      const response = await exportClassStudentScoresExcel(selectedClassId, currentUser.id);
+      const blob = new Blob(
+        [response.data],
+        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+      );
+
+      const selectedClass = classes.find((cls) => cls.id === selectedClassId);
+      const topic = selectedClass?.topic || 'class';
+      const sanitizedTopic = topic.replace(/[^a-z0-9-_]+/gi, '_').toLowerCase();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${sanitizedTopic}-student-scores.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to export class scores. Make sure you are the class owner and try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div style={{
       padding: '32px',
@@ -245,6 +277,10 @@ export default function ProgressReport() {
         animation: styles.animations.slideUp,
         animationDelay: '0.1s',
         opacity: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        flexWrap: 'wrap',
       }}>
         <label htmlFor="class-select" style={{ 
           marginRight: '1rem',
@@ -274,6 +310,28 @@ export default function ProgressReport() {
             <option key={cls.id} value={cls.id}>{cls.topic}</option>
           ))}
         </select>
+
+        {isTeacher && selectedClassId && (
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={exporting}
+            style={{
+              padding: '0.9rem 1.2rem',
+              borderRadius: '10px',
+              border: 'none',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              color: '#fff',
+              background: styles.colors.primaryGradient,
+              cursor: exporting ? 'not-allowed' : 'pointer',
+              opacity: exporting ? 0.7 : 1,
+              boxShadow: styles.shadows.small,
+            }}
+          >
+            {exporting ? 'Exporting...' : 'Export Student Scores (.xlsx)'}
+          </button>
+        )}
       </div>
 
       {selectedClassId ? (

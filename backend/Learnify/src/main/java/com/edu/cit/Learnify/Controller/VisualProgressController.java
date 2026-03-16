@@ -4,6 +4,11 @@ import com.edu.cit.Learnify.DTO.ClassAverageScoreDTO;
 import com.edu.cit.Learnify.DTO.EngagementHeatmapDTO;
 import com.edu.cit.Learnify.DTO.QuizScoreTrendDTO;
 import com.edu.cit.Learnify.Service.VisualProgressService;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +42,30 @@ public class VisualProgressController {
     @GetMapping("/temporal-analysis/{classId}")
     public List<QuizScoreTrendDTO> getTemporalAnalysis(@PathVariable String classId) {
         return service.getTemporalAnalysisByClassId(classId);
+    }
+
+    @GetMapping("/export/class/{classId}/teacher/{teacherId}")
+    public ResponseEntity<byte[]> exportClassStudentScores(
+            @PathVariable String classId,
+            @PathVariable String teacherId
+    ) {
+        try {
+            byte[] fileBytes = service.exportClassStudentScoresToExcel(classId, teacherId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ));
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename("class-" + classId + "-student-scores.xlsx")
+                    .build());
+
+            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SecurityException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }
 

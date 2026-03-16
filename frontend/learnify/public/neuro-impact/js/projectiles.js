@@ -25,7 +25,7 @@ class Projectile {
     }
     draw() {
         mainCtx.fillStyle = "#282828";
-        if (isLevelDark) mainCtx.fillStyle = "#aad69c";
+        if (isLevelDark) mainCtx.fillStyle = "#c50633";
         mainCtx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
@@ -175,7 +175,7 @@ class Laser {
         else this.delete = true;
     }
     draw() {
-        if (isLevelDark) mainCtx.fillStyle = "#aad69c";
+        if (isLevelDark) mainCtx.fillStyle = "#150fd8";
         else mainCtx.fillStyle = "#282828";
 
         mainCtx.fillRect(this.x, this.y - 10, 10, 10);
@@ -204,7 +204,7 @@ class Wall {
         this.draw();
     }
     draw() {
-        if (isLevelDark) mainCtx.fillStyle = "#aad69c";
+        if (isLevelDark) mainCtx.fillStyle = "#2315c1";
         else mainCtx.fillStyle = "#282828";
 
         mainCtx.fillRect(this.x, this.y, this.width, this.height);

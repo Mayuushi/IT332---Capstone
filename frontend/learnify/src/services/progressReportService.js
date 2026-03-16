@@ -13,3 +13,8 @@ export const fetchEngagementHeatmap = (classId) =>
 
 export const fetchTemporalProgress = (classId) =>
   axios.get(`${API_BASE}/temporal-analysis/${classId}`);
+
+export const exportClassStudentScoresExcel = (classId, teacherId) =>
+  axios.get(`${API_BASE}/export/class/${classId}/teacher/${teacherId}`, {
+    responseType: 'blob',
+  });
