@@ -44,10 +44,10 @@ const SEQUENCE = [
   {
     type: 'minigame',
     id: 'minigame2',
-    title: 'Minigame 2: Brain Builder',
-    description: 'Assemble the brain regions in the right order — coming soon!',
+    title: 'Minigame 2: Trace the Line',
+    description: 'Trace the nerve pathways of the spinal cord, brainstem, and peripheral nerves — test your precision and speed!',
     icon: 'game',
-    route: null,
+    route: '/lessons/nervous-system/play/tracetheline',
     lockedBy: 'vn_chapter2_completed',
     completedKey: 'vn_minigame2_completed',
     duration: '5 min',
