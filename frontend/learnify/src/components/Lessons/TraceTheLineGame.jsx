@@ -4,6 +4,88 @@ import { useAuth } from '../../context/AuthContext';
 import TraceTheLineService from '../../services/TraceTheLineService';
 import '../CSS/TraceTheLineGame.css';
 
+// ── Confetti particle engine ───────────────────────────────────────────────────
+const CONFETTI_COLORS = [
+  '#facc15', '#06ffa5', '#22d3ee', '#f472b6', '#a78bfa', '#fb923c', '#ffffff',
+];
+function useConfetti(active) {
+  const confettiRef = useRef(null);
+  const rafRef      = useRef(null);
+  const particlesRef = useRef([]);
+
+  useEffect(() => {
+    if (!active) return;
+    const canvas = confettiRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Spawn burst of 160 particles from the centre-top of the modal
+    particlesRef.current = Array.from({ length: 160 }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 4 + Math.random() * 8;
+      return {
+        x:    canvas.width  / 2 + (Math.random() - 0.5) * 80,
+        y:    canvas.height / 3,
+        vx:   Math.cos(angle) * speed,
+        vy:   Math.sin(angle) * speed - 6,
+        size: 5 + Math.random() * 7,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        rot:  Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.3,
+        life: 1,
+        decay: 0.008 + Math.random() * 0.006,
+        shape: Math.random() < 0.5 ? 'rect' : 'circle',
+      };
+    });
+
+    const tick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesRef.current = particlesRef.current.filter((p) => p.life > 0);
+      for (const p of particlesRef.current) {
+        p.x   += p.vx;
+        p.y   += p.vy;
+        p.vy  += 0.25;       // gravity
+        p.vx  *= 0.99;       // air resistance
+        p.rot += p.rotV;
+        p.life -= p.decay;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'rect') {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (particlesRef.current.length > 0) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener('resize', resize);
+    };
+  }, [active]);
+
+  return confettiRef;
+}
+
 const STAGES = [
   {
     stage: 1,
@@ -142,6 +224,7 @@ const TraceTheLineGame = () => {
   const [error,            setError]            = useState('');
   const [stageAccuracies,  setStageAccuracies]  = useState({});   // { 1: 72, 2: 65, 3: 58 }
   const [showFinalScreen,  setShowFinalScreen]  = useState(false);
+  const confettiCanvasRef = useConfetti(showFinalScreen);
 
   const studentId = currentUser?.id || '';
 
@@ -262,7 +345,10 @@ const TraceTheLineGame = () => {
     ctx.setLineDash([]);
 
     // User's drawn path (yellow, smooth)
-    if (points.length > 0) {
+    // Guard with > 1: drawSmooth returns early without calling ctx.beginPath() when
+    // pts.length < 2, which would leave the reference path in the canvas context and
+    // cause it to be re-stroked in solid yellow (the "start-to-finish" flicker).
+    if (points.length > 1) {
       ctx.lineWidth   = 8;
       ctx.lineCap     = 'round';
       ctx.lineJoin    = 'round';
@@ -467,6 +553,7 @@ const TraceTheLineGame = () => {
         if (stageNum < 3) {
           setUnlockedStage((prev) => Math.max(prev, stageNum + 1));
         } else {
+          localStorage.setItem(`vn_minigame1_completed_${studentId}`, 'true');
           setShowFinalScreen(true);
         }
       }
@@ -649,10 +736,13 @@ const TraceTheLineGame = () => {
       {/* ── Final screen (all 3 stages cleared) ─────────────────────────────── */}
       {showFinalScreen && (
         <div className="trace-result-modal-backdrop">
+          <canvas ref={confettiCanvasRef} className="trace-confetti-canvas" />
           <div className="trace-result-modal trace-final-screen">
             <h3>🏆 All Stages Complete!</h3>
-            <p className="trace-final-label">Overall Accuracy</p>
-            <p className="trace-final-accuracy">{overallAccuracy != null ? `${overallAccuracy}%` : '—'}</p>
+            <div className="trace-final-accuracy-card">
+              <p className="trace-final-label">Overall Accuracy</p>
+              <div className="trace-final-accuracy">{overallAccuracy != null ? `${overallAccuracy}%` : '—'}</div>
+            </div>
             <p className="trace-final-breakdown">
               Stage 1:&nbsp;<strong>{stageAccuracies[1] != null ? `${stageAccuracies[1]}%` : '—'}</strong>
               &emsp;Stage 2:&nbsp;<strong>{stageAccuracies[2] != null ? `${stageAccuracies[2]}%` : '—'}</strong>
@@ -665,10 +755,10 @@ const TraceTheLineGame = () => {
               </button>
               <button
                 className="trace-btn-continue"
-                onClick={() => navigate('/lessons/nervous-system/play/chapter3')}
+                onClick={() => navigate('/lessons/nervous-system/play/chapter2')}
                 disabled={loading}
               >
-                Continue to Chapter 3
+                Continue to Chapter 2
               </button>
             </div>
           </div>
