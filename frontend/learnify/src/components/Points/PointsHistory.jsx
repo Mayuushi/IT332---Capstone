@@ -3,14 +3,14 @@ import { useAuth } from '../../context/AuthContext';
 import { pointsService } from '../../services/pointsService';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import './PointsHistory.css';
-
+ 
 const PointsHistory = () => {
   const { currentUser } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // all, quiz, lesson, etc.
-
+ 
   useEffect(() => {
     const fetchPointsHistory = async () => {
       try {
@@ -30,62 +30,62 @@ const PointsHistory = () => {
         setLoading(false);
       }
     };
-
+ 
     fetchPointsHistory();
   }, [currentUser, filter]);
-
+ 
   // Format date
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
+    const options = {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
+ 
   // Get activity type label
   const getActivityLabel = (type) => {
     const labels = {
-      'QUIZ_COMPLETION': 'Quiz Completion',
-      'LESSON_COMPLETION': 'Lesson Completion',
-      'DAILY_LOGIN': 'Daily Login',
-      'CHALLENGE_COMPLETION': 'Challenge Completion',
-      'VISUAL_NOVEL_COMPLETION': 'Visual Novel Completion'
+      QUIZ_COMPLETION: 'Quiz Completion',
+      LESSON_COMPLETION: 'Lesson Completion',
+      DAILY_LOGIN: 'Daily Login',
+      CHALLENGE_COMPLETION: 'Challenge Completion',
+      VISUAL_NOVEL_COMPLETION: 'Visual Novel Completion',
     };
     return labels[type] || type;
   };
-
+ 
   // Get activity icon
   const getActivityIcon = (type) => {
     const icons = {
-      'QUIZ_COMPLETION': '📝',
-      'LESSON_COMPLETION': '📚',
-      'DAILY_LOGIN': '🔄',
-      'CHALLENGE_COMPLETION': '🏆',
-      'VISUAL_NOVEL_COMPLETION': '📖',
+      QUIZ_COMPLETION: '📝',
+      LESSON_COMPLETION: '📚',
+      DAILY_LOGIN: '🔄',
+      CHALLENGE_COMPLETION: '🏆',
+      VISUAL_NOVEL_COMPLETION: '📖',
     };
     return icons[type] || '✨';
   };
-
+ 
   if (loading) return <LoadingSpinner />;
-  
+ 
   if (error) return (
     <div className="error-container">
       <div className="error-message">{error}</div>
     </div>
   );
-
+ 
   return (
     <div className="points-history">
       <div className="history-header">
-        <h2>Points History</h2>
+        <h2>📜 Points History</h2>
         <div className="filter-controls">
-          <label>Filter by:</label>
-          <select 
-            value={filter} 
+          <label>Filter:</label>
+          <select
+            value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="filter-select"
           >
@@ -98,9 +98,9 @@ const PointsHistory = () => {
           </select>
         </div>
       </div>
-
+ 
       {history.length === 0 ? (
-        <div className="no-history">No points history found</div>
+        <div className="no-history">No adventures logged yet! Go earn some points! 🎮</div>
       ) : (
         <div className="history-list">
           {history.map((item) => (
@@ -121,5 +121,5 @@ const PointsHistory = () => {
     </div>
   );
 };
-
+ 
 export default PointsHistory;
