@@ -44,10 +44,10 @@ const SEQUENCE = [
   {
     type: 'minigame',
     id: 'minigame2',
-    title: 'Minigame 2: Brain Builder',
-    description: 'Assemble the brain regions in the right order — coming soon!',
+    title: 'Minigame 2: Neuro Impact',
+    description: 'Defend your Nervous System from the danger.',
     icon: 'game',
-    route: null,
+    route: '/neuro-impact',
     lockedBy: 'vn_chapter2_completed',
     completedKey: 'vn_minigame2_completed',
     duration: '5 min',
