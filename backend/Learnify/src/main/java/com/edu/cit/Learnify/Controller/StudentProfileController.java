@@ -29,6 +29,13 @@ public class StudentProfileController {
         return ResponseEntity.ok(profile);
     }
 
+    // GET /api/profiles/me — retrieves the currently authenticated student's own profile
+    @GetMapping("/me")
+    public ResponseEntity<StudentProfileDTO> getMyProfile(@RequestHeader("studentId") String studentId) {
+        StudentProfileDTO profile = profileService.getStudentProfile(studentId);
+        return ResponseEntity.ok(profile);
+    }
+
     @PostMapping("/{studentId}/notes")
     public ResponseEntity<?> addNote(
             @PathVariable String studentId,

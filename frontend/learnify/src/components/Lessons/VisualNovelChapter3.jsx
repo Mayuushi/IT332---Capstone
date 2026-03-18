@@ -239,7 +239,6 @@ const VisualNovelChapter3 = () => {
 
     const ch1Done = localStorage.getItem(`vn_chapter1_completed_${userId}`);
     const ch2Done = localStorage.getItem(`vn_chapter2_completed_${userId}`);
-
     if (ch1Done !== 'true' || ch2Done !== 'true') {
       setPrerequisiteLocked(true);
       setLoading(false);
