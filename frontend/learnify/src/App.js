@@ -34,6 +34,8 @@ import ProgressReport from './components/Teacher/ProgressReport';
 import TeacherOverview from './components/Teacher/TeacherOverview';
 import PerformanceOverview from './components/Teacher/PerformanceOverview';
 import Platformer from './components/Platformer/GameApp';
+import TraceTheLineGame from './components/Lessons/TraceTheLineGame';
+import ProfilePage from './components/Student/ProfilePage';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -65,102 +67,91 @@ const App = () => {
           <div className="content-container">
             <Sidebar />
             <main className="main-content">
-            <Routes>
-  <Route path="/" element={<AuthSelector />} />
-  <Route path="/register/teacher" element={<TeacherRegister />} />
-  <Route path="/register/student" element={<StudentRegister />} />
-  <Route path="/class/create" element={
-    <ProtectedRoute>
-      <ClassCreate />
-    </ProtectedRoute>
-  } />
-
-  <Route path="/login" element={<Login />} />
-  <Route path="/dashboard" element={
-    <ProtectedRoute>
-      <Dashboard />
-    </ProtectedRoute>
-  } />
-  <Route path="/teacher-overview" element={
-    <ProtectedRoute>
-      <TeacherOverview />
-    </ProtectedRoute>
-  } />
-  <Route path="/question-bankmanager" element={
-    <ProtectedRoute>
-      <QuestionBankManager />
-    </ProtectedRoute>
-  } />
-  <Route path="/test" element={
-    <ProtectedRoute>
-      <LearnifyApp />
-    </ProtectedRoute>
-  } />
-
-  <Route path="/progressreport" element={
-    <ProtectedRoute>
-      <ProgressReport />
-    </ProtectedRoute>
-  } />
-
-  <Route path="/performance-overview" element={
-    <ProtectedRoute>
-      <PerformanceOverview />
-    </ProtectedRoute>
-  } />
-
-  <Route path="/points" element={
-    <ProtectedRoute>
-      <PointsPage />
-    </ProtectedRoute>
-  } />
-  <Route path="/badges" element={
-    <ProtectedRoute>
-      <BadgeDisplay />
-    </ProtectedRoute>
-  } />
-  <Route path="/leaderboard" element={
-    <ProtectedRoute>
-      <Leaderboard />
-    </ProtectedRoute>
-  } />
-
-<Route path="/quizform" element={
-    <ProtectedRoute>
-      <QuizForm />
-    </ProtectedRoute>
-  } />
-
-<Route path="/quiz" element={
-    <ProtectedRoute>
-      <Quiz />
-    </ProtectedRoute>
-  } />
-  <Route path="/quiz/:classId" element={
-  <ProtectedRoute>
-    <QuizWrapper />
-  </ProtectedRoute>
-} />
-
-<Route path="/quizmanager" element={
-    <ProtectedRoute>
-      <QuizManager />
-    </ProtectedRoute>
-  } />
-
-
-  
-
-<Route path="/manageclasses" element={
-    <ProtectedRoute>
-      <ManageClasses />
-    </ProtectedRoute>
-  } />
-  <Route path="/enrolledclasses" element={
-    <ProtectedRoute>
-      <EnrolledClasses />
-    </ProtectedRoute>
-  } />
+              <Routes>
+                <Route path="/" element={<AuthSelector />} />
+                <Route path="/register/teacher" element={<TeacherRegister />} />
+                <Route path="/register/student" element={<StudentRegister />} />
+                <Route path="/class/create" element={
+                  <ProtectedRoute>
+                    <ClassCreate />
+                  </ProtectedRoute>
+                } />
+                <Route path="/login" element={<Login />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher-overview" element={
+                  <ProtectedRoute>
+                    <TeacherOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="/question-bankmanager" element={
+                  <ProtectedRoute>
+                    <QuestionBankManager />
+                  </ProtectedRoute>
+                } />
+                <Route path="/test" element={
+                  <ProtectedRoute>
+                    <LearnifyApp />
+                  </ProtectedRoute>
+                } />
+                <Route path="/progressreport" element={
+                  <ProtectedRoute>
+                    <ProgressReport />
+                  </ProtectedRoute>
+                } />
+                <Route path="/performance-overview" element={
+                  <ProtectedRoute>
+                    <PerformanceOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="/points" element={
+                  <ProtectedRoute>
+                    <PointsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/badges" element={
+                  <ProtectedRoute>
+                    <BadgeDisplay />
+                  </ProtectedRoute>
+                } />
+                <Route path="/leaderboard" element={
+                  <ProtectedRoute>
+                    <Leaderboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/quizform" element={
+                  <ProtectedRoute>
+                    <QuizForm />
+                  </ProtectedRoute>
+                } />
+                <Route path="/quiz" element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="/quiz/:classId" element={
+                  <ProtectedRoute>
+                    <QuizWrapper />
+                  </ProtectedRoute>
+                } />
+                <Route path="/quizmanager" element={
+                  <ProtectedRoute>
+                    <QuizManager />
+                  </ProtectedRoute>
+                } />
+                <Route path="/manageclasses" element={
+                  <ProtectedRoute>
+                    <ManageClasses />
+                  </ProtectedRoute>
+                } />
+                <Route path="/enrolledclasses" element={
+                  <ProtectedRoute>
+                    <EnrolledClasses />
+                  </ProtectedRoute>
+                } />
                 <Route path="/lessons/nervous-system" element={
                   <ProtectedRoute>
                     <TitleScreen />
@@ -171,14 +162,14 @@ const App = () => {
                     <VisualNovelChapter1 />
                   </ProtectedRoute>
                 } />
-                <Route path="/lessons/nervous-system/play/chapter3" element={
-                  <ProtectedRoute>
-                    <VisualNovelChapter3 />
-                  </ProtectedRoute>
-                } />
                 <Route path="/lessons/nervous-system/play/chapter2" element={
                   <ProtectedRoute>
                     <VisualNovelChapter2 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lessons/nervous-system/play/chapter3" element={
+                  <ProtectedRoute>
+                    <VisualNovelChapter3 />
                   </ProtectedRoute>
                 } />
                 <Route path="/lessons" element={
@@ -188,12 +179,21 @@ const App = () => {
                 } />
                 <Route path="/platformer" element={
                   <ProtectedRoute>
-                    <Platformer/>
+                    <Platformer />
                   </ProtectedRoute>
                 } />
-  
-  <Route path="*" element={<Navigate to="/" />} />
-</Routes>
+                <Route path="/lessons/nervous-system/play/tracetheline" element={
+                  <ProtectedRoute>
+                    <TraceTheLineGame />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
 
             </main>
           </div>

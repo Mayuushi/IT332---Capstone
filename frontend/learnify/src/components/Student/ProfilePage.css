@@ -1,0 +1,285 @@
+/* ── Page layout ──────────────────────────────────────────────────────────── */
+.pp-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pp-error {
+  color: #b91c1c;
+  font-weight: 600;
+  padding: 16px;
+}
+
+/* ── Hero card ────────────────────────────────────────────────────────────── */
+.pp-hero-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.pp-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.pp-hero-info {
+  flex: 1;
+  min-width: 180px;
+}
+
+.pp-name {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pp-email {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.pp-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pp-tag {
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pp-tag-grade {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.pp-tag-level {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.pp-hero-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.pp-stat-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2563eb;
+  line-height: 1;
+}
+
+.pp-stat-lbl {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Body (two sections) ───────────────────────────────────────────────────── */
+.pp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+.pp-section {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 22px 28px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+.pp-section-title {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  border-left: 4px solid #667eea;
+  padding-left: 12px;
+}
+
+.pp-empty {
+  color: #94a3b8;
+  font-size: 0.92rem;
+}
+
+/* ── Badge grid ───────────────────────────────────────────────────────────── */
+.pp-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.pp-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: box-shadow 0.2s;
+}
+
+.pp-badge-card:hover {
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.18);
+}
+
+.pp-badge-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pp-badge-placeholder {
+  width: 48px;
+  height: 48px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pp-badge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pp-badge-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pp-badge-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.pp-badge-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ── Quiz table ───────────────────────────────────────────────────────────── */
+.pp-quiz-table-wrap {
+  overflow-x: auto;
+}
+
+.pp-quiz-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.pp-quiz-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.pp-quiz-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.pp-quiz-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pp-quiz-table tbody tr:hover td {
+  background: #f8fafc;
+}
+
+/* Score progress bar */
+.pp-score-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pp-score-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  min-width: 4px;
+  max-width: 120px;
+  transition: width 0.4s ease;
+}
+
+.pp-score-pct {
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .pp-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pp-hero-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
 
@@ -10,7 +10,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="profile">
+      <Link to="/profile" className="profile profile-link">
         <div className="avatar">
           {currentUser.name.substring(0, 1).toUpperCase()}
         </div>
@@ -18,7 +18,7 @@ const Sidebar = () => {
           <div className="name">{currentUser.name}</div>
           <div className="grade">Grade {currentUser.grade}</div>
         </div>
-      </div>
+      </Link>
       
       <nav className="nav-menu">
         {!currentUser.isTeacher && (
@@ -51,12 +51,6 @@ const Sidebar = () => {
             </NavLink>
             <NavLink to="/manageclasses" className={({ isActive }) => isActive ? 'active' : ''}>
               Manage Classes
-            </NavLink>
-            <NavLink to="/quizmanager" className={({ isActive }) => isActive ? 'active' : ''}>
-              Manage Quizzes
-            </NavLink>
-            <NavLink to="/question-bankmanager" className={({ isActive }) => isActive ? 'active' : ''}>
-              Question Bank
             </NavLink>
             <NavLink to="/progressreport" className={({ isActive }) => isActive ? 'active' : ''}>
               Visual Report

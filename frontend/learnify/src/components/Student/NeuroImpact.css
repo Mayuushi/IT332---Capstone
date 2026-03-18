@@ -1,0 +1,123 @@
+.neuro-impact-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.neuro-impact-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.neuro-impact-header h1 {
+  color: #2d3641;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.neuro-impact-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.game-wrapper {
+  background: #2d3641;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-iframe {
+  width: 840px;
+  height: 540px;
+  border: none;
+  border-radius: 8px;
+  background: #2d3641;
+  display: block;
+}
+
+.game-instructions {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.game-instructions h3 {
+  color: #2d3641;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.game-instructions ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 15px;
+}
+
+.game-instructions li {
+  padding: 8px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.game-instructions strong {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.game-tip {
+  background: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  padding: 12px 15px;
+  margin: 15px 0 0;
+  font-size: 1rem;
+  color: #1976D2;
+  border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .neuro-impact-container {
+    padding: 10px;
+  }
+
+  .neuro-impact-header h1 {
+    font-size: 2rem;
+  }
+
+  .game-wrapper {
+    padding: 10px;
+    min-height: 500px;
+  }
+
+  .game-iframe {
+    height: 500px;
+  }
+
+  .game-instructions {
+    padding: 15px;
+  }
+
+  .game-instructions h3 {
+    font-size: 1.2rem;
+  }
+
+  .game-instructions li {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-wrapper {
+    min-height: 400px;
+  }
+
+  .game-iframe {
+    height: 400px;
+  }
+}

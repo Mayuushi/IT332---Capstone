@@ -1,0 +1,408 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRACE THE LINE — BIOPUNK ARCADE THEME  (mirrors Reflex Rally / NeuroQuest)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+.trace-the-line-page {
+  /* ── Design tokens ─────────────────────────────────────────────────────── */
+  --ttl-bg:         #050a14;
+  --ttl-surface:    #0a1628;
+  --ttl-card:       #0d1f3c;
+  --ttl-border:     #1a3050;
+  --ttl-border2:    #1e4080;
+  --ttl-cyan:       #00d4ff;
+  --ttl-cyan-dim:   #00a8cc;
+  --ttl-purple:     #8b5cf6;
+  --ttl-purple-dim: #6d28d9;
+  --ttl-pink:       #ff006e;
+  --ttl-green:      #06ffa5;
+  --ttl-amber:      #ffbe0b;
+  --ttl-red:        #ff4d6d;
+  --ttl-text:       #e8f4fd;
+  --ttl-muted:      #7ea8cc;
+  --ttl-dim:        #3d5a80;
+  --ttl-r:          12px;
+  --ttl-r-lg:       20px;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  width: 100%;
+  font-family: 'Nunito', sans-serif;
+  background: var(--ttl-bg);
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Circuit-board grid backdrop */
+.trace-the-line-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.trace-game-card,
+.trace-history-card {
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.98) 0%, rgba(13, 31, 60, 0.98) 100%);
+  border: 1px solid var(--ttl-border2);
+  border-radius: var(--ttl-r-lg);
+  padding: 24px;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.06), 0 20px 50px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.trace-header h1 {
+  margin: 0;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(1.25rem, 3vw, 1.7rem);
+  font-weight: 700;
+  color: var(--ttl-cyan);
+  text-shadow: 0 0 25px var(--ttl-cyan), 0 0 50px rgba(0, 212, 255, 0.3);
+  letter-spacing: 2px;
+}
+
+.trace-header p {
+  margin-top: 8px;
+  color: var(--ttl-muted);
+}
+
+/* ── Stage selector chips ─────────────────────────────────────────────────── */
+.trace-difficulty-selector {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.stage-chip {
+  background: rgba(0, 212, 255, 0.04);
+  border: 1px solid var(--ttl-border2);
+  border-radius: var(--ttl-r);
+  padding: 10px 14px;
+  color: var(--ttl-muted);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.stage-chip:hover:not(:disabled) {
+  border-color: var(--ttl-cyan);
+  background: rgba(0, 212, 255, 0.09);
+  color: var(--ttl-text);
+  box-shadow: 0 0 14px rgba(0, 212, 255, 0.18);
+}
+
+.stage-chip.selected {
+  border-color: var(--ttl-cyan);
+  background: rgba(0, 212, 255, 0.12);
+  color: var(--ttl-cyan);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.28), inset 0 0 12px rgba(0, 212, 255, 0.06);
+}
+
+.stage-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Metrics bar ──────────────────────────────────────────────────────────── */
+.trace-metrics {
+  margin: 14px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trace-metrics span {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--ttl-border2);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  color: var(--ttl-muted);
+  letter-spacing: 0.5px;
+}
+
+/* ── Canvas ───────────────────────────────────────────────────────────────── */
+.trace-canvas {
+  width: 100%;
+  border-radius: var(--ttl-r);
+  border: 2px solid var(--ttl-border2);
+  touch-action: none;
+  display: block;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Action buttons ───────────────────────────────────────────────────────── */
+.trace-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Submit / primary: purple→pink gradient */
+.trace-actions button {
+  border: none;
+  border-radius: var(--ttl-r);
+  padding: 12px 22px;
+  background: linear-gradient(135deg, var(--ttl-purple-dim) 0%, var(--ttl-pink) 100%);
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 0, 110, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.trace-actions button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.trace-actions button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(255, 0, 110, 0.55), 0 0 40px rgba(139, 92, 246, 0.25);
+}
+
+.trace-actions button:disabled {
+  background: rgba(61, 90, 128, 0.45);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Reset — cyan variant (first button) */
+.trace-actions button:first-child {
+  background: linear-gradient(135deg, #0c3555 0%, #0e5c8a 100%);
+  color: var(--ttl-cyan);
+  box-shadow: 0 4px 18px rgba(0, 212, 255, 0.2);
+}
+
+.trace-actions button:first-child:hover:not(:disabled) {
+  box-shadow: 0 8px 28px rgba(0, 212, 255, 0.45);
+}
+
+/* ── Error ────────────────────────────────────────────────────────────────── */
+.trace-error {
+  margin-top: 12px;
+  color: var(--ttl-red);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-shadow: 0 0 10px rgba(255, 77, 109, 0.45);
+}
+
+/* ── History card ─────────────────────────────────────────────────────────── */
+.trace-history-card h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ttl-purple);
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.trace-history-card p {
+  color: var(--ttl-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Result modal ─────────────────────────────────────────────────────────── */
+.trace-result-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 20, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.trace-result-modal {
+  width: min(520px, 100%);
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.99) 0%, rgba(13, 31, 60, 0.99) 100%);
+  border: 1px solid var(--ttl-border2);
+  border-radius: var(--ttl-r-lg);
+  padding: 28px 24px;
+  box-shadow: 0 0 60px rgba(0, 212, 255, 0.10), 0 30px 60px rgba(0, 0, 0, 0.75);
+}
+
+.trace-result-modal h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ttl-cyan);
+  text-shadow: 0 0 20px var(--ttl-cyan);
+  letter-spacing: 1px;
+}
+
+.trace-result-modal p {
+  margin: 8px 0;
+  color: var(--ttl-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.trace-result-modal p strong {
+  color: var(--ttl-text);
+}
+
+/* ── History list ─────────────────────────────────────────────────────────── */
+.trace-history-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.trace-history-card li {
+  display: grid;
+  grid-template-columns: 0.45fr 1.1fr 0.8fr 0.8fr 0.7fr 0.7fr;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ttl-border);
+  font-size: 0.8rem;
+  color: var(--ttl-muted);
+  font-weight: 600;
+}
+
+/* ── Result action buttons ────────────────────────────────────────────────── */
+.trace-result-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trace-result-actions button {
+  flex: 1;
+  border: none;
+  border-radius: var(--ttl-r);
+  padding: 13px 20px;
+  background: linear-gradient(135deg, var(--ttl-purple-dim) 0%, var(--ttl-pink) 100%);
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 22px rgba(255, 0, 110, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.trace-result-actions button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.trace-result-actions button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(255, 0, 110, 0.55);
+}
+
+.trace-result-actions button:disabled {
+  background: rgba(61, 90, 128, 0.45);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Final screen ─────────────────────────────────────────────────────────── */
+.trace-final-screen {
+  text-align: center;
+}
+
+.trace-final-screen h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  color: var(--ttl-amber);
+  text-shadow: 0 0 25px var(--ttl-amber), 0 0 50px rgba(255, 190, 11, 0.4);
+  margin-bottom: 16px;
+}
+
+.trace-final-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ttl-muted);
+  margin: 0 0 4px;
+}
+
+.trace-final-accuracy {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--ttl-green);
+  text-shadow: 0 0 30px var(--ttl-green), 0 0 60px rgba(6, 255, 165, 0.4);
+  margin: 6px 0 18px;
+}
+
+.trace-final-breakdown {
+  color: var(--ttl-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.trace-final-breakdown strong {
+  color: var(--ttl-cyan);
+}
+
+/* Continue to Chapter 3 — green variant */
+.trace-btn-continue {
+  background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
+  box-shadow: 0 4px 20px rgba(6, 255, 165, 0.3) !important;
+  color: var(--ttl-green) !important;
+}
+
+.trace-btn-continue:hover:not(:disabled) {
+  box-shadow: 0 8px 30px rgba(6, 255, 165, 0.55) !important;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .trace-the-line-page {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .trace-difficulty-selector {
+    grid-template-columns: 1fr;
+  }
+}
