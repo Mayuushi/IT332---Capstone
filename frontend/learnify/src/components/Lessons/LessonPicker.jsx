@@ -22,7 +22,7 @@ const SEQUENCE = [
   {
     type: 'minigame',
     id: 'minigame1',
-    title: 'Minigame 2: Trace the Line',
+    title: 'Minigame 1: Trace the Line',
     description: 'Trace the nerve pathways of the spinal cord, brainstem, and peripheral nerves — test your precision and speed!',
     icon: 'game',
     route: '/lessons/nervous-system/play/tracetheline',
