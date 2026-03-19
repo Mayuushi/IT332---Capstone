@@ -113,8 +113,8 @@ const STAGES = [
 const CANVAS_WIDTH = 900;
 const CANVAS_HEIGHT = 480;
 
-// Minimum accuracy (%) required to pass each difficulty
-const PASS_THRESHOLD = { easy: 50, medium: 55, hard: 58 };
+// Minimum accuracy (%) required to pass — 75% for every stage
+const PASS_THRESHOLD = 75;
 
 // ── Brain: smooth mathematical cortex trace ─────────────────────────────────
 // Multi-frequency sine generates broad, rounded gyral humps that alternate
@@ -210,7 +210,7 @@ const TraceTheLineGame = () => {
 
   const canvasRef        = useRef(null);
   const isDrawingRef     = useRef(false);
-  const pendingStartRef  = useRef(null);   // stores {clientX,clientY} from canvas click that triggered auto-start
+  const sessionAbortRef  = useRef(false);   // set true on reset so stale API responses are ignored
 
   const [session,          setSession]          = useState(null);
   const [points,           setPoints]           = useState([]);
@@ -391,13 +391,13 @@ const TraceTheLineGame = () => {
     drawSideLabel('START', start);
     drawSideLabel('END',   end);
 
-    // Idle overlay hint — hidden immediately once user clicks (loading=true)
-    if (status === 'idle' && !loading) {
-      ctx.fillStyle    = 'rgba(0, 212, 255, 0.75)';
+    // Overlay hint — shown when waiting for the user to begin drawing
+    if ((status === 'idle' || status === 'ready') && !loading) {
+      ctx.fillStyle    = 'rgba(0, 212, 255, 0.80)';
       ctx.font         = `bold 16px 'Fredoka', sans-serif`;
       ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('Click on the path to start tracing', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+      ctx.fillText('Draw on the path to start tracing!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
       ctx.textAlign    = 'start';
       ctx.textBaseline = 'alphabetic';
     }
@@ -440,66 +440,70 @@ const TraceTheLineGame = () => {
   };
 
   // ── Session ───────────────────────────────────────────────────────────────────
-  const startStageSession = async (stageToStart) => {
-    if (stageToStart === 1) setSessionHistory([]);   // new session reset
+  // skipReset=true when called from beginDraw (drawing already started, don't wipe points)
+  const startStageSession = async (stageToStart, skipReset = false) => {
+    sessionAbortRef.current = false;
+    if (stageToStart === 1 && !skipReset) setSessionHistory([]);
     setLoading(true);
     setError('');
     setResult(null);
     setSession(null);
-    setPoints([]);
-    setSeconds(0);
+    if (!skipReset) {
+      setPoints([]);
+      setSeconds(0);
+    }
     setSelectedStage(stageToStart);
 
     try {
       const s = await TraceTheLineService.startTrace(studentId, stageToStart);
+      if (sessionAbortRef.current) return;   // reset clicked while API was in flight
       setSession(s);
-      setStatus('tracing');
+      if (!skipReset) setStatus('ready');     // Next Stage path: wait for first draw
+      // skipReset path: status is already 'tracing' (set synchronously in beginDraw)
       await loadHistory();
     } catch (err) {
+      if (sessionAbortRef.current) return;
       setError(err.message || 'Unable to start tracing session.');
       setStatus('idle');
     } finally {
-      setLoading(false);
+      if (!sessionAbortRef.current) setLoading(false);
     }
   };
 
   // ── Drawing handlers ──────────────────────────────────────────────────────────
   const beginDraw = (clientX, clientY) => {
     if (status === 'completed') return;
+    const pt = pointerToCanvas(clientX, clientY);
+    if (!pt) return;
     if (status === 'idle') {
-      // Auto-start session; resume drawing once session is ready
-      pendingStartRef.current = { clientX, clientY };
-      startStageSession(selectedStage);
+      // Auto-start: begin drawing immediately, create session in background
+      isDrawingRef.current = true;
+      setStatus('tracing');          // timer starts right now
+      setPoints([pt]);
+      startStageSession(selectedStage, true);   // skipReset=true — don't wipe the points we just set
+      return;
+    }
+    if (status === 'ready') {
+      // Session already exists (e.g. from Next Stage); first draw starts the timer
+      isDrawingRef.current = true;
+      setStatus('tracing');
+      setPoints([pt]);
       return;
     }
     if (status !== 'tracing') return;
-    const pt = pointerToCanvas(clientX, clientY);
-    if (!pt) return;
     isDrawingRef.current = true;
     setPoints([pt]);
   };
 
   const continueDraw = (clientX, clientY) => {
-    if (!isDrawingRef.current || status !== 'tracing') return;
+    // Use isDrawingRef only — never block on React state lag
+    if (!isDrawingRef.current) return;
     const pt = pointerToCanvas(clientX, clientY);
     if (!pt) return;
     setPoints((prev) => [...prev, pt]);
   };
 
   const endDraw = () => { isDrawingRef.current = false; };
-
-  // Once session starts from a canvas click, begin drawing from the stored point
-  useEffect(() => {
-    if (status !== 'tracing' || !pendingStartRef.current) return;
-    const { clientX, clientY } = pendingStartRef.current;
-    pendingStartRef.current = null;
-    const pt = pointerToCanvas(clientX, clientY);
-    if (pt) {
-      isDrawingRef.current = true;
-      setPoints([pt]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
 
   // ── Submit ────────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
@@ -512,7 +516,7 @@ const TraceTheLineGame = () => {
     setError('');
 
     const clientAccuracy = computeAccuracy(points, expectedPath, activeStageMeta.difficulty);
-    const passed         = clientAccuracy >= (PASS_THRESHOLD[activeStageMeta.difficulty] ?? 50);
+    const passed         = clientAccuracy >= PASS_THRESHOLD;
     const stageNum       = Number(session?.stageNumber ?? selectedStage);
 
     try {
@@ -553,8 +557,8 @@ const TraceTheLineGame = () => {
         if (stageNum < 3) {
           setUnlockedStage((prev) => Math.max(prev, stageNum + 1));
         } else {
+          // Mark completion; final screen is shown via the stage-3 result modal button
           localStorage.setItem(`vn_minigame1_completed_${studentId}`, 'true');
-          setShowFinalScreen(true);
         }
       }
 
@@ -574,8 +578,9 @@ const TraceTheLineGame = () => {
     await startStageSession(next);
   };
 
-  const handleTryAgain = () => {
-    setResult(null);
+  const handleTryAgain = () => {    sessionAbortRef.current = true;   // discard any in-flight session API calls
+    isDrawingRef.current = false;
+    setLoading(false);                // clear loading in case API call was pending    setResult(null);
     setSession(null);
     setPoints([]);
     setSeconds(0);
@@ -675,10 +680,10 @@ const TraceTheLineGame = () => {
         />
 
         <div className="trace-actions">
-          <button onClick={handleReset} disabled={loading}>
+          <button onClick={handleReset}>
             Reset
           </button>
-          <button onClick={handleSubmit} disabled={loading || status !== 'tracing'}>
+          <button onClick={handleSubmit} disabled={loading || status !== 'tracing' || !session}>
             Submit Coordinates
           </button>
         </div>
@@ -721,6 +726,11 @@ const TraceTheLineGame = () => {
               {result.passed && Number(result.stageNumber || selectedStage) < 3 && (
                 <button onClick={handleNextStage} disabled={loading}>
                   Next Stage
+                </button>
+              )}
+              {result.passed && Number(result.stageNumber || selectedStage) === 3 && (
+                <button onClick={() => setShowFinalScreen(true)} disabled={loading}>
+                  View Final Results
                 </button>
               )}
               {!result.passed && (
