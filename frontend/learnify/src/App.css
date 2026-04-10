@@ -28,6 +28,24 @@ body {
   padding: 1rem;
 }
 
+/* Remove inner padding for pages that need full-bleed content like AuthSelector */
+.main-content:has(.auth-container) {
+  padding: 0;
+  background: transparent;
+}
+.main-content.full-bleed {
+  padding: 0;
+  background: transparent;
+}
+.main-content:has(.register-container) {
+  padding: 0;
+  background: transparent;
+}
+.main-content:has(.login-container) {
+  padding: 0;
+  background: transparent;
+}
+
 .loading-container {
   display: flex;
   justify-content: center;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import studentService from '../../services/studentService';
 import '../../components/CSS/Register.css';
+import PixelPlayground from '../UI/PixelPlayground';
 
 const StudentRegister = () => {
   const [student, setStudent] = useState({
@@ -38,6 +39,7 @@ const StudentRegister = () => {
 
   return (
     <div className="register-container">
+      <PixelPlayground />
       <div className="register-card">
         <div className="register-header">
           <h2>Student Registration</h2>
@@ -103,7 +105,8 @@ const StudentRegister = () => {
         </form>
         
         <div className="login-link">
-          Already have an account? <span onClick={() => navigate('/login')}>Log in</span>
+          <span style={{ color: 'gray' }}>Already have an account?</span>{' '}
+          <span onClick={() => navigate('/login')} style={{ color: 'Blue' }}>Log in</span>
         </div>
       </div>
     </div>
