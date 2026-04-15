@@ -2,12 +2,14 @@ import React from "react";
 import { BookOpen, GraduationCap } from "lucide-react";
 import '../../components/CSS/AuthSelector.css'
 import { useNavigate } from "react-router-dom";
+import PixelPlayground from "../UI/PixelPlayground";
 
 const AuthSelector = () => {
   const navigate = useNavigate();  // Use navigate directly
 
   return (
     <div className="auth-container">
+      <PixelPlayground />
       <div className="auth-card">
         <div className="auth-header">
           <h1>Welcome to LearnSphere</h1>

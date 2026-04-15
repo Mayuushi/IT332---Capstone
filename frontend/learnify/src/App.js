@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/UI/Header';
 import Sidebar from './components/UI/Sidebar';
@@ -58,15 +58,18 @@ const PointsPage = () => {
   );
 };
 
-const App = () => {
+const AppInner = () => {
+  const location = useLocation();
+  const isAuthSelector = location.pathname === "/";
+  const isRegister = location.pathname.startsWith("/register");
+  const isLogin = location.pathname === "/login";
   return (
     <AuthProvider>
-      <Router>
-        <div className="app">
-          <Header />
-          <div className="content-container">
-            <Sidebar />
-            <main className="main-content">
+      <div className="app">
+        <Header />
+        <div className="content-container">
+          <Sidebar />
+          <main className={`main-content ${(isAuthSelector || isRegister || isLogin) ? 'full-bleed' : ''}`}>
               <Routes>
                 <Route path="/" element={<AuthSelector />} />
                 <Route path="/register/teacher" element={<TeacherRegister />} />
@@ -195,12 +198,17 @@ const App = () => {
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
 
-            </main>
-          </div>
+          </main>
         </div>
-      </Router>
+      </div>
     </AuthProvider>
   );
 };
+
+const App = () => (
+  <Router>
+    <AppInner />
+  </Router>
+);
 
 export default App;

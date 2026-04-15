@@ -6,19 +6,36 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 1rem;
-    background: linear-gradient(to bottom, #EFF6FF, #E0E7FF);
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    background: #7EC8FF;
+    position: relative;
+    overflow: hidden;
   }
+  .pixel-canvas {
+    position: absolute;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    height: 100%;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  /* Card container */
   
   /* Card container */
   .auth-card {
     width: 100%;
     max-width: 28rem;
+    margin: 1rem;
     background-color: white;
     border-radius: 0.75rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    position: relative;
+    z-index: 1;
   }
   
   /* Header section */
@@ -121,6 +138,10 @@
   .auth-footer p {
     font-size: 0.875rem;
     color: #4B5563;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
   }
   
   /* Sign-in button */
@@ -132,6 +153,8 @@
     font-weight: 500;
     cursor: pointer;
     transition: color 0.3s ease;
+    margin-left: 0.25rem;
+    display: inline;
   }
   
   .sign-in-button:hover {

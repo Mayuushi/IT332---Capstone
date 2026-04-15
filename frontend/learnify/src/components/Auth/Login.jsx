@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import '../../components/CSS/Login.css'
+import PixelPlayground from '../UI/PixelPlayground';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,9 +49,10 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="login-container">
+      <PixelPlayground />
       <div className="login-card">
         <div className="login-header">
-          <h2>Login to Learnify</h2>
+          <h2 style={{ color: 'blue' }}>Login to Learnify</h2>
           <p>Access your personalized learning experience</p>
         </div>
         
