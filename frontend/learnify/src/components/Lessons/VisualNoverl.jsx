@@ -70,6 +70,7 @@ const VisualNovel = () => {
   const [showPointsNotification, setShowPointsNotification] = useState(false);
   const [pointsAwarded, setPointsAwarded] = useState(0);
   const [isEnding, setIsEnding] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const currentAudioRef = useRef(null);
 
   // Helper function to get the background path with appropriate extension
@@ -99,6 +100,15 @@ const VisualNovel = () => {
       setLoading(false);
       return;
     }
+
+    // Load mute preference from backend
+    axios.get(`http://localhost:8080/api/students/${userId}/vn-muted`)
+      .then(res => setIsMuted(res.data === true))
+      .catch(() => {
+        // Fallback to localStorage if API fails
+        const saved = localStorage.getItem(`vn_muted_${userId}`);
+        if (saved === 'true') setIsMuted(true);
+      });
 
     // Check if the visual novel has been completed recently
     const vnCompleted = localStorage.getItem(`vn_completed_${userId}`);
@@ -172,6 +182,7 @@ const VisualNovel = () => {
 
     const audio = new Audio(`/audio/vn/${nodeId}.mp3`);
     currentAudioRef.current = audio;
+    audio.muted = isMuted;
 
     audio.play().catch((err) => {
       addDebugLog(`Unable to autoplay audio for node ${nodeId}: ${err.message}`);
@@ -181,7 +192,34 @@ const VisualNovel = () => {
       audio.pause();
       audio.currentTime = 0;
     };
-  }, [currentNode?.id]);
+  }, [currentNode?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync mute state to current audio without restarting it
+  useEffect(() => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  // Handle toggling mute state and persisting to backend
+  const handleToggleMute = async () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    if (currentAudioRef.current) {
+      currentAudioRef.current.muted = newMuted;
+    }
+    // Persist to backend
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/students/${userId}/vn-muted`,
+        newMuted,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    } catch {
+      // Fallback: persist to localStorage
+      localStorage.setItem(`vn_muted_${userId}`, String(newMuted));
+    }
+  };
 
   // Award points function - now takes a points amount parameter
   const awardPoints = async (points = 10, reason = 'story_progress') => {
@@ -370,7 +408,9 @@ const VisualNovel = () => {
         onChoiceSelect={handleChoiceSelect}
         isEnding={isEnding}
         onEnding={() => awardPoints(100, 'final_completion')}
-        onReturnToLessons={handleReturnToLessons} // Pass the handler to DialogBox
+        onReturnToLessons={handleReturnToLessons}
+        isMuted={isMuted}
+        onToggleMute={handleToggleMute}
       />
     </GameContainer>
   );

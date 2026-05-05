@@ -13,6 +13,7 @@ public class Student {
     private int grade;
     private int totalPoints;
     private int level;
+    private boolean vnMuted;
 
     // Constructors
     public Student() {}
@@ -92,5 +93,13 @@ public class Student {
     private void updateLevel() {
         // Simple level calculation - adjust as needed for your game mechanics
         this.level = (this.totalPoints / 100) + 1;
+    }
+
+    public boolean isVnMuted() {
+        return vnMuted;
+    }
+
+    public void setVnMuted(boolean vnMuted) {
+        this.vnMuted = vnMuted;
     }
 }

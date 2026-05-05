@@ -578,9 +578,11 @@ const TraceTheLineGame = () => {
     await startStageSession(next);
   };
 
-  const handleTryAgain = () => {    sessionAbortRef.current = true;   // discard any in-flight session API calls
+  const handleTryAgain = () => {
+    sessionAbortRef.current = true;   // discard any in-flight session API calls
     isDrawingRef.current = false;
-    setLoading(false);                // clear loading in case API call was pending    setResult(null);
+    setLoading(false);                // clear loading in case API call was pending
+    setResult(null);
     setSession(null);
     setPoints([]);
     setSeconds(0);

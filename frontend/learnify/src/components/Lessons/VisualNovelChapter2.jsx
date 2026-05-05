@@ -192,7 +192,26 @@ const VisualNovelChapter2 = () => {
   const [pointsAwarded, setPointsAwarded]                   = useState(0);
   const [isEnding, setIsEnding]                             = useState(false);
   const [chapter1Locked, setChapter1Locked]                 = useState(false);
+  const [isMuted, setIsMuted]                               = useState(false);
   const currentAudioRef = useRef(null);
+
+  // ── Load mute preference ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!userId) return;
+    axios.get(`http://localhost:8080/api/students/${userId}/vn-muted`)
+      .then(res => setIsMuted(res.data === true))
+      .catch(() => {
+        const saved = localStorage.getItem(`vn_muted_${userId}`);
+        if (saved === 'true') setIsMuted(true);
+      });
+  }, [userId]);
+
+  // ── Sync mute to current audio without restarting it ───────────────────────
+  useEffect(() => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   // ── Auth guard ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -259,6 +278,7 @@ const VisualNovelChapter2 = () => {
 
     const audio = new Audio(`/audio/vn/${nodeId}.mp3`);
     currentAudioRef.current = audio;
+    audio.muted = isMuted;
     audio.play().catch(() => {});
 
     return () => {
@@ -404,6 +424,20 @@ const VisualNovelChapter2 = () => {
             isEnding={isEnding}
             onEnding={() => awardPoints(100, 'final_completion')}
             onReturnToLessons={handleReturnToLessons}
+            isMuted={isMuted}
+            onToggleMute={async () => {
+              const newMuted = !isMuted;
+              setIsMuted(newMuted);
+              try {
+                await axios.patch(
+                  `http://localhost:8080/api/students/${userId}/vn-muted`,
+                  newMuted,
+                  { headers: { 'Content-Type': 'application/json' } }
+                );
+              } catch {
+                localStorage.setItem(`vn_muted_${userId}`, String(newMuted));
+              }
+            }}
           />
         </>
       )}
