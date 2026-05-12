@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>News Feed</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">News Feed</h1>
+
+        <!-- Form to post new feed -->
+        <form th:action="@{/newsfeed/create}" th:object="${newsFeed}" method="post">
+            <div class="field">
+                <label class="label">Text</label>
+                <div class="control">
+                    <textarea class="textarea" th:field="*{text}" placeholder="What's on your mind?"></textarea>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Image URL</label>
+                <div class="control">
+                    <input class="input" type="text" th:field="*{imageUrl}" placeholder="Enter image URL (optional)">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">User ID</label>
+                <div class="control">
+                    <input class="input" type="number" th:field="*{userId}" placeholder="Enter your user ID">
+                </div>
+            </div>
+
+            <div class="control">
+                <button class="button is-primary" type="submit">Post</button>
+            </div>
+        </form>
+
+        <hr>
+
+        <!-- Display posts -->
+        <div>
+            <h2 class="subtitle">Latest Posts</h2>
+            <div th:each="post : ${posts}" class="box">
+                <p><strong>User ID:</strong> <span th:text="${post.user.id}"></span></p>
+                <p><strong>Text:</strong> <span th:text="${post.text}"></span></p>
+                <p th:if="${post.imageUrl != null}">
+                    <strong>Image:</strong><br>
+                    <img th:src="${post.imageUrl}" alt="Post image" style="max-width: 300px;">
+                </p>
+                <p><em>Posted at:</em> <span th:text="${post.timestamp}"></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
