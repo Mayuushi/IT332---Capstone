@@ -94,4 +94,29 @@ public class StudentController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    /**
+     * Get the VN mute preference for a student
+     */
+    @GetMapping("/{id}/vn-muted")
+    public ResponseEntity<Boolean> getVnMuted(@PathVariable String id) {
+        Optional<Student> student = studentRepository.findById(id);
+        return student.map(s -> new ResponseEntity<>(s.isVnMuted(), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * Set the VN mute preference for a student
+     */
+    @PatchMapping("/{id}/vn-muted")
+    public ResponseEntity<Boolean> setVnMuted(@PathVariable String id, @RequestBody boolean muted) {
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        if (studentOptional.isPresent()) {
+            Student student = studentOptional.get();
+            student.setVnMuted(muted);
+            studentRepository.save(student);
+            return new ResponseEntity<>(student.isVnMuted(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

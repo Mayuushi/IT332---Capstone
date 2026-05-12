@@ -135,6 +135,25 @@ const SpeedButton = styled.button`
   }
 `;
 
+const MuteButton = styled.button`
+  background-color: ${props => props.$active ? 'rgba(255, 100, 100, 0.4)' : 'rgba(102, 194, 255, 0.1)'};
+  border: 1px solid ${props => props.$active ? '#ff6464' : '#66c2ff'};
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: ${props => props.$active ? 'rgba(255, 100, 100, 0.6)' : 'rgba(102, 194, 255, 0.3)'};
+  }
+`;
+
 const SkipButton = styled.button`
   position: absolute;
   bottom: 10px;
@@ -178,7 +197,9 @@ const DialogBox = ({
   onChoiceSelect, 
   isEnding, 
   onEnding, 
-  onReturnToLessons 
+  onReturnToLessons,
+  isMuted,
+  onToggleMute
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
@@ -277,6 +298,16 @@ const DialogBox = ({
       <DialogText>{displayedText}</DialogText>
       
       <TextSpeedControls>
+        <MuteButton
+          $active={isMuted}
+          title={isMuted ? 'Unmute audio' : 'Mute audio'}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onToggleMute) onToggleMute();
+          }}
+        >
+          {isMuted ? '🔇' : '🔊'}
+        </MuteButton>
         <SpeedButton 
           active={typingSpeed === 'slow'} 
           onClick={(e) => {
