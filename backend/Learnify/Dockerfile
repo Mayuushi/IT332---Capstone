@@ -8,4 +8,4 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/backend/Learnify/target/Learnify-0.0.1-SNAPSHOT.jar learnify.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dhttps.protocols=TLSv1.2", "-jar", "syncra.jar"]
+ENTRYPOINT ["java", "-Dhttps.protocols=TLSv1.2", "-jar", "learnify.jar"]
