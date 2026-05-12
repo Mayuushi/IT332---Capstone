@@ -3,7 +3,6 @@ FROM maven:3.8.8-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 COPY . .
 
-WORKDIR /app/backend/Learnify
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
