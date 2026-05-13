@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/vn")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class VisualNovelController {
     private final VisualNovelService visualNovelService;

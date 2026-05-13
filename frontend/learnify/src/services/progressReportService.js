@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8080/api/progress'; // adjust if needed
+const API_BASE = 'https://it332-capstone.onrender.com/api/progress'; // adjust if needed
 
 export const fetchClassPerformance = (classId) =>
   axios.get(`${API_BASE}/class-performance/${classId}`);

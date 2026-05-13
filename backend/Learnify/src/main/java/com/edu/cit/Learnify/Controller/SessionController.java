@@ -24,7 +24,6 @@ import com.edu.cit.Learnify.Service.SessionLogService;
 
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "http://localhost:3000") // or your frontend URL
 @RestController
 @RequestMapping("/api/session")
 @RequiredArgsConstructor

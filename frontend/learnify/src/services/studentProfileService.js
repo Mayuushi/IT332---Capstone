@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/profiles'; // Adjust as needed
+const API_BASE_URL = 'https://it332-capstone.onrender.com/api/profiles'; // Adjust as needed
 
 export const fetchStudentProfile = async (studentId) => {
   try {

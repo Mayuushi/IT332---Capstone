@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/students';
+const API_URL = 'https://it332-capstone.onrender.com/api/students';
 
 const registerStudent = async (studentData) => {
   const response = await axios.post(API_URL, studentData);

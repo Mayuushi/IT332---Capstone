@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.edu.cit.Learnify.DTO.StudentProfileDTO;
 import com.edu.cit.Learnify.Service.StudentProfileService;
 
-@CrossOrigin(origins = "http://localhost:3000") // Accept all origins
 @RestController
 @RequestMapping("/api/profiles")
 public class StudentProfileController {

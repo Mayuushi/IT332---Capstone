@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const QUESTION_BANK_API_URL = 'http://localhost:8080/api/question-bank';
+const QUESTION_BANK_API_URL = 'https://it332-capstone.onrender.com/api/question-bank';
 
 export const fetchQuestionBankByTeacherId = async (teacherId) => {
   try {

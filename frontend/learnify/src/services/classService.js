@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/classes";
+const API_URL = "https://it332-capstone.onrender.com/api/classes";
 
 // Create a new class
 const createClass = async (classData) => {

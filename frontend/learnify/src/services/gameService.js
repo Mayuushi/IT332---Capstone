@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:8080/api/game' });
+const API = axios.create({ baseURL: 'https://it332-capstone.onrender.com/api/game' });
 
 export const gameService = {
   startGame: (playerName) =>

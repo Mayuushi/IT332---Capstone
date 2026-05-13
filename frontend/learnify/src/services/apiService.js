@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/vn';
+const API_BASE_URL = 'https://it332-capstone.onrender.com/api/vn';
 
 export const getStartNode = async () => {
   try {

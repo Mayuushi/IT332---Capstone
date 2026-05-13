@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = "http://localhost:8080/api/session";
+const API_BASE = "https://it332-capstone.onrender.com/api/session";
 
 const sessionService = {
   /**

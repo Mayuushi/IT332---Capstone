@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/teacher-dashboard")
-@CrossOrigin(origins = "http://localhost:3000")
 public class TeacherDashboardController {
 
     @Autowired

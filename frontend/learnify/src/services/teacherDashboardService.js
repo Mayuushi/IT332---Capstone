@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://it332-capstone.onrender.com/api';
 
 const teacherDashboardService = {
   /**

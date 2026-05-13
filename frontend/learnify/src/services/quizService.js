@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/quizzes';
-const QUESTION_BANK_API_URL = 'http://localhost:8080/api/question-bank';
+const API_URL = 'https://it332-capstone.onrender.com/api/quizzes';
+const QUESTION_BANK_API_URL = 'https://it332-capstone.onrender.com/api/question-bank';
 
 
 // ✅ Fetch all questions

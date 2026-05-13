@@ -17,7 +17,6 @@ import com.edu.cit.Learnify.DTO.TraceDTO;
 import com.edu.cit.Learnify.Entity.TracePath;
 import com.edu.cit.Learnify.Service.TraceService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/trace")
 public class TraceController {
