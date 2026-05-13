@@ -20,7 +20,7 @@ const handleSubmit = async (e) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (role === 'teacher') {
-      res = await axios.get(`http://localhost:8080/api/teachers`);
+      res = await axios.get(`https://it332-capstone.onrender.com/api/teachers`);
       user = res.data.find(u =>
         (u.email || '').trim().toLowerCase() === normalizedEmail && (u.password || '') === password
       );
@@ -29,7 +29,7 @@ const handleSubmit = async (e) => {
       navigate('/teacher-overview'); // redirect teacher
     } else {
       // Fetch all students and validate both email + password to avoid duplicate-email mismatches.
-      res = await axios.get(`http://localhost:8080/api/students`);
+      res = await axios.get(`https://it332-capstone.onrender.com/api/students`);
       user = res.data.find(u =>
         (u.email || '').trim().toLowerCase() === normalizedEmail && (u.password || '') === password
       );
