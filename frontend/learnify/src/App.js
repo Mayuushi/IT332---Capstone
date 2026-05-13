@@ -36,7 +36,7 @@ import PerformanceOverview from './components/Teacher/PerformanceOverview';
 import Platformer from './components/Platformer/GameApp';
 import TraceTheLineGame from './components/Lessons/TraceTheLineGame';
 import ProfilePage from './components/Student/ProfilePage';
-
+import NeuroImpact from './components/Student/NeuroImpact';
 // Protected route component
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
@@ -193,6 +193,11 @@ const AppInner = () => {
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/neuro-impact" element={
+                  <ProtectedRoute>
+                    <NeuroImpact />
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<Navigate to="/" />} />
