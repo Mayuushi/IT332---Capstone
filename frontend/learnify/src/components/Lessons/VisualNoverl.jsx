@@ -6,8 +6,8 @@ import CharacterDisplay from './CharacterDisplay';
 import { useAuth } from '../../context/AuthContext'; // Update this path to match your project structure
 import { useNavigate } from 'react-router-dom'; // Add React Router navigation
 
-const API_BASE_URL = 'http://localhost:8080/api/vn';
-const API_POINTS_URL = 'http://localhost:8080/api/points/award';
+const API_BASE_URL = 'https://it332-capstone.onrender.com/api/vn';
+const API_POINTS_URL = 'https://it332-capstone.onrender.com/api/points/award';
 
 // Modified GameContainer to handle different file extensions
 const GameContainer = styled.div`

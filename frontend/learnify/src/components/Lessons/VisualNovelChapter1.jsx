@@ -15,8 +15,8 @@ const CHAPTER_NODE_IDS   = new Set([
 ]);
 const CHAPTER_TITLE = 'Chapter 1: The Beginning';
 
-const API_BASE_URL   = 'http://localhost:8080/api/vn';
-const API_POINTS_URL = 'http://localhost:8080/api/points/award';
+const API_BASE_URL   = 'https://it332-capstone.onrender.com/api/vn';
+const API_POINTS_URL = 'https://it332-capstone.onrender.com/api/points/award';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const fadeIn = keyframes`
