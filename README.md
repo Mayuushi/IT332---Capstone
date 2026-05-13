@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/learnify/public/images/backgrounds/learnify-logo.png" alt="Learnify Logo" width="120" />
+<img src="frontend/learnify/public/LearnifyLogo.png" alt="Learnify Logo" width="120" />
 
 # Learnify
 
