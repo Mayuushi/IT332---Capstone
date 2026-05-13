@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // API base URL - change this to match your Spring Boot server
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'https://it332-capstone.onrender.com/api';
 
 function LearnifyApp() {
   // State for various data

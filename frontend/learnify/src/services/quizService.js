@@ -101,7 +101,7 @@ export const submitQuizAnswers = async (quizId, studentId, answers) => {
 
 export const fetchQuizzesByClassAndStudent = async (classId, studentId) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/quizzes/class/${classId}/student/${studentId}`);
+    const response = await axios.get(`https://it332-capstone.onrender.com/api/quizzes/class/${classId}/student/${studentId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching quizzes with submission status:", error);
@@ -112,7 +112,7 @@ export const fetchQuizzesByClassAndStudent = async (classId, studentId) => {
 // ✅ Fetch all submissions for a specific quiz
 export const fetchQuizSubmissions = async (quizId) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/quizzes/${quizId}/submissions`);
+    const response = await axios.get(`https://it332-capstone.onrender.com/api/quizzes/${quizId}/submissions`);
     return response.data; // Array of { studentId, studentName, score, totalPossible, percentage, submittedAt }
   } catch (error) {
     console.error('Error fetching quiz submissions:', error);

@@ -16,7 +16,7 @@ const ManageQuizzes = () => {
 
     const fetchQuizzes = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/quizzes/teacher/${currentUser.id}`);
+        const response = await axios.get(`https://it332-capstone.onrender.com/api/quizzes/teacher/${currentUser.id}`);
         const normalizedQuizzes = response.data.map(quiz => ({
           ...quiz,
           questions: Array.isArray(quiz.questions) ? quiz.questions : []

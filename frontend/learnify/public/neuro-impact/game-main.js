@@ -1,7 +1,7 @@
 // Main game initialization and loop
 
 // ── High Score API ──────────────────────────────────────────────────────────
-const HIGHSCORE_API = "http://localhost:8080/api/neuro-impact/highscore";
+const HIGHSCORE_API = "https://it332-capstone.onrender.com/api/neuro-impact/highscore";
 
 // Read the logged-in user from localStorage (set by the React app on login)
 let currentUserId = null;

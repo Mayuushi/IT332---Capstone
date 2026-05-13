@@ -102,7 +102,7 @@ const VisualNovel = () => {
     }
 
     // Load mute preference from backend
-    axios.get(`http://localhost:8080/api/students/${userId}/vn-muted`)
+    axios.get(`https://it332-capstone.onrender.com/api/students/${userId}/vn-muted`)
       .then(res => setIsMuted(res.data === true))
       .catch(() => {
         // Fallback to localStorage if API fails
@@ -211,7 +211,7 @@ const VisualNovel = () => {
     // Persist to backend
     try {
       await axios.patch(
-        `http://localhost:8080/api/students/${userId}/vn-muted`,
+        `https://it332-capstone.onrender.com/api/students/${userId}/vn-muted`,
         newMuted,
         { headers: { 'Content-Type': 'application/json' } }
       );

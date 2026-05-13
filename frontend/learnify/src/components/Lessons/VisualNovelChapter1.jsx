@@ -165,7 +165,7 @@ const VisualNovelChapter1 = () => {
   // ── Load mute preference ────────────────────────────────────────────────────
   useEffect(() => {
     if (!userId) return;
-    axios.get(`http://localhost:8080/api/students/${userId}/vn-muted`)
+    axios.get(`https://it332-capstone.onrender.com/api/students/${userId}/vn-muted`)
       .then(res => setIsMuted(res.data === true))
       .catch(() => {
         const saved = localStorage.getItem(`vn_muted_${userId}`);
@@ -383,7 +383,7 @@ const VisualNovelChapter1 = () => {
           setIsMuted(newMuted);
           try {
             await axios.patch(
-              `http://localhost:8080/api/students/${userId}/vn-muted`,
+              `https://it332-capstone.onrender.com/api/students/${userId}/vn-muted`,
               newMuted,
               { headers: { 'Content-Type': 'application/json' } }
             );
