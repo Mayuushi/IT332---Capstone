@@ -27,7 +27,7 @@ function useConfetti(active) {
     window.addEventListener('resize', resize);
 
     // Spawn burst of 160 particles from the centre-top of the modal
-    particlesRef.current = Array.from({ length: 160 }, () => {
+    particlesRef.current = Array.from({ length: 80 }, () => {
       const angle = Math.random() * Math.PI * 2;
       const speed = 4 + Math.random() * 8;
       return {
@@ -211,9 +211,13 @@ const TraceTheLineGame = () => {
   const canvasRef        = useRef(null);
   const isDrawingRef     = useRef(false);
   const sessionAbortRef  = useRef(false);   // set true on reset so stale API responses are ignored
+  const pointsRef        = useRef([]);      // mutable point buffer — avoids re-renders on every mousemove
+  const loadingRef       = useRef(false);   // mirrors loading state for use inside drawCanvas (no dep)
+  const drawRafRef       = useRef(null);    // handle for the canvas RAF loop
+  const bgCanvasRef      = useRef(null);    // pre-rendered reference path (drawn once per stage)
+  const strokeCanvasRef  = useRef(null);    // user stroke, drawn incrementally (no full redraws)
 
   const [session,          setSession]          = useState(null);
-  const [points,           setPoints]           = useState([]);
   const [seconds,          setSeconds]          = useState(0);
   const [result,           setResult]           = useState(null);
   const [sessionHistory,   setSessionHistory]   = useState([]);
@@ -301,18 +305,24 @@ const TraceTheLineGame = () => {
     return reachedEnd ? raw : parseFloat(Math.min(raw, 40).toFixed(1));
   }, []);
 
-  // ── Canvas Drawing ────────────────────────────────────────────────────────────
-  const drawCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // Keep loadingRef in sync so drawCanvas can read it without being a dep
+  useEffect(() => { loadingRef.current = loading; }, [loading]);
+
+  // ── Background canvas — rendered ONCE per stage; holds reference path + dots + labels ──
+  const renderBgCanvas = useCallback(() => {
+    if (!bgCanvasRef.current) {
+      bgCanvasRef.current = document.createElement('canvas');
+      bgCanvasRef.current.width  = CANVAS_WIDTH;
+      bgCanvasRef.current.height = CANVAS_HEIGHT;
+    }
+    const canvas = bgCanvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
 
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Catmull-Rom spline — makes sparse waypoints render as smooth organic curves
+    // Catmull-Rom spline — only called once per stage change, not every frame
     const drawSmooth = (pts) => {
       if (pts.length < 2) return;
       ctx.beginPath();
@@ -330,7 +340,6 @@ const TraceTheLineGame = () => {
       }
     };
 
-    // Reference path (dashed gradient) — use raw displayPath for smooth curves
     const pathToDraw = displayPath || expectedPath;
     const gradient = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     gradient.addColorStop(0, '#22d3ee');
@@ -344,36 +353,19 @@ const TraceTheLineGame = () => {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // User's drawn path (yellow, smooth)
-    // Guard with > 1: drawSmooth returns early without calling ctx.beginPath() when
-    // pts.length < 2, which would leave the reference path in the canvas context and
-    // cause it to be re-stroked in solid yellow (the "start-to-finish" flicker).
-    if (points.length > 1) {
-      ctx.lineWidth   = 8;
-      ctx.lineCap     = 'round';
-      ctx.lineJoin    = 'round';
-      ctx.strokeStyle = '#facc15';
-      drawSmooth(points);
-      ctx.stroke();
-    }
-
-    // Start / end dots
     const start = expectedPath[0];
     const end   = expectedPath[expectedPath.length - 1];
 
     ctx.fillStyle = '#22c55e';
     ctx.beginPath(); ctx.arc(start.x, start.y, 8, 0, Math.PI * 2); ctx.fill();
-
     ctx.fillStyle = '#ef4444';
     ctx.beginPath(); ctx.arc(end.x, end.y, 8, 0, Math.PI * 2); ctx.fill();
 
-    // START / END labels — fixed offset to the right of the dot, never overlapping the path
     const drawSideLabel = (label, dot) => {
       ctx.font = 'bold 12px Arial';
       const tw = ctx.measureText(label).width;
       const bw = tw + 16;
       const bh = 20;
-      // If dot is in the right half, place label to the LEFT to avoid path overlap
       const lx = dot.x > CANVAS_WIDTH * 0.55
         ? Math.max(4, dot.x - bw - 14)
         : Math.min(dot.x + 14, CANVAS_WIDTH - bw - 4);
@@ -387,12 +379,48 @@ const TraceTheLineGame = () => {
       ctx.textAlign    = 'start';
       ctx.textBaseline = 'alphabetic';
     };
-
     drawSideLabel('START', start);
     drawSideLabel('END',   end);
+  }, [displayPath, expectedPath]);
 
-    // Overlay hint — shown when waiting for the user to begin drawing
-    if ((status === 'idle' || status === 'ready') && !loading) {
+  useEffect(() => { renderBgCanvas(); }, [renderBgCanvas]);
+
+  // ── Stroke canvas helpers ────────────────────────────────────────────────────
+  // clearStrokeCanvas: wipe the user stroke layer (called at start of every new attempt)
+  const clearStrokeCanvas = useCallback(() => {
+    if (!strokeCanvasRef.current) {
+      strokeCanvasRef.current = document.createElement('canvas');
+      strokeCanvasRef.current.width  = CANVAS_WIDTH;
+      strokeCanvasRef.current.height = CANVAS_HEIGHT;
+    } else {
+      strokeCanvasRef.current.getContext('2d').clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+  }, []);
+
+  // appendStrokeSegment: draw ONLY the newest segment — O(1) per point instead of O(n)
+  const appendStrokeSegment = useCallback((fromPt, toPt) => {
+    if (!strokeCanvasRef.current) return;
+    const ctx = strokeCanvasRef.current.getContext('2d');
+    ctx.lineWidth   = 8;
+    ctx.strokeStyle = '#facc15';
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.beginPath();
+    ctx.moveTo(fromPt.x, fromPt.y);
+    ctx.lineTo(toPt.x, toPt.y);
+    ctx.stroke();
+  }, []);
+
+  // ── Main canvas — trivially cheap compositor: two image blits per frame ───────
+  const drawCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    if (bgCanvasRef.current)     ctx.drawImage(bgCanvasRef.current,     0, 0);
+    if (strokeCanvasRef.current) ctx.drawImage(strokeCanvasRef.current, 0, 0);
+    if ((status === 'idle' || status === 'ready') && !loadingRef.current) {
       ctx.fillStyle    = 'rgba(0, 212, 255, 0.80)';
       ctx.font         = `bold 16px 'Fredoka', sans-serif`;
       ctx.textAlign    = 'center';
@@ -401,9 +429,22 @@ const TraceTheLineGame = () => {
       ctx.textAlign    = 'start';
       ctx.textBaseline = 'alphabetic';
     }
-  }, [displayPath, expectedPath, points, status, loading]);
+  }, [status]);
 
-  useEffect(() => { drawCanvas(); }, [drawCanvas]);
+  // RAF loop composites bg + stroke onto the visible canvas at 60 fps during tracing.
+  useEffect(() => {
+    if (status === 'tracing') {
+      const loop = () => {
+        drawCanvas();
+        drawRafRef.current = requestAnimationFrame(loop);
+      };
+      drawRafRef.current = requestAnimationFrame(loop);
+      return () => {
+        if (drawRafRef.current) cancelAnimationFrame(drawRafRef.current);
+      };
+    }
+    drawCanvas();
+  }, [status, drawCanvas]);
 
   // ── Timer ────────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -449,8 +490,10 @@ const TraceTheLineGame = () => {
     setResult(null);
     setSession(null);
     if (!skipReset) {
-      setPoints([]);
+      pointsRef.current = [];
+      clearStrokeCanvas();
       setSeconds(0);
+      setStatus('ready');
     }
     setSelectedStage(stageToStart);
 
@@ -458,13 +501,10 @@ const TraceTheLineGame = () => {
       const s = await TraceTheLineService.startTrace(studentId, stageToStart);
       if (sessionAbortRef.current) return;   // reset clicked while API was in flight
       setSession(s);
-      if (!skipReset) setStatus('ready');     // Next Stage path: wait for first draw
-      // skipReset path: status is already 'tracing' (set synchronously in beginDraw)
       await loadHistory();
-    } catch (err) {
+    } catch {
+      // Silently fall back to session-less mode — game works locally without a server session.
       if (sessionAbortRef.current) return;
-      setError(err.message || 'Unable to start tracing session.');
-      setStatus('idle');
     } finally {
       if (!sessionAbortRef.current) setLoading(false);
     }
@@ -479,7 +519,8 @@ const TraceTheLineGame = () => {
       // Auto-start: begin drawing immediately, create session in background
       isDrawingRef.current = true;
       setStatus('tracing');          // timer starts right now
-      setPoints([pt]);
+      clearStrokeCanvas();
+      pointsRef.current = [pt];
       startStageSession(selectedStage, true);   // skipReset=true — don't wipe the points we just set
       return;
     }
@@ -487,12 +528,14 @@ const TraceTheLineGame = () => {
       // Session already exists (e.g. from Next Stage); first draw starts the timer
       isDrawingRef.current = true;
       setStatus('tracing');
-      setPoints([pt]);
+      clearStrokeCanvas();
+      pointsRef.current = [pt];
       return;
     }
     if (status !== 'tracing') return;
     isDrawingRef.current = true;
-    setPoints([pt]);
+    clearStrokeCanvas();
+    pointsRef.current = [pt];
   };
 
   const continueDraw = (clientX, clientY) => {
@@ -500,14 +543,26 @@ const TraceTheLineGame = () => {
     if (!isDrawingRef.current) return;
     const pt = pointerToCanvas(clientX, clientY);
     if (!pt) return;
-    setPoints((prev) => [...prev, pt]);
+    const pts = pointsRef.current;
+    if (pts.length > 0) {
+      const last = pts[pts.length - 1];
+      const dx = pt.x - last.x;
+      const dy = pt.y - last.y;
+      // Throttle: skip points closer than 3 px to reduce stored points
+      if (dx * dx + dy * dy < 9) return;
+      // Hard cap to bound memory usage on long traces
+      if (pts.length >= 1500) return;
+      // Draw only this new segment — O(1), not O(n)
+      appendStrokeSegment(last, pt);
+    }
+    pts.push(pt);
   };
 
   const endDraw = () => { isDrawingRef.current = false; };
 
   // ── Submit ────────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
-    if (!session?.sessionId || points.length < 6) {
+    if (pointsRef.current.length < 6) {
       setError('Draw at least a short trace before submitting.');
       return;
     }
@@ -515,58 +570,58 @@ const TraceTheLineGame = () => {
     setLoading(true);
     setError('');
 
-    const clientAccuracy = computeAccuracy(points, expectedPath, activeStageMeta.difficulty);
+    const clientAccuracy = computeAccuracy(pointsRef.current, expectedPath, activeStageMeta.difficulty);
     const passed         = clientAccuracy >= PASS_THRESHOLD;
     const stageNum       = Number(session?.stageNumber ?? selectedStage);
 
-    try {
-      const payload = {
-        coordinates:        points,
-        expectedCoordinates: expectedPath,   // backend can compare against the same reference
-        clientAccuracy,
-        canvasWidth:        CANVAS_WIDTH,
-        canvasHeight:       CANVAS_HEIGHT,
-      };
+    // Apply result immediately — UI is never blocked by a slow/failing backend
+    const finalResult = {
+      accuracyRate: clientAccuracy,
+      passed,
+      stageNumber:  stageNum,
+      topicId:      activeStageMeta.topicId,
+      difficulty:   activeStageMeta.difficulty,
+    };
+    setResult(finalResult);
+    setStatus('completed');
+    setLoading(false);
 
-      const response = await TraceTheLineService.sendCoordinates(session.sessionId, payload);
-
-      // Use client-computed accuracy and pass/fail for display accuracy
-      const finalResult = {
-        ...response,
-        accuracyRate: clientAccuracy,
+    setStageAccuracies((prev) => ({ ...prev, [stageNum]: clientAccuracy }));
+    setSessionHistory((prev) => [
+      ...prev,
+      {
+        stageNumber:      stageNum,
+        topicId:          activeStageMeta.topicId,
+        difficulty:       activeStageMeta.difficulty,
+        accuracyRate:     clientAccuracy,
         passed,
-        stageNumber: stageNum,
-      };
+        timeSpentSeconds: seconds,
+      },
+    ]);
 
-      setResult(finalResult);
-      setStatus('completed');
-      setStageAccuracies((prev) => ({ ...prev, [stageNum]: clientAccuracy }));
-      setSessionHistory((prev) => [
-        ...prev,
-        {
-          stageNumber:      stageNum,
-          topicId:          activeStageMeta.topicId,
-          difficulty:       activeStageMeta.difficulty,
-          accuracyRate:     clientAccuracy,
-          passed,
-          timeSpentSeconds: seconds,
-        },
-      ]);
-
-      if (passed) {
-        if (stageNum < 3) {
-          setUnlockedStage((prev) => Math.max(prev, stageNum + 1));
-        } else {
-          // Mark completion; final screen is shown via the stage-3 result modal button
-          localStorage.setItem(`vn_minigame1_completed_${studentId}`, 'true');
-        }
+    if (passed) {
+      if (stageNum < 3) {
+        setUnlockedStage((prev) => Math.max(prev, stageNum + 1));
+      } else {
+        localStorage.setItem(`vn_minigame1_completed_${studentId}`, 'true');
       }
+    }
 
+    // Downsample to max 300 points — backend only needs ~90 for accuracy calculation
+    const allPts = pointsRef.current;
+    const step   = allPts.length > 300 ? Math.ceil(allPts.length / 300) : 1;
+    const submitCoords = step === 1 ? allPts : allPts.filter((_, i) => i % step === 0);
+
+    // Sync to backend in background — failure no longer blocks the user
+    try {
+      await TraceTheLineService.sendCoordinates(session.sessionId, {
+        coordinates:  submitCoords,
+        canvasWidth:  CANVAS_WIDTH,
+        canvasHeight: CANVAS_HEIGHT,
+      });
       await loadHistory();
-    } catch (err) {
-      setError(err.message || 'Unable to submit coordinates.');
-    } finally {
-      setLoading(false);
+    } catch {
+      setError('Server sync failed — your score may not be recorded.');
     }
   };
 
@@ -584,7 +639,8 @@ const TraceTheLineGame = () => {
     setLoading(false);                // clear loading in case API call was pending
     setResult(null);
     setSession(null);
-    setPoints([]);
+    pointsRef.current = [];
+    clearStrokeCanvas();
     setSeconds(0);
     setStatus('idle');
     setError('');
@@ -592,7 +648,8 @@ const TraceTheLineGame = () => {
 
   const handleReset = () => {
     setSession(null);
-    setPoints([]);
+    pointsRef.current = [];
+    clearStrokeCanvas();
     setSeconds(0);
     setResult(null);
     setStatus('idle');
@@ -602,7 +659,8 @@ const TraceTheLineGame = () => {
 
   const handlePlayAgain = () => {
     setSession(null);
-    setPoints([]);
+    pointsRef.current = [];
+    clearStrokeCanvas();
     setSeconds(0);
     setResult(null);
     setStatus('idle');
@@ -643,7 +701,17 @@ const TraceTheLineGame = () => {
                 type="button"
                 className={`stage-chip ${isSelected ? 'selected' : ''}`}
                 disabled={loading || status === 'tracing' || isLocked}
-                onClick={() => setSelectedStage(item.stage)}
+                onClick={() => {
+                  if (item.stage === selectedStage) return;
+                  pointsRef.current = [];
+                  clearStrokeCanvas();
+                  setSelectedStage(item.stage);
+                  setStatus('idle');
+                  setError('');
+                  setResult(null);
+                  setSession(null);
+                  setSeconds(0);
+                }}
               >
                 Stage {item.stage}: {item.topicName} ({item.difficulty}){isLocked ? ' 🔒' : ''}
               </button>
@@ -685,7 +753,7 @@ const TraceTheLineGame = () => {
           <button onClick={handleReset}>
             Reset
           </button>
-          <button onClick={handleSubmit} disabled={loading || status !== 'tracing' || !session}>
+          <button onClick={handleSubmit} disabled={loading || status !== 'tracing'}>
             Submit Coordinates
           </button>
         </div>
